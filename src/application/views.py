@@ -40,3 +40,11 @@ def new_example():
         flash('Example successfully saved.')
         return redirect(url_for('list_examples'))
     return render_template('new_example.html', form=form)
+
+
+# Error handlers #####
+# Handle 404 errors
+@app.errorhandler(404)
+def page_not_found(e):
+    return render_template('404.html'), 404
+
