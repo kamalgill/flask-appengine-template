@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block content %}
+	<h1 id="">Add a New Example</h1>
+	<form action="{{ url_for('new_example') }}" method="post" accept-charset="utf-8">
+		{{ form.csrf_token }}
+		<p>
+			<label for="example_id">{{ form.example_id.label }}</label><br />
+			{{ form.example_id|safe }}<br />
+			{% if form.example_id.errors %}
+			<ul class="errors">
+				{% for error in form.example_id.errors %}
+				<li>{{ error }}</li>
+				{% endfor %}
+			</ul>
+			{% endif %}
+		</p>
+		<p>
+			<label for="example_title">{{ form.example_title.label }}</label><br />
+			{{ form.example_title|safe }}<br />
+			{% if form.example_title.errors %}
+			<ul class="errors">
+				{% for error in form.example_title.errors %}
+				<li>{{ error }}</li>
+				{% endfor %}
+			</ul>
+			{% endif %}
+		</p>
+		<p><input type="submit" value="Add Example"/></p>
+	</form>
+{% endblock %}

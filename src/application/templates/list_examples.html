@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block content %}
+<p>
+	<a href="{{ url_for('list_examples') }}">List examples</a> | <a href="{{ url_for('new_example') }}">New example</a>
+</p>
+{% with messages = get_flashed_messages() %}
+	{% if messages %}
+		<div class="flash">
+			 {% for message in messages %}
+				<p>{{ message }}</p>
+			 {% endfor %}
+		</div>
+	{% endif %}
+{% endwith %}
+
+<ul>
+    <h1 id="">All Examples</h1>
+    {% for example in examples %}
+    <li>
+        ID: {{ example.example_id }}<br />
+        Title: {{ example.example_title }}<br />
+    </li>
+    {% endfor %}
+</ul>
+{% endblock %}

@@ -1,0 +1,13 @@
+application: myflaskonappengineapp
+version: 1
+runtime: python
+api_version: 1
+
+handlers:
+- url: /favicon.ico
+  static_files: application/static/img/favicon.ico
+  upload: application/static/img/favicon.ico
+
+- url: .*
+  script: main.py
+
