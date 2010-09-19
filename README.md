@@ -7,7 +7,7 @@ Boilerplate project template for running a Flask-based application on Google App
 
 About Flask
 -----------
-Flask is a BSD-licensed microframework for Python based on Werkzeug, Jinja 2 and good intentions.
+[Flask][flask] is a BSD-licensed microframework for Python based on [Werkzeug][wz], [Jinja 2][jinja2] and good intentions.
 
 See <http://flask.pocoo.org> for more info.
 
@@ -63,6 +63,9 @@ Project template layout was heavily inspired by Francisco Souza's [gaeseries fla
 HTML5-based main template (templates/base.html) and base CSS styles (static/css/style.css) extracted from [HTML5 Boilerplate][2]
 
 
+[flask]: http://flask.pocoo.org
+[wz]: http://werkzeug.pocoo.org/
+[jinja2]: http://jinja.pocoo.org/2/documentation/
 [1]: http://github.com/franciscosouza/gaeseries/tree/flask
 [2]: http://html5boilerplate.com/
 [3]: http://code.google.com/appengine/docs/python/tools/devserver.html
