@@ -12,8 +12,8 @@ About Flask
 See <http://flask.pocoo.org> for more info.
 
 
-Setup Instructions
-------------------
+Setup/Configuration
+-------------------
 1. Download this repository via `git clone git@github.com:kamalgill/flask-appengine-template.git` 
    or download the tarball at <http://github.com/kamalgill/flask-appengine-template/tarball/master>
 2. Set the application id in `src/app.yaml`
@@ -30,8 +30,8 @@ Setup Instructions
 where the keys are a randomized string of characters
 
 
-Front-end Customization Instructions
-------------------------------------
+Front-end Customization
+-----------------------
 1. Customize the main HTML template at `src/application/static/templates/base.html`
 2. Customize CSS styles at `src/application/static/css/main.css`
 3. Add custom JavaScript code at `src/application/static/js/main.js`
@@ -45,6 +45,7 @@ To test the application using App Engine's development server, use [dev_appserve
 <pre class="console">
 	dev_appserver.py src/
 </pre>
+
 Assuming the latest App Engine SDK is installed, the test environment is available at <http://localhost:8080>
 
 
@@ -54,6 +55,8 @@ To deploy the application to App Engine, use [appcfg.py update][4]
 <pre class="console">
 	appcfg.py update src/
 </pre>
+
+The application should be visible at http://{YOURAPPID}.appspot.com
 
 
 Credits
