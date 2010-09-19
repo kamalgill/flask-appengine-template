@@ -1,0 +1,10 @@
+
+# Standard ignores
+*.pyc
+*.pyo
+*.DS_Store
+*.swp
+
+
+# Don't store secret keys in version control
+secret_keys.py
