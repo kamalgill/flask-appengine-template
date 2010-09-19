@@ -9,8 +9,6 @@ About Flask
 -----------
 Flask is a BSD-licensed microframework for Python based on Werkzeug, Jinja 2 and good intentions.
 
-Flask runs incredibly well on Google App Engine.
-
 See <http://flask.pocoo.org> for more info.
 
 
@@ -39,9 +37,9 @@ Front-end Customization Instructions
 3. Add custom JavaScript code at src/application/static/js/main.js
 
 
-Testing the Application (Development Server)
+Testing the Application
 -----------------------
-Using App Engine's development server:
+To test the application using App Engine's development server, use [dev_appserver.py][3]
 <pre class="console">
 	dev_appserver.py src/
 </pre>
@@ -50,6 +48,7 @@ Assuming the latest App Engine SDK is installed, the test environment is availab
 
 Deploying the Application
 -------------------------
+To deploy the application to App Engine, use [appcfg.py update][4]
 <pre class="console">
 	appcfg.py update src/
 </pre>
@@ -64,3 +63,8 @@ HTML5-based main template (templates/base.html) and base CSS styles (static/css/
 
 [1]: http://github.com/franciscosouza/gaeseries/tree/flask
 [2]: http://html5boilerplate.com/
+[3]: http://code.google.com/appengine/docs/python/tools/devserver.html
+[4]: http://code.google.com/appengine/docs/python/tools/uploadinganapp.html
+
+
+
