@@ -17,9 +17,9 @@ Setup Instructions
 1. Download this repository via `git clone git@github.com:kamalgill/flask-appengine-template.git` 
    or download the tarball at <http://github.com/kamalgill/flask-appengine-template/tarball/master>
 2. Set the application id in `src/app.yaml`
-3. Configure datastore models at src/application/models.py
-4. Configure application views and URL routes at src/application/views.py
-5. Configure forms at src/application/forms.py
+3. Configure datastore models at `src/application/models.py`
+4. Configure application views and URL routes at `src/application/views.py`
+5. Configure forms at `src/application/forms.py`
 6. Add a `secret_keys.py` file at `src/application/secret_keys.py`, with the following contents:
 
 <pre class="console">
@@ -32,9 +32,9 @@ where the keys are a randomized string of characters
 
 Front-end Customization Instructions
 ------------------------------------
-1. Customize the main HTML template at src/application/static/templates/base.html
-2. Customize CSS styles at src/application/static/css/main.css
-3. Add custom JavaScript code at src/application/static/js/main.js
+1. Customize the main HTML template at `src/application/static/templates/base.html`
+2. Customize CSS styles at `src/application/static/css/main.css`
+3. Add custom JavaScript code at `src/application/static/js/main.js`
 
 
 Testing the Application
