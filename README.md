@@ -45,11 +45,19 @@ Using App Engine's development server:
 <pre class="console">
 	dev_appserver.py src/
 </pre>
+Assuming the latest App Engine SDK is installed, the test environment is available at <http://localhost:8080>
+
+
+Deploying the Application
+-------------------------
+<pre class="console">
+	appcfg.py update src/
+</pre>
 
 
 Credits
 -------
-Project template layout was heavily inspired by Francisco Souza's [gaeseries flask template][1]
+Project template layout was heavily inspired by Francisco Souza's [gaeseries flask project][1]
 
 HTML5-based main template (templates/base.html) and base CSS styles (static/css/style.css) extracted from [HTML5 Boilerplate][2]
 
