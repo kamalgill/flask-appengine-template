@@ -30,6 +30,8 @@ Setup/Configuration
 
 where the keys are a randomized string of characters
 
+or, run the `generate_keys.py` script at `src/application/generate_keys.py` to generate the keys file
+
 
 Front-end Customization
 -----------------------
