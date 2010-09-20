@@ -16,11 +16,12 @@ Setup/Configuration
 -------------------
 1. Download this repository via `git clone git@github.com:kamalgill/flask-appengine-template.git` 
    or download the tarball at <http://github.com/kamalgill/flask-appengine-template/tarball/master>
-2. Set the application id in `src/app.yaml`
-3. Configure datastore models at `src/application/models.py`
-4. Configure application views and URL routes at `src/application/views.py`
-5. Configure forms at `src/application/forms.py`
-6. Add a `secret_keys.py` file at `src/application/secret_keys.py`, with the following contents:
+2. Copy the src/ folder to your application's root folder
+3. Set the application id in `src/app.yaml`
+4. Configure datastore models at `src/application/models.py`
+5. Configure application views and URL routes at `src/application/views.py`
+6. Configure forms at `src/application/forms.py`
+7. Add a `secret_keys.py` file at `src/application/secret_keys.py`, with the following contents:
 
 <pre class="console">
 	CSRF_SECRET_KEY = '{MY_SECRET_CSRF_KEY}'
@@ -57,6 +58,50 @@ To deploy the application to App Engine, use [appcfg.py update][4]
 </pre>
 
 The application should be visible at http://{YOURAPPID}.appspot.com
+
+
+Folder structure
+----------------
+The App Engine app's root folder is located at `src/`.
+
+<pre class="console">
+	src/
+	|-- application (application code)
+	|-- flask (flask core)
+	|-- flaskext (flask extensions, inc. Flask-WTF)
+	|-- jinja2 (template engine)
+	|-- simplejson (required by Jinja2)
+	|-- werkzeug (WSGI utilities for Python-based web development)
+	`-- wtforms (Jinja2-compatible web form utility)
+</pre>
+
+The application code is located at `src/application`.
+
+<pre class="console">
+	application/
+	|-- __init__.py
+	|-- decorators.py (inc. `login_required` decorator)
+	|-- forms.py (web forms specified here)
+	|-- models.py (App Engine datastore models)
+	|-- settings.py (settings for flask app)
+	|-- static
+	|	|-- css
+	|	|	|-- main.css (custom styles go here)
+	|	|	`-- style.css (base CSS from HTML5 boilerplate)
+	|	|-- img
+	|	|	|-- favicon.ico
+	|	|	`-- favicon.png
+	|	`-- js
+	|		|-- main.js
+	|		`-- modernizr-1.5.min.js (HTML5 enabling and detection)
+	|-- templates
+	|	|-- 404.html (not found page)
+	|	|-- base.html (master template)
+	|	|-- list_examples.html (example list-based template)
+	|	`-- new_example.html (example form-based template)
+	|-- tests.py (unit tests)
+	`-- views.py (URL routes and handlers)
+</pre>
 
 
 Credits
