@@ -1,3 +1,10 @@
+"""
+decorators.py
+
+Decorators for URL handlers
+
+"""
+
 from functools import wraps
 from google.appengine.api import users
 from flask import redirect, request

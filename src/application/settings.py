@@ -1,7 +1,12 @@
-'''
-Place your keys in the secret_keys.py module, which will be kept out of version control
+"""
+settings.py
 
-'''
+Configuration for Flask app
+
+Important: Place your keys in the secret_keys.py module, 
+           which will be kept out of version control.
+
+"""
 
 
 import os
