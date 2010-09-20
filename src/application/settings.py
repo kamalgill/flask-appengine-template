@@ -8,13 +8,16 @@ Important: Place your keys in the secret_keys.py module,
 
 """
 
-
 import os
+
 from secret_keys import CSRF_SECRET_KEY, SESSION_KEY
 
 
+DEBUG_MODE = False
+
 # Auto-set debug mode based on App Engine dev environ
-DEBUG_MODE = os.environ['SERVER_SOFTWARE'].startswith('Dev')
+if 'SERVER_SOFTWARE' in os.environ and os.environ['SERVER_SOFTWARE'].startswith('Dev'):
+    DEBUG_MODE = True
 
 DEBUG = DEBUG_MODE
 
