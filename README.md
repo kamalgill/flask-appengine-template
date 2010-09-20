@@ -80,19 +80,19 @@ The application code is located at `src/application`.
 <pre class="console">
 	application/
 	|-- __init__.py (initializes flask app)
-	|-- decorators.py (inc. login_required decorator)
-	|-- forms.py (web forms specified here)
+	|-- decorators.py (decorators for URL handlers)
+	|-- forms.py (web form models and validators)
 	|-- models.py (App Engine datastore models)
 	|-- settings.py (settings for flask app)
 	|-- static
 	|	|-- css
-	|	|	|-- main.css (custom styles go here)
+	|	|	|-- main.css (custom styles)
 	|	|	`-- style.css (base CSS from HTML5 boilerplate)
 	|	|-- img
-	|	|	|-- favicon.ico
+	|	|	|-- favicon.ico (replace with custom favicon)
 	|	|	`-- favicon.png
 	|	`-- js
-	|		|-- main.js
+	|		|-- main.js (custom javascript)
 	|		`-- modernizr-1.5.min.js (HTML5 enabling and detection)
 	|-- templates
 	|	|-- 404.html (not found page)
