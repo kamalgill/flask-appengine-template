@@ -79,8 +79,8 @@ The application code is located at `src/application`.
 
 <pre class="console">
 	application/
-	|-- __init__.py
-	|-- decorators.py (inc. `login_required` decorator)
+	|-- __init__.py (initializes flask app)
+	|-- decorators.py (inc. login_required decorator)
 	|-- forms.py (web forms specified here)
 	|-- models.py (App Engine datastore models)
 	|-- settings.py (settings for flask app)
