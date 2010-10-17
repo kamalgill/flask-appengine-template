@@ -20,3 +20,4 @@ provided that the following conditions are met:
 
 Note: we would appreciate that you make the image a link to 
 http://flask.pocoo.org/ if you use it on a web page.
+
