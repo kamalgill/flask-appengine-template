@@ -108,9 +108,9 @@ The application code is located at `src/application`.
 
 Removing Extended Attributes (@ flag)
 -------------------------------------
-A few of the files in the source tree were uploaded to GitHub with extended attributes (notice the '@' symbol when running ls -al)
+A few of the files in the source tree were uploaded (with apologies) to GitHub with extended attributes (notice the '@' symbol when running ls -al).
 
-To remove the extended attributes, use `xattr -rd` at the root of the src/ folder.
+To remove the extended attributes, use `xattr -rd` at the root of the src/ folder, use the `xattr` utility ..
 
 <pre class='console'>
 	xattr -rd com.apple.quarantine .
