@@ -106,6 +106,20 @@ The application code is located at `src/application`.
 </pre>
 
 
+Removing Extended Attributes (@ flag)
+-------------------------------------
+A few of the files in the source tree were uploaded to GitHub with extended attributes (notice the '@' symbol when running ls -al)
+
+To remove the extended attributes, use `xattr -rd` at the root of the src/ folder.
+
+<pre class='console'>
+	xattr -rd com.apple.quarantine .
+	xattr -rd com.macromates.caret .
+</pre>
+
+Note: Windows users may safely ignore the xattr fix
+
+
 Credits
 -------
 Project template layout was heavily inspired by Francisco Souza's [gaeseries flask project][1]
