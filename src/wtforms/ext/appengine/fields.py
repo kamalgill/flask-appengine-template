@@ -16,7 +16,7 @@ class ReferencePropertyField(fields.SelectFieldBase):
         self.blank_text = blank_text
         self._set_data(None)
         if reference_class is None:
-            raise ValueError('Missing reference_class attribute in '
+            raise TypeError('Missing reference_class attribute in '
                              'ReferencePropertyField')
 
         self.query = reference_class.all()
@@ -55,11 +55,11 @@ class ReferencePropertyField(fields.SelectFieldBase):
 
     def pre_validate(self, form):
         if not self.allow_blank or self.data is not None:
-            for obj in self.queryset:
+            for obj in self.query:
                 if self.data == str(obj.key()):
                     break
             else:
-                raise ValidationError('Not a valid choice')
+                raise ValueError(self.gettext(u'Not a valid choice'))
 
 
 class StringListPropertyField(fields.TextAreaField):

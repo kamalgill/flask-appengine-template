@@ -24,7 +24,7 @@ class DateTimeField(Field):
     :param display_format:
         A format string to pass to strftime() to format dates for display.
     """
-    widget = TextInput
+    widget = TextInput()
 
     def __init__(self, label=u'', validators=None, parse_kwargs=None,
                  display_format='%Y-%m-%d %H:%M', **kwargs):
@@ -43,6 +43,10 @@ class DateTimeField(Field):
     def process_formdata(self, valuelist):
         if valuelist:
             date_str = u' '.join(valuelist)
+            if not date_str:
+                self.data = None
+                raise ValidationError(self.gettext(u'Please input a date/time value'))
+
             parse_kwargs = self.parse_kwargs.copy()
             if 'default' not in parse_kwargs:
                 try:
@@ -53,7 +57,7 @@ class DateTimeField(Field):
                 self.data = parser.parse(date_str, **parse_kwargs)
             except ValueError:
                 self.data = None
-                raise ValidationError(u'Invalid date/time input')
+                raise ValidationError(self.gettext(u'Invalid date/time input'))
 
 
 class DateField(DateTimeField):
