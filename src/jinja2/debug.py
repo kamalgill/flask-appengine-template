@@ -60,7 +60,7 @@ class ProcessedTraceback(object):
         self.frames = frames
 
     def chain_frames(self):
-        """Chains the frames.  Requires ctypes or the speedups extension."""
+        """Chains the frames.  Requires ctypes or the debugsupport extension."""
         prev_tb = None
         for tb in self.frames:
             if prev_tb is not None:
@@ -259,7 +259,7 @@ def _init_ugly_crap():
     ]
 
     # python with trace
-    if object.__basicsize__ != ctypes.sizeof(_PyObject):
+    if hasattr(sys, 'getobjects'):
         class _PyObject(ctypes.Structure):
             pass
         _PyObject._fields_ = [
@@ -299,7 +299,7 @@ def _init_ugly_crap():
 
 # try to get a tb_set_next implementation
 try:
-    from jinja2._speedups import tb_set_next
+    from jinja2._debugsupport import tb_set_next
 except ImportError:
     try:
         tb_set_next = _init_ugly_crap()

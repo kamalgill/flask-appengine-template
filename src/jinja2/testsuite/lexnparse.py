@@ -16,7 +16,8 @@ import unittest
 
 from jinja2.testsuite import JinjaTestCase
 
-from jinja2 import Environment, Template, TemplateSyntaxError, UndefinedError
+from jinja2 import Environment, Template, TemplateSyntaxError, \
+     UndefinedError, nodes
 
 env = Environment()
 
@@ -35,6 +36,10 @@ class LexerTestCase(JinjaTestCase):
         tmpl = env.from_string('{% raw %}foo{% endraw %}|'
                                '{%raw%}{{ bar }}|{% baz %}{%       endraw    %}')
         assert tmpl.render() == 'foo|{{ bar }}|{% baz %}'
+
+    def test_raw2(self):
+        tmpl = env.from_string('1  {%- raw -%}   2   {%- endraw -%}   3')
+        assert tmpl.render() == '123'
 
     def test_balancing(self):
         env = Environment('{%', '%}', '${', '}')
@@ -353,6 +358,11 @@ class SyntaxTestCase(JinjaTestCase):
                                '{{ none is defined }}|{{ missing is defined }}')
         assert tmpl.render() == 'True|False|None|True|False'
 
+    def test_neg_filter_priority(self):
+        node = env.parse('{{ -1|foo }}')
+        assert isinstance(node.body[0].nodes[0], nodes.Filter)
+        assert isinstance(node.body[0].nodes[0].node, nodes.Neg)
+
     def test_const_assign(self):
         constass1 = '''{% set true = 42 %}'''
         constass2 = '''{% for none in seq %}{% endfor %}'''
@@ -364,6 +374,12 @@ class SyntaxTestCase(JinjaTestCase):
 {% for item in [1, 2] %}{% set foo = 1 %}{% endfor %}\
 {{ foo }}''')
         assert tmpl.render() == '0'
+
+    def test_parse_unary(self):
+        tmpl = env.from_string('{{ -foo["bar"] }}')
+        assert tmpl.render(foo={'bar': 42}) == '-42'
+        tmpl = env.from_string('{{ -foo["bar"]|abs }}')
+        assert tmpl.render(foo={'bar': 42}) == '42'
 
 
 def suite():

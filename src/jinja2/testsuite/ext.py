@@ -51,7 +51,13 @@ newstyle_i18n_templates = {
     'stringformat.html': '{{ _("User: %(num)s", num=user_count) }}',
     'ngettext.html': '{{ ngettext("%(num)s apple", "%(num)s apples", apples) }}',
     'ngettext_long.html': '{% trans num=apples %}{{ num }} apple{% pluralize %}'
-                          '{{ num }} apples{% endtrans %}'
+                          '{{ num }} apples{% endtrans %}',
+    'transvars1.html': '{% trans %}User: {{ num }}{% endtrans %}',
+    'transvars2.html': '{% trans num=count %}User: {{ num }}{% endtrans %}',
+    'transvars3.html': '{% trans count=num %}User: {{ count }}{% endtrans %}',
+    'novars.html': '{% trans %}%(hello)s{% endtrans %}',
+    'vars.html': '{% trans %}{{ foo }}%(foo)s{% endtrans %}',
+    'explicitvars.html': '{% trans foo="42" %}%(foo)s{% endtrans %}'
 }
 
 
@@ -62,6 +68,7 @@ languages = {
         'One user online':              u'Ein Benutzer online',
         '%(user_count)s users online':  u'%(user_count)s Benutzer online',
         'User: %(num)s':                u'Benutzer: %(num)s',
+        'User: %(count)s':              u'Benutzer: %(count)s',
         '%(num)s apple':                u'%(num)s Apfel',
         '%(num)s apples':               u'%(num)s Äpfel'
     }
@@ -344,6 +351,22 @@ class NewstyleInternationalizationTestCase(JinjaTestCase):
         # newstyle gettext of course
         assert re.search(r"l_ngettext, u?'\%\(num\)s apple', u?'\%\(num\)s "
                          r"apples', 3", source) is not None
+
+    def test_trans_vars(self):
+        t1 = newstyle_i18n_env.get_template('transvars1.html')
+        t2 = newstyle_i18n_env.get_template('transvars2.html')
+        t3 = newstyle_i18n_env.get_template('transvars3.html')
+        assert t1.render(num=1, LANGUAGE='de') == 'Benutzer: 1'
+        assert t2.render(count=23, LANGUAGE='de') == 'Benutzer: 23'
+        assert t3.render(num=42, LANGUAGE='de') == 'Benutzer: 42'
+
+    def test_novars_vars_escaping(self):
+        t = newstyle_i18n_env.get_template('novars.html')
+        assert t.render() == '%(hello)s'
+        t = newstyle_i18n_env.get_template('vars.html')
+        assert t.render(foo='42') == '42%(foo)s'
+        t = newstyle_i18n_env.get_template('explicitvars.html')
+        assert t.render() == '%(foo)s'
 
 
 class AutoEscapeTestCase(JinjaTestCase):
