@@ -21,16 +21,19 @@ Setup/Configuration
 4. Configure datastore models at `src/application/models.py`
 5. Configure application views and URL routes at `src/application/views.py`
 6. Configure forms at `src/application/forms.py`
-7. Add a `secret_keys.py` file at `src/application/secret_keys.py`, with the following contents:
+8. Add a `secret_keys.py` file at `src/application/secret_keys.py`, with the following contents:
 
 <pre class="console">
 	CSRF_SECRET_KEY = '{MY_SECRET_CSRF_KEY}'
 	SESSION_KEY = '{MY_SECRET_SESSION_KEY}'
 </pre>
 
-where the keys are a randomized string of characters
+where the keys are a randomized string of characters.
 
-or, run the `generate_keys.py` script at `src/application/generate_keys.py` to generate the keys file
+Or, run the `generate_keys.py` script at `src/application/generate_keys.py` to generate the keys file.
+
+Note: Copy the .gitignore file from the tarball folder's root to your git repository root to keep the secret_keys
+module out of version control.
 
 
 Front-end Customization
