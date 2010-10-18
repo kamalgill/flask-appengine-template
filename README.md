@@ -2,26 +2,31 @@
 Flask on App Engine Project Template
 ====================================
 
-Boilerplate project template for running a Flask-based application on Google App Engine (Python)
+Boilerplate project template for running a Flask-based application on 
+Google App Engine (Python)
 
 
 About Flask
 -----------
-[Flask][flask] is a BSD-licensed microframework for Python based on [Werkzeug][wz], [Jinja 2][jinja2] and good intentions.
+[Flask][flask] is a BSD-licensed microframework for Python based on 
+[Werkzeug][wz], [Jinja 2][jinja2] and good intentions.
 
 See <http://flask.pocoo.org> for more info.
 
 
 Setup/Configuration
 -------------------
-1. Download this repository via `git clone git@github.com:kamalgill/flask-appengine-template.git` 
-   or download the tarball at <http://github.com/kamalgill/flask-appengine-template/tarball/master>
+1. Download this repository via 
+   `git clone git@github.com:kamalgill/flask-appengine-template.git` 
+   or download the tarball at 
+   <http://github.com/kamalgill/flask-appengine-template/tarball/master>
 2. Copy the src/ folder to your application's root folder
 3. Set the application id in `src/app.yaml`
 4. Configure datastore models at `src/application/models.py`
 5. Configure application views and URL routes at `src/application/views.py`
 6. Configure forms at `src/application/forms.py`
-8. Add a `secret_keys.py` file at `src/application/secret_keys.py`, with the following contents:
+8. Add a `secret_keys.py` file at `src/application/secret_keys.py`, with 
+   the following contents:
 
 <pre class="console">
 	CSRF_SECRET_KEY = '{MY_SECRET_CSRF_KEY}'
@@ -30,15 +35,17 @@ Setup/Configuration
 
 where the keys are a randomized string of characters.
 
-Or, run the `generate_keys.py` script at `src/application/generate_keys.py` to generate the keys file.
+Or, run the `generate_keys.py` script at `src/application/generate_keys.py` 
+to generate the keys file.
 
-Note: Copy the .gitignore file from the tarball folder's root to your git repository root to keep the secret_keys
-module out of version control.
+Note: Copy the .gitignore file from the tarball folder's root to your git 
+repository root to keep the secret_keys module out of version control.
 
 
 Front-end Customization
 -----------------------
-1. Customize the main HTML template at `src/application/static/templates/base.html`
+1. Customize the main HTML template at 
+   `src/application/static/templates/base.html`
 2. Customize CSS styles at `src/application/static/css/main.css`
 3. Add custom JavaScript code at `src/application/static/js/main.js`
 4. Customize favicon at `src/application/static/img/favicon.ico`
@@ -47,12 +54,15 @@ Front-end Customization
 
 Testing the Application
 -----------------------
-To test the application using App Engine's development server, use [dev_appserver.py][3]
+To test the application using App Engine's development server, 
+use [dev_appserver.py][3]
+
 <pre class="console">
 	dev_appserver.py src/
 </pre>
 
-Assuming the latest App Engine SDK is installed, the test environment is available at <http://localhost:8080>
+Assuming the latest App Engine SDK is installed, the test environment is 
+available at <http://localhost:8080>
 
 
 Deploying the Application
@@ -111,9 +121,11 @@ The application code is located at `src/application`.
 
 Removing Extended Attributes (@ flag)
 -------------------------------------
-A few of the files in the source tree were uploaded (with apologies) to GitHub with extended attributes (notice the '@' symbol when running ls -al).
+A few of the files in the source tree were uploaded (with apologies) to 
+GitHub with extended attributes (notice the '@' symbol when running ls -al).
 
-To remove the extended attributes, use `xattr -rd` at the root of the src/ folder.
+To remove the extended attributes, use `xattr -rd` at the root of the 
+src/ folder.
 
 <pre class='console'>
 	xattr -rd com.apple.quarantine .
@@ -125,9 +137,11 @@ Note: Windows users may safely ignore the xattr fix
 
 Credits
 -------
-Project template layout was heavily inspired by Francisco Souza's [gaeseries flask project][1]
+Project template layout was heavily inspired by Francisco Souza's 
+[gaeseries flask project][1]
 
-HTML5-based main template (templates/base.html) and base CSS styles (static/css/style.css) extracted from [HTML5 Boilerplate][2]
+HTML5-based main template (templates/base.html) and base CSS styles 
+(static/css/style.css) extracted from [HTML5 Boilerplate][2]
 
 
 [flask]: http://flask.pocoo.org
