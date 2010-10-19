@@ -55,7 +55,7 @@ Front-end Customization
 Testing the Application
 -----------------------
 To test the application using App Engine's development server, 
-use [dev_appserver.py][3]
+use [dev_appserver.py][devserver]
 
 <pre class="console">
 	dev_appserver.py src/
@@ -67,7 +67,7 @@ available at <http://localhost:8080>
 
 Deploying the Application
 -------------------------
-To deploy the application to App Engine, use [appcfg.py update][4]
+To deploy the application to App Engine, use [appcfg.py update][appcfg]
 <pre class="console">
 	appcfg.py update src/
 </pre>
@@ -135,22 +135,27 @@ src/ folder.
 Note: Windows users may safely ignore the xattr fix
 
 
+Licenses
+--------
+See licenses/ folder
+
+
 Credits
 -------
 Project template layout was heavily inspired by Francisco Souza's 
-[gaeseries flask project][1]
+[gaeseries flask project][gaeseries]
 
 HTML5-based main template (templates/base.html) and base CSS styles 
-(static/css/style.css) extracted from [HTML5 Boilerplate][2]
+(static/css/style.css) extracted from [HTML5 Boilerplate][html5]
 
 
 [flask]: http://flask.pocoo.org
 [wz]: http://werkzeug.pocoo.org/
 [jinja2]: http://jinja.pocoo.org/2/documentation/
-[1]: http://github.com/franciscosouza/gaeseries/tree/flask
-[2]: http://html5boilerplate.com/
-[3]: http://code.google.com/appengine/docs/python/tools/devserver.html
-[4]: http://code.google.com/appengine/docs/python/tools/uploadinganapp.html
+[devserver]: http://code.google.com/appengine/docs/python/tools/devserver.html
+[appcfg]: http://code.google.com/appengine/docs/python/tools/uploadinganapp.html
+[gaeseries]: http://github.com/franciscosouza/gaeseries/tree/flask
+[html5]: http://html5boilerplate.com/
 
 
 
