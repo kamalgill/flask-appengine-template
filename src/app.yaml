@@ -3,10 +3,15 @@ version: 1
 runtime: python
 api_version: 1
 
+default_expiration: "5d"
+
 handlers:
 - url: /favicon.ico
   static_files: application/static/img/favicon.ico
   upload: application/static/img/favicon.ico
+
+- url: /static
+  static_dir: application/static
 
 - url: .*
   script: main.py
