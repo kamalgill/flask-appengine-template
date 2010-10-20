@@ -5,6 +5,9 @@ api_version: 1
 
 default_expiration: "5d"
 
+builtins:
+- datastore_admin: on
+
 handlers:
 - url: /favicon.ico
   static_files: application/static/img/favicon.ico
