@@ -23,8 +23,9 @@ Setup/Configuration
 2. Copy the src/ folder to your application's root folder
 3. Set the application id in `src/app.yaml`
 4. Configure datastore models at `src/application/models.py`
-5. Configure application views and URL routes at `src/application/views.py`
-6. Configure forms at `src/application/forms.py`
+5. Configure application views at `src/application/views.py`
+6. Configure URL routes at `src/application/urls.py`
+7. Configure forms at `src/application/forms.py`
 8. Add a `secret_keys.py` file at `src/application/secret_keys.py`, with 
    the following contents:
 
@@ -115,7 +116,8 @@ The application code is located at `src/application`.
 	|	|-- list_examples.html (example list-based template)
 	|	`-- new_example.html (example form-based template)
 	|-- tests.py (unit tests)
-	`-- views.py (URL routes and handlers)
+	|-- views.py (Handlers for URL routes defined at urls.py)
+	`-- urls.py (URL dispatch routes)
 </pre>
 
 
