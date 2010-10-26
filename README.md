@@ -102,8 +102,7 @@ The application code is located at `src/application`.
 	|-- settings.py (settings for flask app)
 	|-- static
 	|	|-- css
-	|	|	|-- main.css (custom styles)
-	|	|	`-- style.css (base CSS from HTML5 boilerplate)
+	|	|	`-- main.css (custom styles)
 	|	|-- img
 	|	|	|-- favicon.ico (replace with custom favicon)
 	|	|	`-- favicon.png
