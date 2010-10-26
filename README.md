@@ -109,7 +109,7 @@ The application code is located at `src/application`.
 	|	|	`-- favicon.png
 	|	`-- js
 	|		|-- main.js (custom javascript)
-	|		`-- modernizr-1.5.min.js (HTML5 enabling and detection)
+	|		`-- modernizr-1.6.min.js (HTML5 enabling and detection)
 	|-- templates
 	|	|-- 404.html (not found page)
 	|	|-- base.html (master template)
