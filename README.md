@@ -83,8 +83,8 @@ The App Engine app's root folder is located at `src/`.
 <pre class="console">
 	src/
 	|-- application (application code)
-	|-- flask (flask core)
-	|-- flaskext (flask extensions, inc. Flask-WTF)
+	|-- flask (Flask core)
+	|-- flaskext (Flask extensions, inc. Flask-WTF)
 	|-- jinja2 (template engine)
 	|-- simplejson (required by Jinja2)
 	|-- werkzeug (WSGI utilities for Python-based web development)
@@ -95,11 +95,11 @@ The application code is located at `src/application`.
 
 <pre class="console">
 	application/
-	|-- __init__.py (initializes flask app)
+	|-- __init__.py (initializes Flask app)
 	|-- decorators.py (decorators for URL handlers)
 	|-- forms.py (web form models and validators)
 	|-- models.py (App Engine datastore models)
-	|-- settings.py (settings for flask app)
+	|-- settings.py (settings for Flask app)
 	|-- static
 	|	|-- css
 	|	|	`-- main.css (custom styles)
@@ -144,10 +144,10 @@ See licenses/ folder
 Credits
 -------
 Project template layout was heavily inspired by Francisco Souza's 
-[gaeseries flask project][gaeseries]
+[gaeseries Flask project][gaeseries]
 
-HTML5-based main template (templates/base.html) and base CSS styles 
-(static/css/style.css) extracted from [HTML5 Boilerplate][html5]
+HTML5-based main template (templates/base.html) 
+extracted from [HTML5 Boilerplate][html5]
 
 
 [flask]: http://flask.pocoo.org
