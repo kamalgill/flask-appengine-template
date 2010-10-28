@@ -5,8 +5,8 @@
 	<form action="{{ url_for('new_example') }}" method="post" accept-charset="utf-8">
 		{{ form.hidden_tag() }}
 		<p>
-			<label for="example_id">{{ form.example_id.label }}</label><br />
-			{{ form.example_id|safe }}<br />
+			{{ form.example_id.label }}
+			{{ form.example_id|safe }}
 			{% if form.example_id.errors %}
 			<ul class="errors">
 				{% for error in form.example_id.errors %}
@@ -16,8 +16,8 @@
 			{% endif %}
 		</p>
 		<p>
-			<label for="example_title">{{ form.example_title.label }}</label><br />
-			{{ form.example_title|safe }}<br />
+			{{ form.example_title.label }}
+			{{ form.example_title|safe }}
 			{% if form.example_title.errors %}
 			<ul class="errors">
 				{% for error in form.example_title.errors %}
