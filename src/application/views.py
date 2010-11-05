@@ -39,7 +39,7 @@ def new_example():
                     added_by = users.get_current_user()
                     )
         example.put()
-        flash('Example successfully saved.')
+        flash(u'Example successfully saved.', 'success')
         return redirect(url_for('list_examples'))
     return render_template('new_example.html', form=form)
 
