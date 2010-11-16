@@ -42,6 +42,13 @@ to generate the keys file.
 Note: Copy the .gitignore file from the tarball folder's root to your git 
 repository root to keep the secret_keys module out of version control.
 
+Or, add the following to your .(git|hg|bzr)ignore file
+
+<pre class="console">
+	# Keep secret keys out of version control
+	secret_keys.py
+</pre>
+
 
 Front-end Customization
 -----------------------
@@ -115,8 +122,8 @@ The application code is located at `src/application`.
 	|	|-- list_examples.html (example list-based template)
 	|	`-- new_example.html (example form-based template)
 	|-- tests.py (unit tests)
-	|-- views.py (Handlers for URL routes defined at urls.py)
-	`-- urls.py (URL dispatch routes)
+	|-- urls.py (URL dispatch routes)
+	`-- views.py (Handlers for URL routes defined at urls.py)
 </pre>
 
 
@@ -149,6 +156,8 @@ Project template layout was heavily inspired by Francisco Souza's
 HTML5-based main template (templates/base.html) 
 extracted from [HTML5 Boilerplate][html5]
 
+CSS reset, fonts, grids, and base styles provided by [YUI 3][yui3]
+
 
 [flask]: http://flask.pocoo.org
 [wz]: http://werkzeug.pocoo.org/
@@ -157,6 +166,6 @@ extracted from [HTML5 Boilerplate][html5]
 [appcfg]: http://code.google.com/appengine/docs/python/tools/uploadinganapp.html
 [gaeseries]: http://github.com/franciscosouza/gaeseries/tree/flask
 [html5]: http://html5boilerplate.com/
-
+[yui3]: http://developer.yahoo.com/yui/3/
 
 
