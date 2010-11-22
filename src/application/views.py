@@ -11,7 +11,7 @@ from google.appengine.api import users
 from flask import render_template, flash, url_for, redirect
 
 from models import ExampleModel
-from decorators import login_required
+from decorators import login_required, admin_required
 from forms import ExampleForm
 
 
@@ -42,4 +42,11 @@ def new_example():
         flash(u'Example successfully saved.', 'success')
         return redirect(url_for('list_examples'))
     return render_template('new_example.html', form=form)
+
+
+@admin_required
+def admin_only():
+    """This view requires an admin account"""
+    return 'Super-seekrit admin page.'
+
 
