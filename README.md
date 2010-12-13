@@ -148,6 +148,16 @@ Licenses
 See licenses/ folder
 
 
+Package Versions
+----------------
+- Flask: 0.6
+- Flask-WTF: 0.3.3
+- Jinja2: 2.5.5
+- simplejson: 2.1.1
+- Werkzeug: 0.6.2
+- WTForms: 0.6.1
+
+
 Credits
 -------
 Project template layout was heavily inspired by Francisco Souza's 
