@@ -39,3 +39,8 @@ app.add_url_rule('/admin_only', 'admin_only', view_func=views.admin_only)
 def page_not_found(e):
     return render_template('404.html'), 404
 
+# Handle 500 errors
+@app.errorhandler(500)
+def server_error(e):
+    return render_template('500.html'), 500
+
