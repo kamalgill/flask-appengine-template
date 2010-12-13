@@ -12,6 +12,10 @@ from application import views
 
 
 ## URL dispatch rules
+# App Engine warm up handler
+# See http://code.google.com/appengine/docs/python/config/appconfig.html#Warming_Requests
+app.add_url_rule('_ah/warmup', 'warmup', view_func=views.warmup)
+
 # Home page
 app.add_url_rule('/', 'home', view_func=views.home)
 

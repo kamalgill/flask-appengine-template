@@ -8,6 +8,9 @@ default_expiration: "5d"
 builtins:
 - datastore_admin: on
 
+inbound_services:
+- warmup
+
 handlers:
 - url: /favicon.ico
   static_files: application/static/img/favicon.ico
