@@ -4,7 +4,9 @@
 *.pyo
 *.DS_Store
 *.swp
-
+*.idea
+*.project
+*.kpf
 
 # Don't store secret keys in version control
 secret_keys.py
