@@ -57,5 +57,5 @@ def warmup():
     See http://code.google.com/appengine/docs/python/config/appconfig.html#Warming_Requests
 
     """
-    pass
+    return ''
 
