@@ -1,0 +1,3 @@
+Place zips of your packages here. For example, to make "import flask"
+work, the zip file flask-X.Y.Z.zip should contain the module called
+"flask" in its root.
