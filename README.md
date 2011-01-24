@@ -159,7 +159,7 @@ Package Versions
 - Jinja2: 2.5.5
 - simplejson: 2.1.1
 - Werkzeug: 0.6.2
-- WTForms: 0.6.1
+- WTForms: 0.6.2
 
 
 Credits
