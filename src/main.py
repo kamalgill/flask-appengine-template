@@ -18,12 +18,24 @@ for filename in os.listdir(package_dir):
     if filename.endswith((".zip", ".egg")):
         sys.path.insert(0, "%s/%s" % (package_dir, filename))
 
+from wsgiref.handlers import CGIHandler
+
 from google.appengine.ext.webapp.util import run_wsgi_app
+
+from application.settings import DEBUG_MODE
 from application import app
 
 
 def main():
-    run_wsgi_app(app)
+    if DEBUG_MODE:
+        from werkzeug_debugger_appengine import get_debugged_app
+        app.debug=True
+        debugged_app = get_debugged_app(app)
+        # Run debugged app
+        CGIHandler().run(debugged_app)
+    else:
+        # Run production app
+        run_wsgi_app(app)
 
 
 # Use App Engine app caching
