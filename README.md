@@ -98,7 +98,8 @@ The App Engine app's root folder is located at `src/`.
       |-- flaskext.zip (Flask extensions, inc. Flask-WTF)
       |-- jinja2.zip (template engine)
       |-- simplejson.zip (JSON utility required by Jinja2)
-      |-- werkzeug.zip (WSGI utilities for Python-based web development)
+      |-- werkzeug (WSGI utilities for Python-based web development)
+      |-- werkzeug_debugger_appengine (enables Werkzeug's interactive debugger for App Engine)
       `-- wtforms.zip (Jinja2-compatible web form utility)
 </pre>
 
@@ -175,6 +176,9 @@ CSS reset, fonts, grids, and base styles provided by [YUI 3][yui3]
 Project layout improvements (zip archives/zipimport) contributed by 
 Stochastic Technologies.
 
+Werkzeug's Interactive Debugger enabled for App Engine using
+Naitik Shah's [werkzeug-debugger-appengine][wzda] utility.
+
 
 [flask]: http://flask.pocoo.org
 [wz]: http://werkzeug.pocoo.org/
@@ -184,5 +188,6 @@ Stochastic Technologies.
 [gaeseries]: http://github.com/franciscosouza/gaeseries/tree/flask
 [html5]: http://html5boilerplate.com/
 [yui3]: http://developer.yahoo.com/yui/3/
+[wzda]: https://github.com/nshah/werkzeug-debugger-appengine
 
 
