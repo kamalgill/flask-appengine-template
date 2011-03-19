@@ -1,0 +1,23 @@
+<div class="traceback">
+  {% if traceback.is_syntax_error %}
+    {% if include_title %}
+      <h3>Syntax Error</h3>
+    {% endif %}
+    <ul>
+    {% for frame in traceback.frames %}
+      <li>{{ frame.render() }}</li>
+    {% endfor %}
+    </ul>
+    <pre>{{ traceback.exception|e }}</pre>
+  {% else %}
+    {% if include_title %}
+      <h3>Traceback <em>(most recent call last)</em>:</h3>
+    {% endif %}
+    <ul>
+    {% for frame in traceback.frames %}
+      <li{% if frame.info %} title="{{ frame.info|e }}"{% endif %}>{{ frame.render() }}</li>
+    {% endfor %}
+    </ul>
+    <blockquote>{{ traceback.exception|e }}</blockquote>
+  {% endif %}
+</div>

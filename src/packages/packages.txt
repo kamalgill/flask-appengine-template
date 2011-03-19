@@ -1,0 +1,5 @@
+Place zips of your packages here.
+
+For example, to make "import flask" work,
+the "flask" package should be available as "flask.zip".
+

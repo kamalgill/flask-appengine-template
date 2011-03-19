@@ -7,11 +7,16 @@ default_expiration: "5d"
 
 builtins:
 - datastore_admin: on
+- remote_api: on
 
 inbound_services:
 - warmup
 
 handlers:
+- url: /_ah/queue/deferred
+  script: $PYTHON_LIB/google/appengine/ext/deferred/__init__.py
+  login: admin
+
 - url: /favicon.ico
   static_files: application/static/img/favicon.ico
   upload: application/static/img/favicon.ico
@@ -25,4 +30,3 @@ handlers:
 
 - url: .*
   script: main.py
-

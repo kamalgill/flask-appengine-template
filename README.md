@@ -30,8 +30,8 @@ Setup/Configuration
    the following contents:
 
 <pre class="console">
-	CSRF_SECRET_KEY = '{MY_SECRET_CSRF_KEY}'
-	SESSION_KEY = '{MY_SECRET_SESSION_KEY}'
+  CSRF_SECRET_KEY = '{MY_SECRET_CSRF_KEY}'
+  SESSION_KEY = '{MY_SECRET_SESSION_KEY}'
 </pre>
 
 where the keys are a randomized string of characters.
@@ -45,8 +45,8 @@ repository root to keep the secret_keys module out of version control.
 Or, add the following to your .(git|hg|bzr)ignore file
 
 <pre class="console">
-	# Keep secret keys out of version control
-	secret_keys.py
+  # Keep secret keys out of version control
+  secret_keys.py
 </pre>
 
 
@@ -66,7 +66,7 @@ To test the application using App Engine's development server,
 use [dev_appserver.py][devserver]
 
 <pre class="console">
-	dev_appserver.py src/
+  dev_appserver.py src/
 </pre>
 
 Assuming the latest App Engine SDK is installed, the test environment is 
@@ -77,7 +77,7 @@ Deploying the Application
 -------------------------
 To deploy the application to App Engine, use [appcfg.py update][appcfg]
 <pre class="console">
-	appcfg.py update src/
+  appcfg.py update src/
 </pre>
 
 The application should be visible at http://{YOURAPPID}.appspot.com
@@ -88,42 +88,47 @@ Folder structure
 The App Engine app's root folder is located at `src/`.
 
 <pre class="console">
-	src/
-	|-- application (application code)
-	|-- flask (Flask core)
-	|-- flaskext (Flask extensions, inc. Flask-WTF)
-	|-- jinja2 (template engine)
-	|-- simplejson (required by Jinja2)
-	|-- werkzeug (WSGI utilities for Python-based web development)
-	`-- wtforms (Jinja2-compatible web form utility)
+  src/
+  |-- app.yaml (App Engine config file)
+  |-- application (application code)
+  |-- index.yaml (App Engine query index definitions)
+  |-- main.py (Main App Engine handler)
+  |-- packages (Flask and third-party zip packages)
+      |-- flask.zip (Flask core)
+      |-- flaskext.zip (Flask extensions, inc. Flask-WTF)
+      |-- jinja2.zip (template engine)
+      |-- simplejson.zip (JSON utility required by Jinja2)
+      |-- werkzeug (WSGI utilities for Python-based web development)
+      |-- werkzeug_debugger_appengine (enables Werkzeug's interactive debugger for App Engine)
+      `-- wtforms.zip (Jinja2-compatible web form utility)
 </pre>
 
 The application code is located at `src/application`.
 
 <pre class="console">
-	application/
-	|-- __init__.py (initializes Flask app)
-	|-- decorators.py (decorators for URL handlers)
-	|-- forms.py (web form models and validators)
-	|-- models.py (App Engine datastore models)
-	|-- settings.py (settings for Flask app)
-	|-- static
-	|	|-- css
-	|	|	`-- main.css (custom styles)
-	|	|-- img
-	|	|	|-- favicon.ico (replace with custom favicon)
-	|	|	`-- favicon.png
-	|	`-- js
-	|		|-- main.js (custom javascript)
-	|		`-- modernizr-1.6.min.js (HTML5 enabling and detection)
-	|-- templates
-	|	|-- 404.html (not found page)
-	|	|-- base.html (master template)
-	|	|-- list_examples.html (example list-based template)
-	|	`-- new_example.html (example form-based template)
-	|-- tests.py (unit tests)
-	|-- urls.py (URL dispatch routes)
-	`-- views.py (Handlers for URL routes defined at urls.py)
+  application/
+  |-- __init__.py (initializes Flask app)
+  |-- decorators.py (decorators for URL handlers)
+  |-- forms.py (web form models and validators)
+  |-- models.py (App Engine datastore models)
+  |-- settings.py (settings for Flask app)
+  |-- static
+  | |-- css
+  | | `-- main.css (custom styles)
+  | |-- img
+  | | |-- favicon.ico (replace with custom favicon)
+  | | `-- favicon.png
+  | `-- js
+  |   |-- main.js (custom javascript)
+  |   `-- modernizr-1.7.min.js (HTML5 enabling and detection)
+  |-- templates
+  | |-- 404.html (not found page)
+  | |-- base.html (master template)
+  | |-- list_examples.html (example list-based template)
+  | `-- new_example.html (example form-based template)
+  |-- tests.py (unit tests)
+  |-- urls.py (URL dispatch routes)
+  `-- views.py (Handlers for URL routes defined at urls.py)
 </pre>
 
 
@@ -136,8 +141,8 @@ To remove the extended attributes, use `xattr -rd` at the root of the
 src/ folder.
 
 <pre class='console'>
-	xattr -rd com.apple.quarantine .
-	xattr -rd com.macromates.caret .
+  xattr -rd com.apple.quarantine .
+  xattr -rd com.macromates.caret .
 </pre>
 
 Note: Windows users may safely ignore the xattr fix
@@ -150,12 +155,12 @@ See licenses/ folder
 
 Package Versions
 ----------------
-- Flask: 0.6
-- Flask-WTF: 0.3.3
+- Flask: 0.6.1
+- Flask-WTF: 0.5.2
 - Jinja2: 2.5.5
 - simplejson: 2.1.1
 - Werkzeug: 0.6.2
-- WTForms: 0.6.1
+- WTForms: 0.6.2
 
 
 Credits
@@ -168,6 +173,12 @@ extracted from [HTML5 Boilerplate][html5]
 
 CSS reset, fonts, grids, and base styles provided by [YUI 3][yui3]
 
+Project layout improvements (zip archives/zipimport) contributed by 
+Stochastic Technologies.
+
+Werkzeug's Interactive Debugger enabled for App Engine using
+Naitik Shah's [werkzeug-debugger-appengine][wzda] utility.
+
 
 [flask]: http://flask.pocoo.org
 [wz]: http://werkzeug.pocoo.org/
@@ -177,5 +188,6 @@ CSS reset, fonts, grids, and base styles provided by [YUI 3][yui3]
 [gaeseries]: http://github.com/franciscosouza/gaeseries/tree/flask
 [html5]: http://html5boilerplate.com/
 [yui3]: http://developer.yahoo.com/yui/3/
+[wzda]: https://github.com/nshah/werkzeug-debugger-appengine
 
 

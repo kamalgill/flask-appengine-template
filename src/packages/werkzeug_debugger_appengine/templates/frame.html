@@ -1,0 +1,5 @@
+<div class="frame" id="frame-{{ frame.id }}">
+  <h4>File <cite>"{{ frame.filename|e }}"</cite>, line <em>{{ frame.lineno }}</em>,
+      in <code>{{ frame.function_name|e }}</code></h4>
+  <pre>{{ frame.current_line.strip()|e }}</pre>
+</div>
