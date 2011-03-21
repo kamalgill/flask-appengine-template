@@ -20,21 +20,20 @@ for filename in os.listdir(package_dir):
 
 from wsgiref.handlers import CGIHandler
 
-from google.appengine.ext.webapp.util import run_wsgi_app
-
 from application.settings import DEBUG_MODE
 from application import app
 
 
 def main():
     if DEBUG_MODE:
+        # Run debugged app
         from werkzeug_debugger_appengine import get_debugged_app
         app.debug=True
         debugged_app = get_debugged_app(app)
-        # Run debugged app
         CGIHandler().run(debugged_app)
     else:
         # Run production app
+        from google.appengine.ext.webapp.util import run_wsgi_app
         run_wsgi_app(app)
 
 
