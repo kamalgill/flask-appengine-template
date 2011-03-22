@@ -16,20 +16,22 @@ Use the '-f' flag to force the new keys to be written to the file
 
 """
 
+import base64
 import string
+import os
 import os.path
 
 from optparse import OptionParser
-from random import choice
 from string import Template
 
 
 # File settings
 file_name = 'secret_keys.py'
-file_template = Template('''
-# CSRF- and Session keys
-CSRF_SECRET_KEY = '$csrf_key'
-SESSION_KEY = '$session_key'
+file_template = Template('''# CSRF- and Session keys
+import base64
+
+CSRF_SECRET_KEY = base64.b64decode('$csrf_key')
+SESSION_KEY = base64.b64decode('$session_key')
 ''')
 
 
@@ -44,8 +46,8 @@ parser.add_option("-r", "--randomness", dest="randomness",
 
 def generate_randomkey(length):
     """Generate random key, givin a number of characters"""
-    chars = string.letters + string.digits
-    return ''.join([choice(chars) for i in range(length)])
+    secret = os.urandom(length)
+    return base64.b64encode(secret)
 
 
 def write_file(contents):
