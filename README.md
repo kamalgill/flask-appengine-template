@@ -95,7 +95,7 @@ The App Engine app's root folder is located at `src/`.
   |-- main.py (Main App Engine handler)
   |-- packages (Flask and third-party zip packages)
       |-- flask.zip (Flask core)
-      |-- flaskext.zip (Flask extensions, inc. Flask-WTF)
+      |-- flaskext (Flask extensions go here)
       |-- jinja2.zip (template engine)
       |-- simplejson.zip (JSON utility required by Jinja2)
       |-- werkzeug (WSGI utilities for Python-based web development)
