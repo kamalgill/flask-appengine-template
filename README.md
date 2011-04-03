@@ -26,18 +26,9 @@ Setup/Configuration
 5. Configure application views at `src/application/views.py`
 6. Configure URL routes at `src/application/urls.py`
 7. Configure forms at `src/application/forms.py`
-8. Add a `secret_keys.py` file at `src/application/secret_keys.py`, with 
-   the following contents:
-
-<pre class="console">
-  CSRF_SECRET_KEY = '{MY_SECRET_CSRF_KEY}'
-  SESSION_KEY = '{MY_SECRET_SESSION_KEY}'
-</pre>
-
-where the keys are a randomized string of characters.
-
-Or, run the `generate_keys.py` script at `src/application/generate_keys.py` 
-to generate the keys file.
+8. Add the secret keys for CSRF protection by running the `generate_keys.py`
+   script at `src/application/generate_keys.py`, which will generate the
+   secret keys module at src/application/secret_keys.py
 
 Note: Copy the .gitignore file from the tarball folder's root to your git 
 repository root to keep the secret_keys module out of version control.
