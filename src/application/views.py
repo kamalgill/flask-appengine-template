@@ -1,7 +1,11 @@
 """
 views.py
 
-URL routes and handlers
+URL route handlers
+
+Note that any handler params must match the URL route params.
+For example the *say_hello* handler, handling the URL route '/hello/<username>',
+  must be passed *username* as the argument.
 
 """
 
