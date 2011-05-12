@@ -149,7 +149,7 @@ Package Versions
 - Flask: 0.6.1
 - Flask-WTF: 0.5.2
 - Jinja2: 2.5.5
-- simplejson: 2.1.1
+- simplejson: 2.1.6
 - Werkzeug: 0.6.2
 - WTForms: 0.6.2
 
