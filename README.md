@@ -9,7 +9,7 @@ Google App Engine (Python)
 About Flask
 -----------
 [Flask][flask] is a BSD-licensed microframework for Python based on 
-[Werkzeug][wz], [Jinja 2][jinja2] and good intentions.
+[Werkzeug][wz], [Jinja2][jinja2] and good intentions.
 
 See <http://flask.pocoo.org> for more info.
 
