@@ -111,9 +111,10 @@ The application code is located at `src/application`.
   | | `-- favicon.png
   | `-- js
   |   |-- main.js (custom javascript)
-  |   `-- modernizr-1.7.min.js (HTML5 enabling and detection)
+  |   `-- modernizr-2.min.js (HTML5 enabling and detection)
   |-- templates
   | |-- 404.html (not found page)
+  | |-- 500.html (server error page)
   | |-- base.html (master template)
   | |-- list_examples.html (example list-based template)
   | `-- new_example.html (example form-based template)
@@ -152,6 +153,7 @@ Package Versions
 - simplejson: 2.1.1
 - Werkzeug: 0.6.2
 - WTForms: 0.6.2
+- Modernizr: 2.0
 
 
 Credits
@@ -163,6 +165,8 @@ HTML5-based main template (templates/base.html)
 extracted from [HTML5 Boilerplate][html5]
 
 CSS reset, fonts, grids, and base styles provided by [YUI 3][yui3]
+
+HTML5 detection provided by [Modernizr 2][modernizr] (configured with all features)
 
 Project layout improvements (zip archives/zipimport) contributed by 
 Stochastic Technologies.
@@ -179,6 +183,7 @@ Naitik Shah's [werkzeug-debugger-appengine][wzda] utility.
 [gaeseries]: http://github.com/franciscosouza/gaeseries/tree/flask
 [html5]: http://html5boilerplate.com/
 [yui3]: http://developer.yahoo.com/yui/3/
+[modernizr]: http://www.modernizr.com/
 [wzda]: https://github.com/nshah/werkzeug-debugger-appengine
 
 
