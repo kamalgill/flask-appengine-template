@@ -164,9 +164,9 @@ Project template layout was heavily inspired by Francisco Souza's
 HTML5-based main template (templates/base.html) 
 extracted from [HTML5 Boilerplate][html5]
 
-CSS reset, fonts, grids, and base styles provided by [YUI 3][yui3]
-
 HTML5 detection provided by [Modernizr 2][modernizr] (configured with all features)
+
+CSS reset, fonts, grids, and base styles provided by [YUI 3][yui3]
 
 Project layout improvements (zip archives/zipimport) contributed by 
 Stochastic Technologies.
