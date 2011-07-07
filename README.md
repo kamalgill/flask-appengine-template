@@ -147,7 +147,7 @@ See licenses/ folder
 
 Package Versions
 ----------------
-- Flask: 0.6.1
+- Flask: 0.7.2
 - Flask-WTF: 0.5.2
 - Jinja2: 2.5.5
 - simplejson: 2.1.6
