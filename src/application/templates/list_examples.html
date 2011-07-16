@@ -20,6 +20,8 @@
         ID: {{ example.example_id }}<br />
         Title: {{ example.example_title }}<br />
     </li>
+    {% else %}
+    <li>No examples yet</li>
     {% endfor %}
 </ul>
 {% endblock %}

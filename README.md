@@ -1,4 +1,3 @@
-
 Flask on App Engine Project Template
 ====================================
 
@@ -63,6 +62,13 @@ use [dev_appserver.py][devserver]
 Assuming the latest App Engine SDK is installed, the test environment is 
 available at <http://localhost:8080>
 
+
+Running Unit Tests
+------------------
+To run unit tests, use
+<pre class="console">
+    python testrunner.py APPENGINE_SDK_PATH
+</pre>
 
 Deploying the Application
 -------------------------
