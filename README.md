@@ -1,4 +1,3 @@
-
 Flask on App Engine Project Template
 ====================================
 
@@ -68,7 +67,7 @@ Running Unit Tests
 ------------------
 To run unit tests, use
 <pre class="console">
-    python testrunner.py <path_to_appengine_sdk>
+    python testrunner.py APPENGINE_SDK_PATH
 </pre>
 
 Deploying the Application
