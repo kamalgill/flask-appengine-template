@@ -6,6 +6,7 @@
 *.swp
 *.idea
 *.project
+*.pydevproject
 *.kpf
 
 # Don't store secret keys in version control
