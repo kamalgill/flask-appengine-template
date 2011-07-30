@@ -1,0 +1,156 @@
+<script id="profilerCornerTemplate" type="text/x-jquery-tmpl">
+    <div class="g-m-p-corner"></div>
+</script>
+
+<script id="profilerCornerEntryTemplate" type="text/x-jquery-tmpl">
+    <div class="entry">
+        ${profiler_results.total_time} <span class="ms">ms</span>
+    </div>
+</script>
+
+<script id="profilerTemplate" type="text/x-jquery-tmpl">
+    <div class="g-m-p" style="display:none;">
+        <div class="title">
+            <span class="url" title="${url}">
+                ${url_short}
+            </span>
+            <div class="total">
+                ${profiler_results.total_time} <span class="ms">ms</span>
+            </div>
+        </div>
+        <div class="date_and_share">
+            <span class="date">${s_dt}</span>
+            - <a class="share" href="/_gae_mini_profiler/shared?request_id=${encodeURIComponent(request_id)}">Share</a>
+        </div>
+
+        <div class="expand">
+            <a href="#profile-link" class="profile-link link uses_script">Profile</a>
+            <div class="summary">
+                ${profiler_results.total_time} <span class="ms">ms</span> spent in ${profiler_results.total_call_count} function calls
+            </div>
+        </div>
+
+        <div class="profiler-details details fancy-scrollbar" style="display:none;">
+            <table>
+                <thead>
+                    <tr>
+                        <th class="left">function</th>
+                        <th class="right">calls</th>
+                        <th class="right headerSortDown"><nobr>total ms</nobr></th>
+                        <th class="right"><nobr>total per call</nobr></th>
+                        <th class="right"><nobr>own ms</nobr></th>
+                        <th class="right"><nobr>own per call</nobr></th>
+                    </tr>
+                </thead>
+                {{each profiler_results.calls}}
+
+                <tr>
+                    <td title="${$value.func_desc}">${$value.func_desc_short}</td>
+                    <td class="right">
+                        {{if $value.callers_desc.length}}
+                        <a class="callers-link uses_script" href="#callers">${$value.total_call_count}</a>
+
+                        <div class="callers" style="display:none;">
+                            <span class="callers-label">Called by</span>
+                            <div class="callers-content">
+                                {{each $value.callers_desc}}
+                                    <div>
+                                        <span title="${$value.func_desc}"><nobr>${$value.func_desc_short}</nobr></span>
+                                    </div>
+                                {{/each}}
+                            </div>
+                        </div>
+
+                        {{else}}
+
+                        ${$value.total_call_count}
+
+                        {{/if}}
+                    </td>
+                    <td class="right">${$value.cumulative_time}</td>
+                    <td class="right">${$value.per_call_cumulative}</td>
+                    <td class="right">${$value.total_time}</td>
+                    <td class="right">${$value.per_call}</td>
+                </tr>
+
+                {{/each}}
+            </table>
+        </div>
+
+        <div class="expand">
+            <a href="#rpc-link" class="rpc-link link uses_script">Remote Procedure Calls</a>
+            <div class="summary">
+                ${appstats_results.total_time} <span class="ms">ms</span>
+                spent in ${appstats_results.total_call_count} RPC{{if appstats_results.total_call_count != 1}}s{{/if}}
+
+                {{if appstats_results.likely_dupes}}
+                    <span class="dupe">(likely dupes)</span>
+                {{/if}}
+            </div>
+        </div>
+
+        <div class="rpc-details details fancy-scrollbar" style="display:none;">
+
+            <a class="appstats-link" target="_appstats" href="/_ah/stats/details?time=${appstats_results.appstats_key}">Full Appstats Details</a>
+
+            {{if appstats_results.calls.length}}
+            <table class="rpc-service-totals">
+                <thead>
+                    <tr>
+                        <th class="left"><nobr>service type</nobr></th>
+                        <th class="right">calls</th>
+                        <th class="right headerSortDown"><nobr>total ms</nobr></th>
+                    </tr>
+                </thead>
+                {{each appstats_results.service_totals}}
+                <tr>
+                    <td>${$value.service_prefix}</td>
+                    <td class="right">${$value.total_call_count}</td>
+                    <td class="right">${$value.total_time}</td>
+                </tr>
+                {{/each}}
+            </table>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th class="left">service</th>
+                        <th class="right headerSortDown"><nobr>start ms</nobr></th>
+                        <th class="right">ms</th>
+                        <th class="left">request</th>
+                        <th class="left">response</th>
+                    </tr>
+                </thead>
+                {{each appstats_results.calls}}
+                <tr>
+                    <td>${$value.service}</td>
+                    <td class="right">
+                        <a class="callers-link uses_script" href="#callers">${$value.start_offset}</a>
+
+                        <div class="callers" style="display:none;">
+                            <span class="callers-label">Called by</span>
+                            <div class="callers-content">
+                                {{each $value.stack_frames_desc}}
+                                <div><nobr>${$value}</nobr></div>
+                                {{/each}}
+                            </div>
+                        </div>
+                    </td>
+                    <td class="right">${$value.total_time}</td>
+                    <td>
+                        {{if $value.likely_dupe}}
+                            <span class="dupe">Likely duplicate of previous RPC</span>
+                        {{/if}}
+                        <span title="${$value.request}">
+                            ${$value.request_short}
+                        </span>
+                    </td>
+                    <td>${$value.response}</td>
+                </tr>
+                {{/each}}
+            </table>
+            {{/if}}
+        </div>
+
+    </div>
+</script>

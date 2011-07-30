@@ -6,9 +6,10 @@ api_version: 1
 default_expiration: "5d"
 
 builtins:
+- appstats: on
 - datastore_admin: on
-- remote_api: on
 - deferred: on
+- remote_api: on
 
 inbound_services:
 - warmup
