@@ -16,13 +16,15 @@
 
     It's strongly recommended to use it during development.
 
-    :copyright: (c) 2010 by the Werkzeug Team, see AUTHORS for more details.
+    :copyright: (c) 2011 by the Werkzeug Team, see AUTHORS for more details.
     :license: BSD, see LICENSE for more details.
 """
 from urlparse import urlparse
 from warnings import warn
 
-from werkzeug import Headers, FileWrapper, is_entity_header
+from werkzeug.datastructures import Headers
+from werkzeug.http import is_entity_header
+from werkzeug.wsgi import FileWrapper
 
 
 class WSGIWarning(Warning):
@@ -176,7 +178,7 @@ class GuardedIterator(object):
             try:
                 warn(WSGIWarning('Iterator was garbage collected before '
                                  'it was closed.'))
-            except:
+            except Exception:
                 pass
 
 

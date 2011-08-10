@@ -21,7 +21,7 @@ $(function() {
      * Add an interactive console to the frames
      */
     if (EVALEX)
-      $('<img src="./__debugger__?cmd=resource&f=console.png">')
+      $('<img src="?__debugger__=yes&cmd=resource&f=console.png">')
         .attr('title', 'Open an interactive python shell in this frame')
         .click(function() {
           consoleNode = openShell(consoleNode, target, frameID);
@@ -32,7 +32,7 @@ $(function() {
     /**
      * Show sourcecode
      */
-    var sourceButton = $('<img src="./__debugger__?cmd=resource&f=source.png">')
+    var sourceButton = $('<img src="?__debugger__=yes&cmd=resource&f=source.png">')
       .attr('title', 'Display the sourcecode for this frame')
       .click(function() {
         if (!sourceView)
@@ -44,7 +44,8 @@ $(function() {
             .click(function() {
               sourceView.slideUp('fast');
             });
-        $.get('./__debugger__', {cmd: 'source', frm: frameID}, function(data) {
+        $.get(document.location.pathname, {__debugger__: 'yes', cmd:
+            'source', frm: frameID}, function(data) {
           $('table', sourceView)
             .replaceWith(data);
           if (!sourceView.is(':visible'))
@@ -94,8 +95,8 @@ $(function() {
       label.val('submitting...');
       $.ajax({
         dataType:     'json',
-        url:          './__debugger__',
-        data:         {tb: TRACEBACK, cmd: 'paste'},
+        url:          document.location.pathname,
+        data:         {__debugger__: 'yes', tb: TRACEBACK, cmd: 'paste'},
         success:      function(data) {
           $('div.plain span.pastemessage')
             .removeClass('pastemessage')
@@ -132,7 +133,8 @@ function openShell(consoleNode, target, frameID) {
   var form = $('<form>&gt;&gt;&gt; </form>')
     .submit(function() {
       var cmd = command.val();
-      $.get('./__debugger__', {cmd: cmd, frm: frameID}, function(data) {
+      $.get(document.location.pathname, {
+          __debugger__: 'yes', cmd: cmd, frm: frameID}, function(data) {
         var tmp = $('<div>').html(data);
         $('span.extended', tmp).each(function() {
           var hidden = $(this).wrap('<span>').hide();
@@ -147,6 +149,7 @@ function openShell(consoleNode, target, frameID) {
         });
         output.append(tmp);
         command.focus();
+        consoleNode.scrollTop(command.position().top);
         var old = history.pop();
         history.push(cmd);
         if (typeof old != 'undefined')
@@ -191,6 +194,6 @@ function focusSourceBlock() {
       break
     line = tmp;
   }
-  var container = $('div.sourceview')[0];
-  container.scrollTop = line.offset().top - container.offsetTop;
+  var container = $('div.sourceview');
+  container.scrollTop(line.offset().top);
 }

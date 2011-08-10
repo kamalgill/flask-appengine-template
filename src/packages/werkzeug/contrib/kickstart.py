@@ -22,7 +22,7 @@
     .. _Genshi: http://genshi.edgewall.org/
     .. _Django: http://www.djangoproject.com/
 
-    :copyright: (c) 2010 by the Werkzeug Team, see AUTHORS for more details.
+    :copyright: (c) 2011 by the Werkzeug Team, see AUTHORS for more details.
     :license: BSD, see LICENSE for more details.
 """
 from os import path
@@ -33,6 +33,10 @@ from werkzeug.routing import RequestRedirect
 
 __all__ = ['Request', 'Response', 'TemplateNotFound', 'TemplateLoader',
            'GenshiTemplateLoader', 'Application']
+
+from warnings import warn
+warn(DeprecationWarning('werkzeug.contrib.kickstart is deprecated and '
+                        'will be removed in Werkzeug 1.0'))
 
 
 class Request(RequestBase):

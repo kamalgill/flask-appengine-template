@@ -5,7 +5,7 @@
 
     This module provides various traceback related utility functions.
 
-    :copyright: (c) 2010 by the Werkzeug Team, see AUTHORS for more details.
+    :copyright: (c) 2011 by the Werkzeug Team, see AUTHORS for more details.
     :license: BSD.
 """
 import re
@@ -15,9 +15,8 @@ import inspect
 import traceback
 import codecs
 from tokenize import TokenError
-from werkzeug.utils import cached_property
+from werkzeug.utils import cached_property, escape
 from werkzeug.debug.console import Console
-from werkzeug.debug.utils import render_template
 
 _coding_re = re.compile(r'coding[:=]\s*([-\w.]+)')
 _line_re = re.compile(r'^(.*?)$(?m)')
@@ -29,6 +28,112 @@ try:
     system_exceptions += (GeneratorExit,)
 except NameError:
     pass
+
+
+HEADER = u'''\
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+  "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+  <head>
+    <title>%(title)s // Werkzeug Debugger</title>
+    <link rel="stylesheet" href="?__debugger__=yes&amp;cmd=resource&amp;f=style.css" type="text/css">
+    <script type="text/javascript" src="?__debugger__=yes&amp;cmd=resource&amp;f=jquery.js"></script>
+    <script type="text/javascript" src="?__debugger__=yes&amp;cmd=resource&amp;f=debugger.js"></script>
+    <script type="text/javascript">
+      var TRACEBACK = %(traceback_id)d,
+          CONSOLE_MODE = %(console)s,
+          EVALEX = %(evalex)s
+    </script>
+  </head>
+  <body>
+    <div class="debugger">
+'''
+FOOTER = u'''\
+      <div class="footer">
+        Brought to you by <strong class="arthur">DON'T PANIC</strong>, your
+        friendly Werkzeug powered traceback interpreter.
+      </div>
+    </div>
+  </body>
+</html>
+'''
+
+PAGE_HTML = HEADER + u'''\
+<h1>%(exception_type)s</h1>
+<div class="detail">
+  <p class="errormsg">%(exception)s</p>
+</div>
+<h2 class="traceback">Traceback <em>(most recent call last)</em></h2>
+%(summary)s
+<div class="plain">
+  <form action="%(lodgeit_url)s" method="post">
+    <p>
+      <input type="hidden" name="language" value="pytb">
+      This is the Copy/Paste friendly version of the traceback.  <span
+      class="pastemessage">You can also paste this traceback into LodgeIt:
+      <input type="submit" value="create paste"></span>
+    </p>
+    <textarea cols="50" rows="10" name="code" readonly>%(plaintext)s</textarea>
+  </form>
+</div>
+<div class="explanation">
+  The debugger caught an exception in your WSGI application.  You can now
+  look at the traceback which led to the error.  <span class="nojavascript">
+  If you enable JavaScript you can also use additional features such as code
+  execution (if the evalex feature is enabled), automatic pasting of the
+  exceptions and much more.</span>
+</div>
+''' + FOOTER + '''
+<!--
+
+%(plaintext_cs)s
+
+-->
+'''
+
+CONSOLE_HTML = HEADER + u'''\
+<h1>Interactive Console</h1>
+<div class="explanation">
+In this console you can execute Python expressions in the context of the
+application.  The initial namespace was created by the debugger automatically.
+</div>
+<div class="console"><div class="inner">The Console requires JavaScript.</div></div>
+''' + FOOTER
+
+SUMMARY_HTML = u'''\
+<div class="%(classes)s">
+  %(title)s
+  <ul>%(frames)s</ul>
+  %(description)s
+</div>
+'''
+
+FRAME_HTML = u'''\
+<div class="frame" id="frame-%(id)d">
+  <h4>File <cite class="filename">"%(filename)s"</cite>,
+      line <em class="line">%(lineno)s</em>,
+      in <code class="function">%(function_name)s</code></h4>
+  <pre>%(current_line)s</pre>
+</div>
+'''
+
+SOURCE_TABLE_HTML = u'<table class=source>%s</table>'
+
+SOURCE_LINE_HTML = u'''\
+<tr class="%(classes)s">
+  <td class=lineno>%(lineno)s</td>
+  <td>%(code)s</td>
+</tr>
+'''
+
+
+def render_console_html():
+    return CONSOLE_HTML % {
+        'evalex':           'true',
+        'console':          'true',
+        'title':            'Console',
+        'traceback_id':     -1
+    }
 
 
 def get_current_traceback(ignore_system_exceptions=False,
@@ -70,6 +175,13 @@ class Line(object):
         return rv
     classes = property(classes)
 
+    def render(self):
+        return SOURCE_LINE_HTML % {
+            'classes':      u' '.join(self.classes),
+            'lineno':       self.lineno,
+            'code':         escape(self.code)
+        }
+
 
 class Traceback(object):
     """Wraps a traceback."""
@@ -94,6 +206,9 @@ class Traceback(object):
 
     def filter_hidden_frames(self):
         """Remove the frames according to the paste spec."""
+        if not self.frames:
+            return
+
         new_frames = []
         hidden = False
         for frame in self.frames:
@@ -115,8 +230,13 @@ class Traceback(object):
                 continue
             new_frames.append(frame)
 
+        # if we only have one frame and that frame is from the codeop
+        # module, remove it.
+        if len(new_frames) == 1 and self.frames[0].module == 'codeop':
+            del self.frames[:]
+
         # if the last frame is missing something went terrible wrong :(
-        if self.frames[-1] in new_frames:
+        elif self.frames[-1] in new_frames:
             self.frames[:] = new_frames
 
     def is_syntax_error(self):
@@ -137,24 +257,75 @@ class Traceback(object):
         tb = self.plaintext.encode('utf-8', 'replace').rstrip() + '\n'
         logfile.write(tb)
 
-    def paste(self):
+    def paste(self, lodgeit_url):
         """Create a paste and return the paste id."""
         from xmlrpclib import ServerProxy
-        srv = ServerProxy('http://paste.pocoo.org/xmlrpc/')
+        srv = ServerProxy('%sxmlrpc/' % lodgeit_url)
         return srv.pastes.newPaste('pytb', self.plaintext)
 
     def render_summary(self, include_title=True):
         """Render the traceback for the interactive console."""
-        return render_template('traceback_summary.html', traceback=self,
-                               include_title=include_title)
+        title = ''
+        description = ''
+        frames = []
+        classes = ['traceback']
+        if not self.frames:
+            classes.append('noframe-traceback')
 
-    def render_full(self, evalex=False):
+        if include_title:
+            if self.is_syntax_error:
+                title = u'Syntax Error'
+            else:
+                title = u'Traceback <em>(most recent call last)</em>:'
+
+        for frame in self.frames:
+            frames.append(u'<li%s>%s' % (
+                frame.info and u' title="%s"' % escape(frame.info) or u'',
+                frame.render()
+            ))
+
+        if self.is_syntax_error:
+            description_wrapper = u'<pre class=syntaxerror>%s</pre>'
+        else:
+            description_wrapper = u'<blockquote>%s</blockquote>'
+
+        return SUMMARY_HTML % {
+            'classes':      u' '.join(classes),
+            'title':        title and u'<h3>%s</h3>' % title or u'',
+            'frames':       u'\n'.join(frames),
+            'description':  description_wrapper % escape(self.exception)
+        }
+
+    def render_full(self, evalex=False, lodgeit_url=None):
         """Render the Full HTML page with the traceback info."""
-        return render_template('traceback_full.html', traceback=self,
-                               evalex=evalex)
+        exc = escape(self.exception)
+        return PAGE_HTML % {
+            'evalex':           evalex and 'true' or 'false',
+            'console':          'false',
+            'lodgeit_url':      escape(lodgeit_url),
+            'title':            exc,
+            'exception':        exc,
+            'exception_type':   escape(self.exception_type),
+            'summary':          self.render_summary(include_title=False),
+            'plaintext':        self.plaintext,
+            'plaintext_cs':     re.sub('-{2,}', '-', self.plaintext),
+            'traceback_id':     self.id
+        }
+
+    def generate_plaintext_traceback(self):
+        """Like the plaintext attribute but returns a generator"""
+        yield u'Traceback (most recent call last):'
+        for frame in self.frames:
+            yield u'  File "%s", line %s, in %s' % (
+                frame.filename,
+                frame.lineno,
+                frame.function_name
+            )
+            yield u'    ' + frame.current_line.strip()
+        yield self.exception
 
     def plaintext(self):
-        return render_template('traceback_plaintext.html', traceback=self)
+        return u'\n'.join(self.generate_plaintext_traceback())
     plaintext = cached_property(plaintext)
 
     id = property(lambda x: id(x))
@@ -192,10 +363,16 @@ class Frame(object):
 
     def render(self):
         """Render a single frame in a traceback."""
-        return render_template('frame.html', frame=self)
+        return FRAME_HTML % {
+            'id':               self.id,
+            'filename':         escape(self.filename),
+            'lineno':           self.lineno,
+            'function_name':    escape(self.function_name),
+            'current_line':     escape(self.current_line.strip())
+        }
 
-    def render_source(self):
-        """Render the sourcecode."""
+    def get_annotated_lines(self):
+        """Helper function that returns lines with extra information."""
         lines = [Line(idx + 1, x) for idx, x in enumerate(self.sourcelines)]
 
         # find function definition and mark lines
@@ -219,7 +396,12 @@ class Frame(object):
         except IndexError:
             pass
 
-        return render_template('source.html', frame=self, lines=lines)
+        return lines
+
+    def render_source(self):
+        """Render the sourcecode."""
+        return SOURCE_TABLE_HTML % u'\n'.join(line.render() for line in
+                                              self.get_annotated_lines())
 
     def eval(self, code, mode='single'):
         """Evaluate code in the context of the frame."""
@@ -242,7 +424,7 @@ class Frame(object):
                     source = self.loader.get_source(self.module)
                 elif hasattr(self.loader, 'get_source_by_code'):
                     source = self.loader.get_source_by_code(self.code)
-            except:
+            except Exception:
                 # we munch the exception so that we don't cause troubles
                 # if the loader is broken.
                 pass

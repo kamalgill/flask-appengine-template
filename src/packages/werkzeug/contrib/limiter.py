@@ -9,12 +9,12 @@
     .. _Trac: http://trac.edgewall.org/
     .. _Django: http://www.djangoproject.com/
 
-    :copyright: (c) 2010 by the Werkzeug Team, see AUTHORS for more details.
+    :copyright: (c) 2011 by the Werkzeug Team, see AUTHORS for more details.
     :license: BSD, see LICENSE for more details.
 """
 from warnings import warn
 
-from werkzeug import LimitedStream
+from werkzeug.wsgi import LimitedStream
 
 
 class StreamLimitMiddleware(object):
@@ -31,6 +31,6 @@ class StreamLimitMiddleware(object):
         self.maximum_size = maximum_size
 
     def __call__(self, environ, start_response):
-        limit = min(limit, int(environ.get('CONTENT_LENGTH') or 0))
+        limit = min(self.maximum_size, int(environ.get('CONTENT_LENGTH') or 0))
         environ['wsgi.input'] = LimitedStream(environ['wsgi.input'], limit)
         return self.app(environ, start_response)

@@ -5,7 +5,7 @@
 
     This module implements WSGI related helpers.
 
-    :copyright: (c) 2010 by the Werkzeug Team, see AUTHORS for more details.
+    :copyright: (c) 2011 by the Werkzeug Team, see AUTHORS for more details.
     :license: BSD, see LICENSE for more details.
 """
 import os
@@ -18,6 +18,7 @@ from time import time, mktime
 from datetime import datetime
 
 from werkzeug._internal import _patch_wrapper
+from werkzeug.http import is_resource_modified, http_date
 
 
 def responder(f):
@@ -38,7 +39,7 @@ def get_current_url(environ, root_only=False, strip_querystring=False,
     """A handy helper function that recreates the full URL for the current
     request or parts of it.  Here an example:
 
-    >>> from werkzeug import create_environ
+    >>> from werkzeug.test import create_environ
     >>> env = create_environ("/?param=foo", "http://localhost/script")
     >>> get_current_url(env)
     'http://localhost/script/?param=foo'
@@ -152,7 +153,7 @@ def peek_path_info(environ):
 
 
 def extract_path_info(environ_or_baseurl, path_or_url, charset='utf-8',
-                      errors='ignore', collapse_http_schemes=True):
+                      errors='replace', collapse_http_schemes=True):
     """Extracts the path info from the given URL (or WSGI environment) and
     path.  The path info returned is a unicode string, not a bytestring
     suitable for a WSGI environment.  The URLs might also be IRIs.
@@ -252,7 +253,7 @@ class SharedDataMiddleware(object):
     environments or simple server setups. Usage is quite simple::
 
         import os
-        from werkzeug import SharedDataMiddleware
+        from werkzeug.wsgi import SharedDataMiddleware
 
         app = SharedDataMiddleware(app, {
             '/shared': os.path.join(os.path.dirname(__file__), 'shared')
@@ -297,7 +298,7 @@ class SharedDataMiddleware(object):
     :param app: the application to wrap.  If you don't want to wrap an
                 application you can pass it :exc:`NotFound`.
     :param exports: a dict of exported files and folders.
-    :param diallow: a list of :func:`~fnmatch.fnmatch` rules.
+    :param disallow: a list of :func:`~fnmatch.fnmatch` rules.
     :param fallback_mimetype: the fallback mimetype for unknown files.
     :param cache: enable or disable caching headers.
     :Param cache_timeout: the cache timeout in seconds for the headers.
@@ -350,8 +351,10 @@ class SharedDataMiddleware(object):
         manager = ResourceManager()
         filesystem_bound = isinstance(provider, DefaultProvider)
         def loader(path):
+            if path is None:
+                return None, None
             path = posixpath.join(package_path, path)
-            if path is None or not provider.has_resource(path):
+            if not provider.has_resource(path):
                 return None, None
             basename = posixpath.basename(path)
             if filesystem_bound:
@@ -605,6 +608,9 @@ def make_line_iter(stream, limit=None, buffer_size=10 * 1024):
 
         first_chunk = buffer and buffer[0] or ''
         if chunks:
+            if first_chunk.endswith('\n') or first_chunk.endswith('\r'):
+                yield first_chunk
+                first_chunk = ''
             first_chunk += chunks.pop()
         if not first_chunk:
             return
@@ -757,8 +763,3 @@ class LimitedStream(object):
         if line is None:
             raise StopIteration()
         return line
-
-
-# circular dependencies
-from werkzeug.utils import http_date
-from werkzeug.http import is_resource_modified

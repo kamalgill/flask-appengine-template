@@ -48,7 +48,7 @@ r"""
                 response.set_cookie('cookie_name', request.session.sid)
             return response(environ, start_response)
 
-    :copyright: (c) 2010 by the Werkzeug Team, see AUTHORS for more details.
+    :copyright: (c) 2011 by the Werkzeug Team, see AUTHORS for more details.
     :license: BSD, see LICENSE for more details.
 """
 import re
@@ -64,7 +64,9 @@ except ImportError:
     from sha import new as sha1
 from cPickle import dump, load, HIGHEST_PROTOCOL
 
-from werkzeug import ClosingIterator, dump_cookie, parse_cookie, CallbackDict
+from werkzeug.datastructures import CallbackDict
+from werkzeug.utils import dump_cookie, parse_cookie
+from werkzeug.wsgi import ClosingIterator
 from werkzeug.posixemulation import rename
 
 
@@ -299,7 +301,7 @@ class SessionMiddleware(object):
     the WSGI environment only relevant for the application which is against
     the concept of WSGI.
 
-    The cookie parameters are the same as for the :func:`~werkzeug.dump_cookie`
+    The cookie parameters are the same as for the :func:`~dump_cookie`
     function just prefixed with ``cookie_``.  Additionally `max_age` is
     called `cookie_age` and not `cookie_max_age` because of backwards
     compatibility.

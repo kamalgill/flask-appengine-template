@@ -5,7 +5,7 @@ r"""
 
     A minimal template engine.
 
-    :copyright: (c) 2010 by the Werkzeug Team, see AUTHORS for more details.
+    :copyright: (c) 2011 by the Werkzeug Team, see AUTHORS for more details.
     :license: BSD License.
 """
 import sys
@@ -14,8 +14,14 @@ import __builtin__ as builtins
 from compiler import ast, parse
 from compiler.pycodegen import ModuleCodeGenerator
 from tokenize import PseudoToken
-from werkzeug import utils, urls
+from werkzeug import urls, utils
 from werkzeug._internal import _decode_unicode
+from werkzeug.datastructures import MultiDict
+
+
+from warnings import warn
+warn(DeprecationWarning('werkzeug.templates is deprecated and '
+                        'will be removed in Werkzeug 1.0'))
 
 
 # Copyright notice: The `parse_data` method uses the string interpolation
@@ -37,8 +43,8 @@ undefined = type('UndefinedType', (object,), {
     '__repr__': lambda x: 'Undefined',
     '__str__':  lambda x: ''
 })()
-runtime_vars = dict.fromkeys(('Undefined', '__to_unicode', '__context',
-                              '__write', '__write_many'))
+runtime_vars = frozenset(['Undefined', '__to_unicode', '__context',
+                          '__write', '__write_many'])
 
 
 def call_stmt(func, args, lineno):
@@ -356,6 +362,7 @@ class Template(object):
         :return: a template
         """
         close = False
+        f = file
         if isinstance(file, basestring):
             f = open(file, 'r')
             close = True
@@ -377,7 +384,7 @@ class Template(object):
         :return: the rendered template as string
         """
         ns = self.default_context.copy()
-        if len(args) == 1 and isinstance(args[0], utils.MultiDict):
+        if len(args) == 1 and isinstance(args[0], MultiDict):
             ns.update(args[0].to_dict(flat=True))
         else:
             ns.update(dict(*args))

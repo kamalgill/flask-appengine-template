@@ -5,19 +5,13 @@
 
     This module implements context-local objects.
 
-    :copyright: (c) 2010 by the Werkzeug Team, see AUTHORS for more details.
+    :copyright: (c) 2011 by the Werkzeug Team, see AUTHORS for more details.
     :license: BSD, see LICENSE for more details.
 """
 try:
     from greenlet import getcurrent as get_current_greenlet
 except ImportError: # pragma: no cover
-    try:
-        from py.magic import greenlet
-        get_current_greenlet = greenlet.getcurrent
-        del greenlet
-    except:
-        # catch all, py.* fails with so many different errors.
-        get_current_greenlet = int
+    get_current_greenlet = int
 try:
     from thread import get_ident as get_current_thread, allocate_lock
 except ImportError: # pragma: no cover
@@ -60,11 +54,12 @@ def release_local(local):
 
 
 class Local(object):
-    __slots__ = ('__storage__', '__lock__')
+    __slots__ = ('__storage__', '__lock__', '__ident_func__')
 
     def __init__(self):
         object.__setattr__(self, '__storage__', {})
         object.__setattr__(self, '__lock__', allocate_lock())
+        object.__setattr__(self, '__ident_func__', get_ident)
 
     def __iter__(self):
         return self.__storage__.iteritems()
@@ -74,22 +69,18 @@ class Local(object):
         return LocalProxy(self, proxy)
 
     def __release_local__(self):
-        self.__storage__.pop(get_ident(), None)
+        self.__storage__.pop(self.__ident_func__(), None)
 
     def __getattr__(self, name):
-        self.__lock__.acquire()
         try:
-            try:
-                return self.__storage__[get_ident()][name]
-            except KeyError:
-                raise AttributeError(name)
-        finally:
-            self.__lock__.release()
+            return self.__storage__[self.__ident_func__()][name]
+        except KeyError:
+            raise AttributeError(name)
 
     def __setattr__(self, name, value):
+        ident = self.__ident_func__()
         self.__lock__.acquire()
         try:
-            ident = get_ident()
             storage = self.__storage__
             if ident in storage:
                 storage[ident][name] = value
@@ -99,14 +90,10 @@ class Local(object):
             self.__lock__.release()
 
     def __delattr__(self, name):
-        self.__lock__.acquire()
         try:
-            try:
-                del self.__storage__[get_ident()][name]
-            except KeyError:
-                raise AttributeError(name)
-        finally:
-            self.__lock__.release()
+            del self.__storage__[self.__ident_func__()][name]
+        except KeyError:
+            raise AttributeError(name)
 
 
 class LocalStack(object):
@@ -142,6 +129,13 @@ class LocalStack(object):
 
     def __release_local__(self):
         self._local.__release_local__()
+
+    def _get__ident_func__(self):
+        return self._local.__ident_func__
+    def _set__ident_func__(self, value):
+        object.__setattr__(self._local, '__ident_func__', value)
+    __ident_func__ = property(_get__ident_func__, _set__ident_func__)
+    del _get__ident_func__, _set__ident_func__
 
     def __call__(self):
         def _lookup():
@@ -197,32 +191,48 @@ class LocalManager(object):
     by appending them to `manager.locals`.  Everytime the manager cleans up
     it, will clean up all the data left in the locals for this context.
 
+    The `ident_func` parameter can be added to override the default ident
+    function for the wrapped locals.
+
     .. versionchanged:: 0.6.1
        Instead of a manager the :func:`release_local` function can be used
        as well.
+
+    .. versionchanged:: 0.7
+       `ident_func` was added.
     """
 
-    def __init__(self, locals=None):
+    def __init__(self, locals=None, ident_func=None):
         if locals is None:
             self.locals = []
         elif isinstance(locals, Local):
             self.locals = [locals]
         else:
             self.locals = list(locals)
+        if ident_func is not None:
+            self.ident_func = ident_func
+            for local in self.locals:
+                object.__setattr__(local, '__ident_func__', ident_func)
+        else:
+            self.ident_func = get_ident
 
     def get_ident(self):
         """Return the context identifier the local objects use internally for
         this context.  You cannot override this method to change the behavior
         but use it to link other context local objects (such as SQLAlchemy's
         scoped sessions) to the Werkzeug locals.
+
+        .. versionchanged:: 0.7
+           Yu can pass a different ident function to the local manager that
+           will then be propagated to all the locals passed to the
+           constructor.
         """
-        return get_ident()
+        return self.ident_func()
 
     def cleanup(self):
         """Manually clean up the data in the locals for this context.  Call
         this at the end of the request or use `make_middleware()`.
         """
-        ident = self.get_ident()
         for local in self.locals:
             release_local(local)
 
@@ -263,7 +273,7 @@ class LocalProxy(object):
 
     Example usage::
 
-        from werkzeug import Local
+        from werkzeug.local import Local
         l = Local()
 
         # these are proxies
@@ -271,7 +281,7 @@ class LocalProxy(object):
         user = l('user')
 
 
-        from werkzeug import LocalStack
+        from werkzeug.local import LocalStack
         _response_local = LocalStack()
 
         # this is a proxy
@@ -314,7 +324,7 @@ class LocalProxy(object):
         try:
             return self._get_current_object().__dict__
         except RuntimeError:
-            return AttributeError('__dict__')
+            raise AttributeError('__dict__')
 
     def __repr__(self):
         try:

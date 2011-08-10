@@ -13,7 +13,7 @@
         from werkzeug.contrib.profiler import ProfilerMiddleware
         app = ProfilerMiddleware(app)
 
-    :copyright: (c) 2010 by the Werkzeug Team, see AUTHORS for more details.
+    :copyright: (c) 2011 by the Werkzeug Team, see AUTHORS for more details.
     :license: BSD, see LICENSE for more details.
 """
 import sys
@@ -102,7 +102,9 @@ def make_action(app_factory, hostname='localhost', port=5000,
                 threaded=False, processes=1, stream=None,
                 sort_by=('time', 'calls'), restrictions=()):
     """Return a new callback for :mod:`werkzeug.script` that starts a local
-    server with the profiler enabled::
+    server with the profiler enabled.
+
+    ::
 
         from werkzeug.contrib import profiler
         action_profile = profiler.make_action(make_app)
