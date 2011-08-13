@@ -180,6 +180,8 @@ Stochastic Technologies.
 Werkzeug's Interactive Debugger enabled for App Engine using
 Naitik Shah's [werkzeug-debugger-appengine][wzda] utility.
 
+Testing and Profiling improvements provided by [Juarez Bochi][jbochi]
+
 
 [flask]: http://flask.pocoo.org
 [wz]: http://werkzeug.pocoo.org/
@@ -191,5 +193,5 @@ Naitik Shah's [werkzeug-debugger-appengine][wzda] utility.
 [yui3]: http://developer.yahoo.com/yui/3/
 [modernizr]: http://www.modernizr.com/
 [wzda]: https://github.com/nshah/werkzeug-debugger-appengine
-
+[jbochi]: https://github.com/jbochi
 
