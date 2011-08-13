@@ -1,0 +1,223 @@
+
+.g-m-p-corner {
+    padding: 4px;
+    cursor: pointer;
+    text-align: right;
+}
+
+.g-m-p-corner .ms,
+.g-m-p .ms {
+    color: #777;
+}
+
+.g-m-p-corner .entry.ajax {
+    border-top: 1px dotted #DDD;
+}
+
+.g-m-p-corner .entry.expanded {
+    font-weight: bold;
+}
+
+.g-m-p {
+    min-width: 410px;
+    padding: 9px;
+    padding-bottom: 18px;
+}
+
+.g-m-p, .g-m-p-corner, .g-m-p-shared {
+    font-family: Helvetica, Arial, sans-serif;
+    font-size: 12px;
+    color: #444;
+    line-height: 18px;
+}
+
+.g-m-p a, .g-m-p-corner a, .g-m-p-shared a {
+    color: #069;
+    text-decoration: none;
+}
+
+.g-m-p a.uses_script, .g-m-p-corner a.uses_script, .g-m-p-shared a.uses_script {
+    border-bottom: dotted 1px #069
+}
+
+.g-m-p, .g-m-p-corner {
+    position: absolute;
+    left: 9px;
+    top: 0px;
+
+    background: #F7F7F7;
+
+    border-top: 0;
+    border-left: 1px solid #CCC;
+    border-bottom: 1px solid #DDD;
+    border-right: 1px solid #DDD;
+
+    box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.25);
+    -moz-box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.25);
+    -webkit-box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.25);
+
+    -webkit-border-bottom-left-radius: 12px;
+    -moz-border-radius-bottomleft: 12px;
+    border-bottom-left-radius: 12px;
+
+    -webkit-border-bottom-right-radius: 12px;
+    -moz-border-radius-bottomright: 12px;
+    border-bottom-right-radius: 12px;
+
+    z-index: 1000;
+}
+
+.g-m-p .title {
+    font-size: 1.25em;
+    text-align: left;
+    font-weight: bold;
+    border-bottom: 1px solid #CCC;
+    padding: 0;
+}
+
+.g-m-p .date_and_share {
+    text-align: right;
+    margin-bottom: 18px;
+}
+
+.g-m-p .date_and_share .date {
+    font-style: italic;
+    color: #CCC;
+}
+
+.g-m-p .appstats-link {
+    float:right;
+}
+
+.g-m-p .url {
+    font-size: 125%;
+}
+
+.g-m-p .total {
+    float: right;
+}
+
+.g-m-p .dupe {
+    font-weight: bold;
+    color: red;
+}
+
+.g-m-p .summary {
+    float:right;
+}
+
+.g-m-p .details {
+    max-width: 800px;
+    max-height: 500px;
+    margin-bottom: 18px;
+    overflow: auto;
+}
+
+.g-m-p .expand.expanded {
+    border-bottom: 1px solid #DDD;
+}
+
+.g-m-p .expand.expanded a {
+    text-decoration: none;
+    border-bottom: 0;
+    font-weight: bold;
+}
+
+.g-m-p .details table {
+    margin-top: 18px;
+    border-spacing: 0;
+    font-size: 12px;
+}
+
+.g-m-p .details table tr:nth-child(odd) {
+    background-color: #FFF;
+}
+
+.g-m-p .details table tr:nth-child(even) {
+    background-color: #F7F7F7;
+}
+
+.g-m-p .details table .callers-label {
+    color: #CCC;
+}
+
+.g-m-p .details th, .g-m-p .details th.header {
+    font-size: 12px;
+    background-color: #F7F7F7;
+    font-weight: bold;
+    cursor: pointer;
+    float: none;
+    position: static;
+}
+
+.g-m-p .details th.headerSortUp,
+.g-m-p .details th.headerSortDown {
+    text-decoration: underline;
+}
+
+.g-m-p .details th,
+.g-m-p .details td {
+    padding-right: 18px;
+    vertical-align: top;
+}
+
+.g-m-p .details .left {
+    text-align: left;
+}
+
+.g-m-p .details .right {
+    text-align: right;
+}
+
+.g-m-p-shared .shared-teaser-container {
+    text-align: center;
+}
+
+.g-m-p-shared .shared-teaser {
+    margin-left: auto;
+    margin-right: auto;
+    height: 400px;
+    width: 600px;
+    text-align: center;
+    padding: 200px 0;
+    font-size: 24px;
+    font-weight: bold;
+}
+
+/* Borrowed from those smart guys @ Fog Creek. Props to Justin & Bobby */
+.g-m-p .fancy-scrollbar::-webkit-scrollbar {
+  height: 8px;
+  width: 8px;
+}
+.g-m-p .fancy-scrollbar::-webkit-scrollbar-button:start:decrement,
+.g-m-p .fancy-scrollbar::-webkit-scrollbar-button:end:increment {
+  background: transparent;
+  display: none;
+}
+.g-m-p .fancy-scrollbar::-webkit-scrollbar-track-piece {
+  background: transparent;
+}
+.g-m-p .fancy-scrollbar::-webkit-scrollbar-track-piece:vertical:start {
+  -webkit-border-top-left-radius: 4px;
+  -webkit-border-top-right-radius: 4px;
+}
+.g-m-p .fancy-scrollbar::-webkit-scrollbar-track-piece:vertical:end {
+  -webkit-border-bottom-left-radius: 4px;
+  -webkit-border-bottom-right-radius: 4px;
+}
+.g-m-p .fancy-scrollbar::-webkit-scrollbar-track-piece:horizontal:start {
+  -webkit-border-top-left-radius: 4px;
+  -webkit-border-bottom-left-radius: 4px;
+}
+.g-m-p .fancy-scrollbar::-webkit-scrollbar-track-piece:horizontal:end {
+  -webkit-border-top-right-radius: 4px;
+  -webkit-border-bottom-right-radius: 4px;
+}
+.g-m-p .fancy-scrollbar::-webkit-scrollbar-thumb:vertical,
+.g-m-p .fancy-scrollbar::-webkit-scrollbar-thumb:horizontal {
+  background: #ccc;
+  border: 1px solid #aaa;
+  -webkit-border-radius: 4px;
+  display: block;
+  height: 50px;
+}
