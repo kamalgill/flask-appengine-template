@@ -91,8 +91,9 @@ The App Engine app's root folder is located at `src/`.
   |-- index.yaml (App Engine query index definitions)
   |-- main.py (Main App Engine handler)
   |-- packages (Flask and third-party zip packages)
+      |-- blinker.zip (library for event/signal support)
       |-- flask.zip (Flask core)
-      |-- flaskext (Flask extensions go here)
+      |-- flaskext (Flask extensions go here; wtforms and gae_mini_profiler are provided)
       |-- jinja2.zip (template engine)
       |-- simplejson.zip (JSON utility required by Jinja2)
       |-- werkzeug (WSGI utilities for Python-based web development)
@@ -130,6 +131,13 @@ The application code is located at `src/application`.
 </pre>
 
 
+Testing/Profiling
+-----------------
+Thanks to contributions from [jbochi][jbochi], and the 
+excellent [Flask-GAE_Mini_Profiler][profiler] extension, 
+profiling is enabled for admin users.
+
+
 Removing Extended Attributes (@ flag)
 -------------------------------------
 A few of the files in the source tree were uploaded (with apologies) to 
@@ -153,6 +161,7 @@ See licenses/ folder
 
 Package Versions
 ----------------
+- Blinker: 1.1
 - Flask: 0.7.2
 - Flask-WTF: 0.5.2
 - Jinja2: 2.5.5
@@ -194,4 +203,5 @@ Testing and Profiling improvements provided by [Juarez Bochi][jbochi]
 [modernizr]: http://www.modernizr.com/
 [wzda]: https://github.com/nshah/werkzeug-debugger-appengine
 [jbochi]: https://github.com/jbochi
+[profiler]: http://packages.python.org/Flask-GAE-Mini-Profiler/
 
