@@ -50,9 +50,9 @@ Front-end Customization
 5. Customize 404 page at `src/aplication/templates/404.html`
 
 
-Testing the Application
------------------------
-To test the application using App Engine's development server, 
+Previewing the Application
+--------------------------
+To preview the application using App Engine's development server, 
 use [dev_appserver.py][devserver]
 
 <pre class="console">
@@ -131,11 +131,11 @@ The application code is located at `src/application`.
 </pre>
 
 
-Testing/Profiling
------------------
+Profiling with AppStats
+-----------------------
 Thanks to contributions from [jbochi][jbochi], and the 
 excellent [Flask-GAE_Mini_Profiler][profiler] extension, 
-profiling is enabled for admin users.
+AppStats-based profiling is enabled for admin users.
 
 
 Removing Extended Attributes (@ flag)
