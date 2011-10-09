@@ -8,11 +8,13 @@
     :copyright: (c) 2011 by the Werkzeug Team, see AUTHORS for more details.
     :license: BSD, see LICENSE for more details.
 """
+import re
 import os
 import urllib
 import urlparse
 import posixpath
 import mimetypes
+from itertools import chain
 from zlib import adler32
 from time import time, mktime
 from datetime import datetime
@@ -570,6 +572,15 @@ class FileWrapper(object):
         raise StopIteration()
 
 
+def make_limited_stream(stream, limit):
+    """Makes a stream limited."""
+    if not isinstance(stream, LimitedStream):
+        if limit is None:
+            raise TypeError('stream not limited and no limit provided.')
+        stream = LimitedStream(stream, limit)
+    return stream
+
+
 def make_line_iter(stream, limit=None, buffer_size=10 * 1024):
     """Safely iterates line-based over an input stream.  If the input stream
     is not a :class:`LimitedStream` the `limit` parameter is mandatory.
@@ -583,16 +594,16 @@ def make_line_iter(stream, limit=None, buffer_size=10 * 1024):
     If you need line-by-line processing it's strongly recommended to iterate
     over the input stream using this helper function.
 
+    .. versionchanged:: 0.8
+       This function now ensures that the limit was reached.
+
     :param stream: the stream to iterate over.
     :param limit: the limit in bytes for the stream.  (Usually
                   content length.  Not necessary if the `stream`
                   is a :class:`LimitedStream`.
     :param buffer_size: The optional buffer size.
     """
-    if not isinstance(stream, LimitedStream):
-        if limit is None:
-            raise TypeError('stream not limited and no limit provided.')
-        stream = LimitedStream(stream, limit)
+    stream = make_limited_stream(stream, limit)
     _read = stream.read
     buffer = []
     while 1:
@@ -617,6 +628,42 @@ def make_line_iter(stream, limit=None, buffer_size=10 * 1024):
 
         buffer = chunks
         yield first_chunk
+
+
+def make_chunk_iter(stream, separator, limit=None, buffer_size=10 * 1024):
+    """Works like :func:`make_line_iter` but accepts a separator
+    which divides chunks.  If you want newline based processing
+    you shuold use :func:`make_limited_stream` instead as it
+    supports arbitrary newline markers.
+
+    .. versionadded:: 0.8
+
+    :param stream: the stream to iterate over.
+    :param separator: the separator that divides chunks.
+    :param limit: the limit in bytes for the stream.  (Usually
+                  content length.  Not necessary if the `stream`
+                  is a :class:`LimitedStream`.
+    :param buffer_size: The optional buffer size.
+    """
+    stream = make_limited_stream(stream, limit)
+    _read = stream.read
+    _split = re.compile(r'(%s)' % re.escape(separator)).split
+    buffer = []
+    while 1:
+        new_data = _read(buffer_size)
+        if not new_data:
+            break
+        chunks = _split(new_data)
+        new_buf = []
+        for item in chain(buffer, chunks):
+            if item == separator:
+                yield ''.join(new_buf)
+                new_buf = []
+            else:
+                new_buf.append(item)
+        buffer = new_buf
+    if buffer:
+        yield ''.join(buffer)
 
 
 class LimitedStream(object):
@@ -688,13 +735,20 @@ class LimitedStream(object):
         """This is called when the stream tries to read past the limit.
         The return value of this function is returned from the reading
         function.
-
-        Per default this raises a :exc:`~werkzeug.exceptions.BadRequest`.
         """
         if self.silent:
             return ''
         from werkzeug.exceptions import BadRequest
         raise BadRequest('input stream exhausted')
+
+    def on_disconnect(self):
+        """What should happen if a disconnect is detected?  The return
+        value of this function is returned from read functions in case
+        the client went away.  By default a
+        :exc:`~werkzeug.exceptions.ClientDisconnected` exception is raised.
+        """
+        from werkzeug.exceptions import ClientDisconnected
+        raise ClientDisconnected()
 
     def exhaust(self, chunk_size=1024 * 16):
         """Exhaust the stream.  This consumes all the data left until the
@@ -718,9 +772,15 @@ class LimitedStream(object):
         """
         if self._pos >= self.limit:
             return self.on_exhausted()
-        if size is None:
+        if size is None or size == -1:  # -1 is for consistence with file
             size = self.limit
-        read = self._read(min(self.limit - self._pos, size))
+        to_read = min(self.limit - self._pos, size)
+        try:
+            read = self._read(to_read)
+        except (IOError, ValueError):
+            return self.on_disconnect()
+        if to_read and len(read) != to_read:
+            return self.on_disconnect()
         self._pos += len(read)
         return read
 
@@ -732,7 +792,12 @@ class LimitedStream(object):
             size = self.limit - self._pos
         else:
             size = min(size, self.limit - self._pos)
-        line = self._readline(size)
+        try:
+            line = self._readline(size)
+        except (ValueError, IOError):
+            return self.on_disconnect()
+        if size and not line:
+            return self.on_disconnect()
         self._pos += len(line)
         return line
 
