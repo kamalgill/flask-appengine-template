@@ -91,14 +91,15 @@ The App Engine app's root folder is located at `src/`.
   |-- index.yaml (App Engine query index definitions)
   |-- main.py (Main App Engine handler)
   |-- packages (Flask and third-party zip packages)
-      |-- blinker.zip (library for event/signal support)
-      |-- flask.zip (Flask core)
-      |-- flaskext (Flask extensions go here; wtforms and gae_mini_profiler are provided)
-      |-- jinja2.zip (template engine)
-      |-- simplejson.zip (JSON utility required by Jinja2)
-      |-- werkzeug (WSGI utilities for Python-based web development)
-      |-- werkzeug_debugger_appengine (enables Werkzeug's interactive debugger for App Engine)
-      `-- wtforms.zip (Jinja2-compatible web form utility)
+  |   |-- blinker.zip (library for event/signal support)
+  |   |-- flask.zip (Flask core)
+  |   |-- flaskext (Flask extensions go here; wtforms and gae_mini_profiler are provided)
+  |   |-- jinja2.zip (template engine)
+  |   |-- simplejson.zip (JSON utility required by Jinja2)
+  |   |-- werkzeug (WSGI utilities for Python-based web development)
+  |   |-- werkzeug_debugger_appengine (enables Werkzeug's interactive debugger for App Engine)
+  |   `-- wtforms.zip (Jinja2-compatible web form utility)
+  `-- tests/ (unit tests)
 </pre>
 
 The application code is located at `src/application`.
@@ -125,7 +126,6 @@ The application code is located at `src/application`.
   | |-- base.html (master template)
   | |-- list_examples.html (example list-based template)
   | `-- new_example.html (example form-based template)
-  |-- tests.py (unit tests)
   |-- urls.py (URL dispatch routes)
   `-- views.py (Handlers for URL routes defined at urls.py)
 </pre>
