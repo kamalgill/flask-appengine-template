@@ -23,6 +23,9 @@ handlers:
   static_files: application/static/robots.txt
   upload: application/static/robots.txt
 
+- url: /_gae_mini_profiler/static
+  static_dir: packages/flaskext/gae_mini_profiler/static
+
 - url: /static
   static_dir: application/static
 
