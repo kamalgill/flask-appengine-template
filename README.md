@@ -91,14 +91,13 @@ The App Engine app's root folder is located at `src/`.
   |-- index.yaml (App Engine query index definitions)
   |-- main.py (Main App Engine handler)
   |-- packages (Flask and third-party zip packages)
-  |   |-- blinker.zip (library for event/signal support)
-  |   |-- flask.zip (Flask core)
-  |   |-- flaskext (Flask extensions go here; wtforms and gae_mini_profiler are provided)
-  |   |-- jinja2.zip (template engine)
-  |   |-- simplejson.zip (JSON utility required by Jinja2)
-  |   |-- werkzeug (WSGI utilities for Python-based web development)
-  |   |-- werkzeug_debugger_appengine (enables Werkzeug's interactive debugger for App Engine)
-  |   `-- wtforms.zip (Jinja2-compatible web form utility)
+  |   |-- blinker/ (library for event/signal support)
+  |   |-- flask/ (Flask core)
+  |   |-- flaskext/ (Flask extensions go here; wtforms and gae_mini_profiler are provided)
+  |   |-- simplejson/ (JSON utility required by Jinja2)
+  |   |-- werkzeug/ (WSGI utilities for Python-based web development)
+  |   |-- werkzeug_debugger_appengine/ (enables Werkzeug's interactive debugger for App Engine)
+  |   `-- wtforms/ (Jinja2-compatible web form utility)
   `-- tests/ (unit tests)
 </pre>
 
@@ -164,7 +163,7 @@ Package Versions
 - Blinker: 1.1
 - Flask: 0.8
 - Flask-WTF: 0.5.2
-- Jinja2: 2.5.5
+- Jinja2: 2.6 (included in GAE)
 - simplejson: 2.2.1
 - Werkzeug: 0.8.1
 - WTForms: 0.6.2

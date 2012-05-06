@@ -1,15 +1,20 @@
 application: myflaskonappengineapp
 version: 1
-runtime: python
+runtime: python27
 api_version: 1
+threadsafe: true
 
 default_expiration: "5d"
 
 builtins:
 - appstats: on
-- datastore_admin: on
+- admin_redirect: on
 - deferred: on
 - remote_api: on
+
+libraries:
+- name: jinja2
+  version: "2.6"
 
 inbound_services:
 - warmup
@@ -30,4 +35,4 @@ handlers:
   static_dir: application/static
 
 - url: .*
-  script: main.py
+  script: application.app
