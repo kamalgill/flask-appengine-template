@@ -2,16 +2,16 @@
 
 {% block content %}
 <p>
-	<a href="{{ url_for('list_examples') }}">List examples</a> | <a href="{{ url_for('new_example') }}">New example</a>
+    <a href="{{ url_for('list_examples') }}">List examples</a> | <a href="{{ url_for('new_example') }}">New example</a>
 </p>
 {% with messages = get_flashed_messages(with_categories=true) %}
-	{% if messages %}
-		<ul class="flash">
-			 {% for category, message in messages %}
-				<li class="{{category}}">{{ message }}</li>
-			 {% endfor %}
-		</ul>
-	{% endif %}
+    {% if messages %}
+        <ul class="flash">
+             {% for category, message in messages %}
+                <li class="{{category}}">{{ message }}</li>
+             {% endfor %}
+        </ul>
+    {% endif %}
 {% endwith %}
 <ul>
     <h1 id="">All Examples</h1>

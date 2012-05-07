@@ -1,31 +1,31 @@
 {% extends "base.html" %}
 
 {% block content %}
-	<h1 id="">Add a New Example</h1>
-	<form action="{{ url_for('new_example') }}" method="post" accept-charset="utf-8">
-		{{ form.hidden_tag() }}
-		<p>
-			{{ form.example_id.label }}
-			{{ form.example_id|safe }}
-			{% if form.example_id.errors %}
-			<ul class="errors">
-				{% for error in form.example_id.errors %}
-				<li>{{ error }}</li>
-				{% endfor %}
-			</ul>
-			{% endif %}
-		</p>
-		<p>
-			{{ form.example_title.label }}
-			{{ form.example_title|safe }}
-			{% if form.example_title.errors %}
-			<ul class="errors">
-				{% for error in form.example_title.errors %}
-				<li>{{ error }}</li>
-				{% endfor %}
-			</ul>
-			{% endif %}
-		</p>
-		<p><input type="submit" value="Add Example"/></p>
-	</form>
+    <h1 id="">Add a New Example</h1>
+    <form action="{{ url_for('new_example') }}" method="post" accept-charset="utf-8">
+        {{ form.hidden_tag() }}
+        <p>
+            {{ form.example_id.label }}
+            {{ form.example_id|safe }}
+            {% if form.example_id.errors %}
+            <ul class="errors">
+                {% for error in form.example_id.errors %}
+                <li>{{ error }}</li>
+                {% endfor %}
+            </ul>
+            {% endif %}
+        </p>
+        <p>
+            {{ form.example_title.label }}
+            {{ form.example_title|safe }}
+            {% if form.example_title.errors %}
+            <ul class="errors">
+                {% for error in form.example_title.errors %}
+                <li>{{ error }}</li>
+                {% endfor %}
+            </ul>
+            {% endif %}
+        </p>
+        <p><input type="submit" value="Add Example"/></p>
+    </form>
 {% endblock %}

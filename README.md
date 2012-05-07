@@ -6,9 +6,9 @@ Google App Engine (Python)
 
 Python 2.7 Runtime Support
 --------------------------
-* Support for the Python 2.7 runtime is in the 'python27' branch.
+* Support for the Python 2.7 runtime was added to this project in May 2012.
 * The profiler (gae_mini_profiler) and debugger (werkzeug_debugger_appengine)
-  have been disabled until proper integration with the 2.7 runtime is implemented.
+  have been disabled until the libraries are updated to support the Python 2.7 runtime.
 
 
 About Flask
