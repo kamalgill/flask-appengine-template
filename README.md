@@ -4,7 +4,11 @@ Flask on App Engine Project Template
 Boilerplate project template for running a Flask-based application on 
 Google App Engine (Python)
 
-Note: Support for the Python 2.7 runtime is in the 'python27' branch.
+Python 2.7 Runtime Support
+--------------------------
+* Support for the Python 2.7 runtime is in the 'python27' branch.
+* The profiler (gae_mini_profiler) and debugger (werkzeug_debugger_appengine)
+  have been disabled until proper integration with the 2.7 runtime is implemented.
 
 
 About Flask
@@ -91,16 +95,13 @@ The App Engine app's root folder is located at `src/`.
   src/
   |-- app.yaml (App Engine config file)
   |-- application (application code)
+  |-- blinker/ (library for event/signal support)
+  |-- flask/ (Flask core)
+  |-- flaskext/ (Flask extensions go here; wtforms and gae_mini_profiler are provided)
   |-- index.yaml (App Engine query index definitions)
-  |-- main.py (Main App Engine handler)
-  |-- packages (Flask and third-party zip packages)
-  |   |-- blinker/ (library for event/signal support)
-  |   |-- flask/ (Flask core)
-  |   |-- flaskext/ (Flask extensions go here; wtforms and gae_mini_profiler are provided)
-  |   |-- werkzeug/ (WSGI utilities for Python-based web development)
-  |   |-- werkzeug_debugger_appengine/ (enables Werkzeug's interactive debugger for App Engine)
-  |   `-- wtforms/ (Jinja2-compatible web form utility)
-  `-- tests/ (unit tests)
+  |-- tests/ (unit tests)
+  |-- werkzeug/ (WSGI utilities for Python-based web development)
+  `-- wtforms/ (Jinja2-compatible web form utility)
 </pre>
 
 The application code is located at `src/application`.
