@@ -4,6 +4,8 @@ Flask on App Engine Project Template
 Boilerplate project template for running a Flask-based application on 
 Google App Engine (Python)
 
+Note: Support for the Python 2.7 runtime is in the 'python27' branch.
+
 
 About Flask
 -----------
@@ -70,6 +72,7 @@ To run unit tests, use
     python testrunner.py APPENGINE_SDK_PATH
 </pre>
 
+
 Deploying the Application
 -------------------------
 To deploy the application to App Engine, use [appcfg.py update][appcfg]
@@ -94,7 +97,6 @@ The App Engine app's root folder is located at `src/`.
   |   |-- blinker/ (library for event/signal support)
   |   |-- flask/ (Flask core)
   |   |-- flaskext/ (Flask extensions go here; wtforms and gae_mini_profiler are provided)
-  |   |-- simplejson/ (JSON utility required by Jinja2)
   |   |-- werkzeug/ (WSGI utilities for Python-based web development)
   |   |-- werkzeug_debugger_appengine/ (enables Werkzeug's interactive debugger for App Engine)
   |   `-- wtforms/ (Jinja2-compatible web form utility)
@@ -130,13 +132,6 @@ The application code is located at `src/application`.
 </pre>
 
 
-Profiling with AppStats
------------------------
-Thanks to contributions from [jbochi][jbochi], and the 
-excellent [Flask-GAE_Mini_Profiler][profiler] extension, 
-AppStats-based profiling is enabled for admin users.
-
-
 Removing Extended Attributes (@ flag)
 -------------------------------------
 A few of the files in the source tree were uploaded (with apologies) to 
@@ -164,7 +159,6 @@ Package Versions
 - Flask: 0.8
 - Flask-WTF: 0.5.2
 - Jinja2: 2.6 (included in GAE)
-- simplejson: 2.2.1
 - Werkzeug: 0.8.1
 - WTForms: 0.6.2
 - Modernizr: 2.0
@@ -184,9 +178,6 @@ CSS reset, fonts, grids, and base styles provided by [YUI 3][yui3]
 
 Project layout improvements (zip archives/zipimport) contributed by 
 Stochastic Technologies.
-
-Werkzeug's Interactive Debugger enabled for App Engine using
-Naitik Shah's [werkzeug-debugger-appengine][wzda] utility.
 
 Testing and Profiling improvements provided by [Juarez Bochi][jbochi]
 
