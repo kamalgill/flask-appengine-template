@@ -117,11 +117,13 @@ The application code is located at `src/application`.
   | |-- css
   | | `-- main.css (custom styles)
   | |-- img
-  | | |-- favicon.ico (replace with custom favicon)
+  | | |-- favicon.ico
   | | `-- favicon.png
   | `-- js
-  |   |-- main.js (custom javascript)
-  |   `-- modernizr-2.min.js (HTML5 enabling and detection)
+  |   |-- main.js (site-wide JS)
+  |   `-- lib/ (third-party JS libraries)
+  |     |--bootstrap-*.js (Bootstrap jQuery plugins
+  |     `--modernizer-*.js (HTML5 detection library)
   |-- templates
   | |-- 404.html (not found page)
   | |-- 500.html (server error page)
@@ -157,12 +159,13 @@ See licenses/ folder
 Package Versions
 ----------------
 - Blinker: 1.1
+- Bootstrap: 2.0.3
 - Flask: 0.8
 - Flask-WTF: 0.5.2
 - Jinja2: 2.6 (included in GAE)
 - Werkzeug: 0.8.1
 - WTForms: 0.6.2
-- Modernizr: 2.0
+- Modernizr: 2.5
 
 
 Credits
@@ -170,29 +173,20 @@ Credits
 Project template layout was heavily inspired by Francisco Souza's 
 [gaeseries Flask project][gaeseries]
 
-HTML5-based main template (templates/base.html) 
-extracted from [HTML5 Boilerplate][html5]
+Layout, form, table, and button styles provided by [Bootstrap][bootstrap]
 
 HTML5 detection provided by [Modernizr 2][modernizr] (configured with all features)
 
-CSS reset, fonts, grids, and base styles provided by [YUI 3][yui3]
 
-Project layout improvements (zip archives/zipimport) contributed by 
-Stochastic Technologies.
-
-Testing and Profiling improvements provided by [Juarez Bochi][jbochi]
-
-
-[flask]: http://flask.pocoo.org
-[wz]: http://werkzeug.pocoo.org/
-[jinja2]: http://jinja.pocoo.org/2/documentation/
-[devserver]: http://code.google.com/appengine/docs/python/tools/devserver.html
 [appcfg]: http://code.google.com/appengine/docs/python/tools/uploadinganapp.html
-[gaeseries]: http://github.com/franciscosouza/gaeseries/tree/flask
+[bootstrap]: http://twitter.github.com/bootstrap
+[devserver]: http://code.google.com/appengine/docs/python/tools/devserver.html
+[flask]: http://flask.pocoo.org
 [html5]: http://html5boilerplate.com/
-[yui3]: http://developer.yahoo.com/yui/3/
+[jinja2]: http://jinja.pocoo.org/2/documentation/
+[gaeseries]: http://github.com/franciscosouza/gaeseries/tree/flask
 [modernizr]: http://www.modernizr.com/
-[wzda]: https://github.com/nshah/werkzeug-debugger-appengine
-[jbochi]: https://github.com/jbochi
 [profiler]: http://packages.python.org/Flask-GAE-Mini-Profiler/
+[wz]: http://werkzeug.pocoo.org/
+[wzda]: https://github.com/nshah/werkzeug-debugger-appengine
 
