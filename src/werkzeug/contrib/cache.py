@@ -471,15 +471,15 @@ class RedisCache(BaseCache):
     :param key_prefix: A prefix that should be added to all keys.
     """
 
-    def __init__(self, host='localhost', port=6379, default_timeout=300,
-                 key_prefix=None):
+    def __init__(self, host='localhost', port=6379, password=None,
+                 default_timeout=300, key_prefix=None):
         BaseCache.__init__(self, default_timeout)
         if isinstance(host, basestring):
             try:
                 import redis
             except ImportError:
                 raise RuntimeError('no redis module found')
-            self._client = redis.Redis(host=host, port=port)
+            self._client = redis.Redis(host=host, port=port, password=password)
         else:
             self._client = host
         self.key_prefix = key_prefix or ''
@@ -488,7 +488,8 @@ class RedisCache(BaseCache):
         """Dumps an object into a string for redis.  By default it serializes
         integers as regular string and pickle dumps everything else.
         """
-        if isinstance(value, (int, long)):
+        t = type(value)
+        if t is int or t is long:
             return str(value)
         return '!' + pickle.dumps(value)
 
