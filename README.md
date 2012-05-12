@@ -163,9 +163,9 @@ Package Versions
 - Flask: 0.8
 - Flask-WTF: 0.5.2
 - Jinja2: 2.6 (included in GAE)
+- Modernizr: 2.5.3
 - Werkzeug: 0.8.3
-- WTForms: 0.6.2
-- Modernizr: 2.5
+- WTForms: 1.0.1
 
 
 Credits

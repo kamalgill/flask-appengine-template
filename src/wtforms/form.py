@@ -24,8 +24,8 @@ class BaseForm(object):
         self._errors = None
         self._fields = {}
 
-        if hasattr(fields, 'iteritems'):
-            fields = fields.iteritems()
+        if hasattr(fields, 'items'):
+            fields = fields.items()
 
         translations = self._get_translations()
 
@@ -37,9 +37,9 @@ class BaseForm(object):
         """ Iterate form fields in arbitrary order """
         return self._fields.itervalues()
 
-    def __contains__(self, item):
+    def __contains__(self, name):
         """ Returns `True` if the named field is a member of this form. """
-        return (item in self._fields)
+        return (name in self._fields)
 
     def __getitem__(self, name):
         """ Dict-style access to this form's fields."""
@@ -81,12 +81,13 @@ class BaseForm(object):
             Used to pass data coming from the enduser, usually `request.POST` or
             equivalent.
         :param obj:
-            If `formdata` has no data for a field, the form will try to get it
-            from the passed object.
+            If `formdata` is empty or not provided, this object is checked for
+            attributes matching form field names, which will be used for field
+            values.
         :param `**kwargs`:
-            If neither `formdata` or `obj` contains a value for a field, the
-            form will assign the value of a matching keyword argument to the
-            field, if provided.
+            If `formdata` is empty or not provided and `obj` does not contain
+            an attribute named the same as a field, form will assign the value
+            of a matching keyword argument to the field, if one exists.
         """
         if formdata is not None and not hasattr(formdata, 'getlist'):
             if hasattr(formdata, 'getall'):
@@ -204,15 +205,16 @@ class Form(BaseForm):
             Used to pass data coming from the enduser, usually `request.POST` or
             equivalent.
         :param obj:
-            If `formdata` has no data for a field, the form will try to get it
-            from the passed object.
+            If `formdata` is empty or not provided, this object is checked for
+            attributes matching form field names, which will be used for field
+            values.
         :param prefix:
             If provided, all fields will have their name prefixed with the
             value.
         :param `**kwargs`:
-            If neither `formdata` or `obj` contains a value for a field, the
-            form will assign the value of a matching keyword argument to the
-            field, if provided.
+            If `formdata` is empty or not provided and `obj` does not contain
+            an attribute named the same as a field, form will assign the value
+            of a matching keyword argument to the field, if one exists.
         """
         super(Form, self).__init__(self._unbound_fields, prefix=prefix)
 
