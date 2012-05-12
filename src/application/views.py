@@ -29,30 +29,25 @@ def say_hello(username):
     return 'Hello %s' % username
 
 
+@login_required
 def list_examples():
     """List all examples"""
     examples = ExampleModel.all()
-    return render_template('list_examples.html', examples=examples)
-
-
-@login_required
-def new_example():
-    """Add a new example, detecting whether or not App Engine is in read-only mode."""
     form = ExampleForm()
     if form.validate_on_submit():
         example = ExampleModel(
-                    example_id = form.example_id.data,
-                    example_title = form.example_title.data,
-                    added_by = users.get_current_user()
-                    )
+            example_id = form.example_id.data,
+            example_title = form.example_title.data,
+            added_by = users.get_current_user()
+        )
         try:
             example.put()
             flash(u'Example successfully saved.', 'success')
             return redirect(url_for('list_examples'))
         except CapabilityDisabledError:
-            flash(u'App Engine Datastore is currently in read-only mode.', 'failure')
+            flash(u'App Engine Datastore is currently in read-only mode.', 'info')
             return redirect(url_for('list_examples'))
-    return render_template('new_example.html', form=form)
+    return render_template('list_examples.html', examples=examples, form=form)
 
 
 @admin_required

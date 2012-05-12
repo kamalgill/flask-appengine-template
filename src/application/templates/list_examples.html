@@ -1,27 +1,72 @@
 {% extends "base.html" %}
 
+{% block style_block %}
+    <style type="text/css">
+        table.table { width: 50%; }
+    </style>
+{% endblock %}
+
 {% block content %}
-<p>
-    <a href="{{ url_for('list_examples') }}">List examples</a> | <a href="{{ url_for('new_example') }}">New example</a>
-</p>
-{% with messages = get_flashed_messages(with_categories=true) %}
-    {% if messages %}
-        <ul class="flash">
-             {% for category, message in messages %}
-                <li class="{{category}}">{{ message }}</li>
-             {% endfor %}
-        </ul>
-    {% endif %}
-{% endwith %}
-<ul>
+
     <h1 id="">All Examples</h1>
-    {% for example in examples %}
-    <li>
-        ID: {{ example.example_id }}<br />
-        Title: {{ example.example_title }}<br />
-    </li>
-    {% else %}
-    <li>No examples yet</li>
-    {% endfor %}
-</ul>
+    <div>&nbsp;</div>
+    <table class="table table-bordered table-striped">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Title</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for example in examples %}
+            <tr>
+                <td>{{ example.example_id }}</td>
+                <td>{{ example.example_title }}</td>
+            </tr>
+            {% else %}
+            <tr><td colspan="2">No examples yet</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <p>
+        <a class="btn btn-primary" data-toggle="modal" data-target="#new-example-modal">
+            <i class="icon-plus-sign icon-white"></i>
+            New example
+        </a>
+    </p>
+
+    {% include 'new_example.html' %} {# pull in new_example form (modal dialog) #}
+
+{% endblock content %}
+
+{% block tail_script %}
+    <script>
+        var FormHelpers = {
+            validate: function (form, evt) {
+                // Form validation for modal dialog
+                var example_id = form.find('#example_id').val();
+                var example_title = form.find('#example_title').val();
+                if (!(example_id)) {
+                    evt.preventDefault();
+                    Utils.renderFieldErrorTooltip('#example_id', 'ID is required', 'right');
+                }
+                if (!(example_title)) {
+                    evt.preventDefault();
+                    Utils.renderFieldErrorTooltip('#example_title', 'Title is required', 'right');
+                }
+            },
+            init: function () {
+                var self = this;
+                var example_form = $('#new-example-form');
+                example_form.on('submit', function (evt) {
+                    self.validate(example_form, evt)
+                });
+            }
+        };
+        $(document).ready(function() {
+            // Enable modal dialog (via Bootstrap's 'modal' plugin)
+            $('#new-example-modal').modal({'show': false});
+            FormHelpers.init();
+        });
+    </script>
 {% endblock %}

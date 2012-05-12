@@ -1,31 +1,47 @@
-{% extends "base.html" %}
+<div class="modal fade" id="new-example-modal">
+    <div class="modal-header">
+        <button class="close" data-dismiss="modal">×</button>
+        <h3>Add a New Example</h3>
+    </div>
+    <div class="modal-body">
+        <form id="new-example-form" class="well form-horizontal"
+            action="{{ url_for('list_examples') }}" method="post" accept-charset="utf-8">
+            <fieldset>
+                {{ form.hidden_tag() }}
+                <div class="control-group">
+                    <div class="control-label">{{ form.example_id.label }}</div>
+                    <div class="controls">
+                        {{ form.example_id|safe }}
+                        {% if form.example_id.errors %}
+                        <ul class="errors">
+                            {% for error in form.example_id.errors %}
+                            <li>{{ error }}</li>
+                            {% endfor %}
+                        </ul>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="control-group">
+                    <div class="control-label">{{ form.example_title.label }}</div>
+                    <div class="controls">
+                        {{ form.example_title|safe }}
+                        {% if form.example_title.errors %}
+                        <ul class="errors">
+                            {% for error in form.example_title.errors %}
+                            <li>{{ error }}</li>
+                            {% endfor %}
+                        </ul>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="control-group">
+                    <div class="controls">
+                        <input class="btn btn-primary" type="submit" value="Add Example"/>
+                        <button class="btn" data-dismiss="modal">Cancel</button>
+                    </div>
+                </div>
+            </fieldset>
+        </form>
+    </div>
+</div>
 
-{% block content %}
-    <h1 id="">Add a New Example</h1>
-    <form action="{{ url_for('new_example') }}" method="post" accept-charset="utf-8">
-        {{ form.hidden_tag() }}
-        <p>
-            {{ form.example_id.label }}
-            {{ form.example_id|safe }}
-            {% if form.example_id.errors %}
-            <ul class="errors">
-                {% for error in form.example_id.errors %}
-                <li>{{ error }}</li>
-                {% endfor %}
-            </ul>
-            {% endif %}
-        </p>
-        <p>
-            {{ form.example_title.label }}
-            {{ form.example_title|safe }}
-            {% if form.example_title.errors %}
-            <ul class="errors">
-                {% for error in form.example_title.errors %}
-                <li>{{ error }}</li>
-                {% endfor %}
-            </ul>
-            {% endif %}
-        </p>
-        <p><input class="btn btn-primary" type="submit" value="Add Example"/></p>
-    </form>
-{% endblock %}

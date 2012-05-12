@@ -1,0 +1,18 @@
+{% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        {% if category == 'error' %}
+            {% set icon = 'icon-exclamation-sign' %}
+        {% elif category == 'success' %}
+            {% set icon = 'icon-ok-sign' %}
+        {% else %}
+            {% set icon = 'icon-info-sign' %}
+        {% endif %}
+        {% for category, message in messages %}
+            <div class="alert alert-{{ category }}">
+                <i class="{{ icon }}"></i>&nbsp;
+                <a class="close" data-dismiss="alert">×</a>
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
+{% endwith %}
