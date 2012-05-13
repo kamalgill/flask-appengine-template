@@ -54,8 +54,7 @@ def list_examples():
 @login_required
 def delete_example(example_id):
     """Delete an example object"""
-    int_example_id = int(example_id)
-    example = ExampleModel.get_by_id(int_example_id)
+    example = ExampleModel.get_by_id(example_id)
     try:
         example.delete()
         flash(u'Example %s successfully deleted.' % example_id, 'success')
