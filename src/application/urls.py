@@ -28,6 +28,8 @@ app.add_url_rule('/examples', 'list_examples', view_func=views.list_examples, me
 # Contrived admin-only view example
 app.add_url_rule('/admin_only', 'admin_only', view_func=views.admin_only)
 
+# Delete an example (post method only)
+app.add_url_rule('/examples/delete/<example_id>', view_func=views.delete_example, methods=['POST'])
 
 
 ## Error handlers

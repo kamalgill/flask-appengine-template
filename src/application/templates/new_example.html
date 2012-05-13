@@ -9,12 +9,12 @@
             <fieldset>
                 {{ form.hidden_tag() }}
                 <div class="control-group">
-                    <div class="control-label">{{ form.example_id.label }}</div>
+                    <div class="control-label">{{ form.example_name.label }}</div>
                     <div class="controls">
-                        {{ form.example_id|safe }}
-                        {% if form.example_id.errors %}
+                        {{ form.example_name|safe }}
+                        {% if form.example_name.errors %}
                         <ul class="errors">
-                            {% for error in form.example_id.errors %}
+                            {% for error in form.example_name.errors %}
                             <li>{{ error }}</li>
                             {% endfor %}
                         </ul>
@@ -22,12 +22,12 @@
                     </div>
                 </div>
                 <div class="control-group">
-                    <div class="control-label">{{ form.example_title.label }}</div>
+                    <div class="control-label">{{ form.example_description.label }}</div>
                     <div class="controls">
-                        {{ form.example_title|safe }}
-                        {% if form.example_title.errors %}
+                        {{ form.example_description|safe }}
+                        {% if form.example_description.errors %}
                         <ul class="errors">
-                            {% for error in form.example_title.errors %}
+                            {% for error in form.example_description.errors %}
                             <li>{{ error }}</li>
                             {% endfor %}
                         </ul>

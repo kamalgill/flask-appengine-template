@@ -3,21 +3,23 @@
 """
 tests.py
 
+TODO: These tests need to be updated to support the Python 2.7 runtime
+
 """
 import os
 import unittest
 
 from google.appengine.ext import testbed
 
-import main
-from application import models
+from application import app
+
 
 class DemoTestCase(unittest.TestCase):
     def setUp(self):
         # Flask apps testing. See: http://flask.pocoo.org/docs/testing/
-        main.app.config['TESTING'] = True
-        main.app.config['CSRF_ENABLED'] = False
-        self.app = main.app.test_client()
+        app.config['TESTING'] = True
+        app.config['CSRF_ENABLED'] = False
+        self.app = app.test_client()
         # Setups app engine test bed. See: http://code.google.com/appengine/docs/python/tools/localunittesting.html#Introducing_the_Python_Testing_Utilities
         self.testbed = testbed.Testbed()
         self.testbed.activate()
@@ -32,9 +34,6 @@ class DemoTestCase(unittest.TestCase):
         os.environ['USER_EMAIL'] = email or ''
         os.environ['USER_ID'] = user_id or ''
         os.environ['USER_IS_ADMIN'] = '1' if is_admin else '0'
-
-    def logoutCurrentUser():
-        setCurrentUser(None, None)
 
     def test_home_redirects(self):
         rv = self.app.get('/')
@@ -51,8 +50,8 @@ class DemoTestCase(unittest.TestCase):
     def test_inserts_data(self):
         self.setCurrentUser(u'john@example.com', u'123')
         rv = self.app.post('/example/new', data=dict(
-            example_id='42',
-            example_title='An example'
+            example_name='An example',
+            example_description='Description of an example'
         ), follow_redirects=True)
         assert 'Example successfully saved' in rv.data
 

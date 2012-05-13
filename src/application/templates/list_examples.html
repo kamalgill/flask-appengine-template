@@ -2,7 +2,7 @@
 
 {% block style_block %}
     <style type="text/css">
-        table.table { width: 50%; }
+        table.table { width: 60%; }
     </style>
 {% endblock %}
 
@@ -14,17 +14,30 @@
         <thead>
             <tr>
                 <th>ID</th>
-                <th>Title</th>
+                <th>Name</th>
+                <th>Description</th>
+                <th>Added by</th>
+                <th>Added on</th>
+                <th>&nbsp;</th>
             </tr>
         </thead>
         <tbody>
             {% for example in examples %}
+            {% set example_id = example.key().id() %}
             <tr>
-                <td>{{ example.example_id }}</td>
-                <td>{{ example.example_title }}</td>
+                <td>{{ example_id }}</td>
+                <td>{{ example.example_name }}</td>
+                <td>{{ example.example_description }}</td>
+                <td>{{ example.added_by }}</td>
+                <td>{{ example.timestamp.strftime('%b %d, %Y %I:%M %p') }}</td>
+                <td>
+                    <form method="post" action="{{ url_for('delete_example', example_id=example_id) }}">
+                        <button class="btn">Delete</button>
+                    </form>
+                </td>
             </tr>
             {% else %}
-            <tr><td colspan="2">No examples yet</td></tr>
+            <tr><td colspan="6">No examples yet</td></tr>
             {% endfor %}
         </tbody>
     </table>
@@ -44,15 +57,15 @@
         var FormHelpers = {
             validate: function (form, evt) {
                 // Form validation for modal dialog
-                var example_id = form.find('#example_id').val();
-                var example_title = form.find('#example_title').val();
-                if (!(example_id)) {
+                var example_name = form.find('#example_name').val();
+                var example_description = form.find('#example_description').val();
+                if (!(example_name)) {
                     evt.preventDefault();
-                    Utils.renderFieldErrorTooltip('#example_id', 'ID is required', 'right');
+                    Utils.renderFieldErrorTooltip('#example_name', 'Name is required', 'right');
                 }
-                if (!(example_title)) {
+                if (!(example_description)) {
                     evt.preventDefault();
-                    Utils.renderFieldErrorTooltip('#example_title', 'Title is required', 'right');
+                    Utils.renderFieldErrorTooltip('#example_description', 'Description is required', 'right');
                 }
             },
             init: function () {

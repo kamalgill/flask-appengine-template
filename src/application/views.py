@@ -36,18 +36,33 @@ def list_examples():
     form = ExampleForm()
     if form.validate_on_submit():
         example = ExampleModel(
-            example_id = form.example_id.data,
-            example_title = form.example_title.data,
+            example_name = form.example_name.data,
+            example_description = form.example_description.data,
             added_by = users.get_current_user()
         )
         try:
             example.put()
-            flash(u'Example successfully saved.', 'success')
+            example_id = example.key().id()
+            flash(u'Example %s successfully saved.' % example_id, 'success')
             return redirect(url_for('list_examples'))
         except CapabilityDisabledError:
             flash(u'App Engine Datastore is currently in read-only mode.', 'info')
             return redirect(url_for('list_examples'))
     return render_template('list_examples.html', examples=examples, form=form)
+
+
+@login_required
+def delete_example(example_id):
+    """Delete an example object"""
+    int_example_id = int(example_id)
+    example = ExampleModel.get_by_id(int_example_id)
+    try:
+        example.delete()
+        flash(u'Example %s successfully deleted.' % example_id, 'success')
+        return redirect(url_for('list_examples'))
+    except CapabilityDisabledError:
+        flash(u'App Engine Datastore is currently in read-only mode.', 'info')
+        return redirect(url_for('list_examples'))
 
 
 @admin_required
