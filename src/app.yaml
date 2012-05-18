@@ -26,6 +26,10 @@ handlers:
   static_files: application/static/img/favicon.ico
   upload: application/static/img/favicon.ico
 
+- url: /robots.txt
+  static_files: application/static/robots.txt
+  upload: application/static/robots.txt
+
 - url: /_gae_mini_profiler/static
   static_dir: packages/flaskext/gae_mini_profiler/static
 
