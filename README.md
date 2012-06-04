@@ -53,7 +53,7 @@ Front-end Customization
 2. Customize CSS styles at `src/application/static/css/main.css`
 3. Add custom JavaScript code at `src/application/static/js/main.js`
 4. Customize favicon at `src/application/static/img/favicon.ico`
-5. Customize 404 page at `src/aplication/templates/404.html`
+5. Customize 404 page at `src/application/templates/404.html`
 
 
 Previewing the Application
