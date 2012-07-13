@@ -69,14 +69,6 @@ Assuming the latest App Engine SDK is installed, the test environment is
 available at <http://localhost:8080>
 
 
-Running Unit Tests
-------------------
-To run unit tests, use
-<pre class="console">
-    python testrunner.py APPENGINE_SDK_PATH
-</pre>
-
-
 Deploying the Application
 -------------------------
 To deploy the application to App Engine, use [appcfg.py update][appcfg]
@@ -115,16 +107,19 @@ The application code is located at `src/application`.
   |-- settings.py (settings for Flask app)
   |-- static
   | |-- css
+  | | |-- bootstrap-*.css (Twitter Bootstrap styles)
   | | `-- main.css (custom styles)
   | |-- img
   | | |-- favicon.ico
-  | | `-- favicon.png
+  | | |-- favicon.png
+  | | `-- glyphicons-*.png (Twitter bootstrap icons sprite)
   | `-- js
   |   |-- main.js (site-wide JS)
   |   `-- lib/ (third-party JS libraries)
   |     |--bootstrap-*.js (Bootstrap jQuery plugins
   |     `--modernizer-*.js (HTML5 detection library)
   |-- templates
+  | |-- includes/ (common include files)
   | |-- 404.html (not found page)
   | |-- 500.html (server error page)
   | |-- base.html (master template)
