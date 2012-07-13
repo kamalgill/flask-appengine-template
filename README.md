@@ -155,7 +155,7 @@ Package Versions
 ----------------
 - Blinker: 1.1
 - Bootstrap: 2.0.3
-- Flask: 0.8
+- Flask: 0.9
 - Flask-WTF: 0.6
 - Jinja2: 2.6 (included in GAE)
 - Modernizr: 2.5.3

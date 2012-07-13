@@ -25,7 +25,7 @@ class BlueprintSetupState(object):
         #: a reference to the current application
         self.app = app
 
-        #: a reference to the blurprint that created this setup state.
+        #: a reference to the blueprint that created this setup state.
         self.blueprint = blueprint
 
         #: a dictionary with all options that were passed to the
@@ -184,6 +184,30 @@ class Blueprint(_PackageBoundObject):
             self.record_once(register_endpoint)
             return f
         return decorator
+
+    def app_template_filter(self, name=None):
+        """Register a custom template filter, available application wide.  Like
+        :meth:`Flask.template_filter` but for a blueprint.
+
+        :param name: the optional name of the filter, otherwise the
+                     function name will be used.
+        """
+        def decorator(f):
+            self.add_app_template_filter(f, name=name)
+            return f
+        return decorator
+
+    def add_app_template_filter(self, f, name=None):
+        """Register a custom template filter, available application wide.  Like
+        :meth:`Flask.add_template_filter` but for a blueprint.  Works exactly
+        like the :meth:`app_template_filter` decorator.
+
+        :param name: the optional name of the filter, otherwise the
+                     function name will be used.
+        """
+        def register_template(state):
+            state.app.jinja_env.filters[name or f.__name__] = f
+        self.record_once(register_template)
 
     def before_request(self, f):
         """Like :meth:`Flask.before_request` but for a blueprint.  This function
