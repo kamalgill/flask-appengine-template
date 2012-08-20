@@ -265,7 +265,7 @@ class ProfilerWSGIMiddleware(object):
             old_app = self.app
             def wrapped_appstats_app(environ, start_response):
                 # Use this wrapper to grab the app stats recorder for RequestStats.save()
-                self.recorder = recording.recorder
+                self.recorder = recording.Recorder(environ)
                 return old_app(environ, start_response)
             self.app = recording.appstats_wsgi_middleware(wrapped_appstats_app)
 
@@ -276,7 +276,7 @@ class ProfilerWSGIMiddleware(object):
             # Get profiled wsgi result
             result = self.prof.runcall(lambda *args, **kwargs: self.app(environ, profiled_start_response), None, None)
 
-            self.recorder = recording.recorder
+            self.recorder = recording.Recorder(environ)
 
             # If we're dealing w/ a generator, profile all of the .next calls as well
             if type(result) == GeneratorType:
