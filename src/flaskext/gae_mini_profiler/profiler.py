@@ -12,7 +12,7 @@ import datetime
 import logging
 import os
 import pickle
-import simplejson
+import json
 import StringIO
 import sys
 from types import GeneratorType
@@ -39,7 +39,7 @@ class RequestStatsHandler(RequestHandler):
         for property in RequestStats.serialized_properties:
             dict_request_stats[property] = request_stats.__getattribute__(property)
 
-        self.response.out.write(simplejson.dumps(dict_request_stats))
+        self.response.out.write(json.dumps(dict_request_stats))
 
 class RequestStats(object):
 
