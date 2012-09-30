@@ -46,6 +46,16 @@ Or, add the following to your .(git|hg|bzr)ignore file
 </pre>
 
 
+Install python dependencies
+---------------------------
+The local dev environment requires installation of Jinja2, PIL, and simplejson,
+which can be installed via:
+
+<pre class="console">
+  pip install -r requirements_dev.txt
+</pre>
+
+
 Front-end Customization
 -----------------------
 1. Customize the main HTML template at 
