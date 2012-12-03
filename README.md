@@ -164,11 +164,11 @@ See licenses/ folder
 Package Versions
 ----------------
 - Blinker: 1.1
-- Bootstrap: 2.0.3
+- Bootstrap: 2.2.1
 - Flask: 0.9
 - Flask-WTF: 0.6
 - Jinja2: 2.6 (included in GAE)
-- Modernizr: 2.5.3
+- Modernizr: 2.6.2
 - Werkzeug: 0.8.3
 - WTForms: 1.0.1
 

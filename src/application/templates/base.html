@@ -1,21 +1,21 @@
 <!DOCTYPE html>
 <html lang="en" class="no-js">
+{% set bootstrap_version = '2.2.1' %}
+{% set modernizer_version = '2.6.2' %}
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1" />
     <title>{% block title%}Flask on App Engine{% endblock %}</title>
-    <link href="/static/css/bootstrap-2.0.2.min.css" rel="stylesheet" />
+    <link href="/static/css/bootstrap-{{ bootstrap_version }}.min.css" rel="stylesheet" />
     <style> body { padding-top: 90px; } </style> <!-- Bootstrap -->
-    <link href="/static/css/bootstrap-responsive-2.0.2.min.css" rel="stylesheet" />
+    <link href="/static/css/bootstrap-responsive-{{ bootstrap_version }}.min.css" rel="stylesheet" />
     <link href="/static/css/main.css" rel="stylesheet" />
     <link rel="shortcut icon" href="/static/img/favicon.ico" />
     {% block style_block %}<!-- page-specific CSS -->{% endblock %}
-    <script src="/static/js/lib/modernizr-2.5.3.min.js"></script><!-- Modernizr must be here, above body tag. -->
+    <script src="/static/js/lib/modernizr-{{ modernizer_version }}.min.js"></script>{# Modernizr must be here, above body tag. #}
     {% block head_script %}<!-- defer-incapable JS block -->{% endblock %}
-
 </head>
-
 <body>
     <div id="header">
         {% include 'includes/nav.html' %} {# pull in navbar #}
@@ -26,17 +26,14 @@
             {% block content %}<!-- main content area -->{% endblock %}
         </div>
     </div><!-- /container -->
-
     <footer>
         <div id="footer" class="container">
             {% block footer %}<!-- footer -->{% endblock %}
         </div><!-- /footer -->
     </footer>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
-    <script src="/static/js/lib/bootstrap-2.0.3.min.js"></script>
+    <script src="/static/js/lib/bootstrap-{{ bootstrap_version }}.min.js"></script>
     <script src="/static/js/main.js"></script>
     {% block tail_script %}<!-- defer-capable JS block -->{% endblock %}
-
 </body>
 </html>
-
