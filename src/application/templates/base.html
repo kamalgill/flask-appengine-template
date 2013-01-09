@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="en" class="no-js">
-{% set bootstrap_version = '2.2.1' %}
+{% set bootstrap_version = '2.2.2' %}
 {% set modernizer_version = '2.6.2' %}
 <head>
     <meta charset="utf-8">
@@ -9,7 +9,6 @@
     <title>{% block title%}Flask on App Engine{% endblock %}</title>
     <link href="/static/css/bootstrap-{{ bootstrap_version }}.min.css" rel="stylesheet" />
     <style> body { padding-top: 90px; } </style> <!-- Bootstrap -->
-    <link href="/static/css/bootstrap-responsive-{{ bootstrap_version }}.min.css" rel="stylesheet" />
     <link href="/static/css/main.css" rel="stylesheet" />
     <link rel="shortcut icon" href="/static/img/favicon.ico" />
     {% block style_block %}<!-- page-specific CSS -->{% endblock %}
