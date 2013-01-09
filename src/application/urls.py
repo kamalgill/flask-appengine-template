@@ -4,7 +4,6 @@ urls.py
 URL dispatch route mappings and error handlers
 
 """
-
 from flask import render_template
 
 from application import app
@@ -28,8 +27,11 @@ app.add_url_rule('/examples', 'list_examples', view_func=views.list_examples, me
 # Contrived admin-only view example
 app.add_url_rule('/admin_only', 'admin_only', view_func=views.admin_only)
 
-# Delete an example (post method only)
-app.add_url_rule('/examples/delete/<int:example_id>', view_func=views.delete_example, methods=['POST'])
+# Edit an example
+app.add_url_rule('/examples/<int:example_id>/edit', 'edit_example', view_func=views.edit_example, methods=['GET', 'POST'])
+
+# Delete an example
+app.add_url_rule('/examples/<int:example_id>/delete', view_func=views.delete_example, methods=['POST'])
 
 
 ## Error handlers

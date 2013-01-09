@@ -19,6 +19,7 @@
                 <th>Added by</th>
                 <th>Added on</th>
                 <th>&nbsp;</th>
+                <th>&nbsp;</th>
             </tr>
         </thead>
         <tbody>
@@ -29,7 +30,10 @@
                 <td>{{ example.example_name }}</td>
                 <td>{{ example.example_description }}</td>
                 <td>{{ example.added_by }}</td>
-                <td>{{ example.timestamp.strftime('%b %d, %Y %I:%M %p') }}</td>
+                <td class="nowrap">{{ example.timestamp.strftime('%b %d, %Y %I:%M %p') }}</td>
+                <td>
+                    <a href="{{ url_for('edit_example', example_id=example_id) }}" class="btn">Edit</a>
+                </td>
                 <td>
                     <form method="post" action="{{ url_for('delete_example', example_id=example_id) }}">
                         <button class="btn">Delete</button>
@@ -37,7 +41,7 @@
                 </td>
             </tr>
             {% else %}
-            <tr><td colspan="6">No examples yet</td></tr>
+            <tr><td colspan="7">No examples yet</td></tr>
             {% endfor %}
         </tbody>
     </table>

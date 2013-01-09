@@ -1,4 +1,8 @@
 
 /* Main stylesheet */
 
+/* @section forms */
+.btn.cancel { margin-left: 0.5rem; }
+.nowrap { white-space: nowrap; }
+
 /* Your customizations here */

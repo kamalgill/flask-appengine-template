@@ -8,12 +8,10 @@ For example the *say_hello* handler, handling the URL route '/hello/<username>',
   must be passed *username* as the argument.
 
 """
-
-
 from google.appengine.api import users
 from google.appengine.runtime.apiproxy_errors import CapabilityDisabledError
 
-from flask import render_template, flash, url_for, redirect
+from flask import request, render_template, flash, url_for, redirect
 
 from models import ExampleModel
 from decorators import login_required, admin_required
@@ -49,6 +47,20 @@ def list_examples():
             flash(u'App Engine Datastore is currently in read-only mode.', 'info')
             return redirect(url_for('list_examples'))
     return render_template('list_examples.html', examples=examples, form=form)
+
+
+@login_required
+def edit_example(example_id):
+    example = ExampleModel.get_by_id(example_id)
+    form = ExampleForm(obj=example)
+    if request.method == "POST":
+        if form.validate_on_submit():
+            example.example_name = form.data.get('example_name')
+            example.example_description = form.data.get('example_description')
+            example.put()
+            flash(u'Example %s successfully saved.' % example_id, 'success')
+            return redirect(url_for('list_examples'))
+    return render_template('edit_example.html', example=example, form=form)
 
 
 @login_required
