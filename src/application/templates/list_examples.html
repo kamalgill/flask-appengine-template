@@ -23,7 +23,7 @@
         </thead>
         <tbody>
             {% for example in examples %}
-            {% set example_id = example.key().id() %}
+            {% set example_id = example.key.id() %}
             <tr>
                 <td>{{ example_id }}</td>
                 <td>{{ example.example_name }}</td>

@@ -32,7 +32,7 @@ def say_hello(username):
 @login_required
 def list_examples():
     """List all examples"""
-    examples = ExampleModel.all()
+    examples = ExampleModel.query()
     form = ExampleForm()
     if form.validate_on_submit():
         example = ExampleModel(
@@ -42,7 +42,7 @@ def list_examples():
         )
         try:
             example.put()
-            example_id = example.key().id()
+            example_id = example.key.id()
             flash(u'Example %s successfully saved.' % example_id, 'success')
             return redirect(url_for('list_examples'))
         except CapabilityDisabledError:
@@ -56,7 +56,7 @@ def delete_example(example_id):
     """Delete an example object"""
     example = ExampleModel.get_by_id(example_id)
     try:
-        example.delete()
+        example.key.delete()
         flash(u'Example %s successfully deleted.' % example_id, 'success')
         return redirect(url_for('list_examples'))
     except CapabilityDisabledError:
