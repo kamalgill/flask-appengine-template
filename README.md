@@ -118,7 +118,10 @@ The application code is located at `src/application`.
   |-- static
   | |-- css
   | | |-- bootstrap-*.css (Twitter Bootstrap styles)
+  | | |-- fontawesome-*.css (Fontawesome styles)
   | | `-- main.css (custom styles)
+  | |-- font
+  | | `various fontawesome font files
   | |-- img
   | | |-- favicon.ico
   | | |-- favicon.png
@@ -164,9 +167,10 @@ See licenses/ folder
 Package Versions
 ----------------
 - Blinker: 1.1
-- Bootstrap: 2.2.1
+- Bootstrap: 2.2.2
 - Flask: 0.9
 - Flask-WTF: 0.6
+- FontAwesome: 3.0
 - Jinja2: 2.6 (included in GAE)
 - Modernizr: 2.6.2
 - Werkzeug: 0.8.3
@@ -180,6 +184,8 @@ Project template layout was heavily inspired by Francisco Souza's
 
 Layout, form, table, and button styles provided by [Bootstrap][bootstrap]
 
+[Font Awesome][fontawesome] by Dave Gandy
+
 HTML5 detection provided by [Modernizr 2][modernizr] (configured with all features)
 
 
@@ -187,6 +193,7 @@ HTML5 detection provided by [Modernizr 2][modernizr] (configured with all featur
 [bootstrap]: http://twitter.github.com/bootstrap
 [devserver]: http://code.google.com/appengine/docs/python/tools/devserver.html
 [flask]: http://flask.pocoo.org
+[fontawesome]: http://fortawesome.github.com/Font-Awesome/
 [html5]: http://html5boilerplate.com/
 [jinja2]: http://jinja.pocoo.org/2/documentation/
 [gaeseries]: http://github.com/franciscosouza/gaeseries/tree/flask
