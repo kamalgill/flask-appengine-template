@@ -35,5 +35,6 @@
     <script src="/static/js/lib/bootstrap-{{ bootstrap_version }}.min.js"></script>
     <script src="/static/js/main.js"></script>
     {% block tail_script %}<!-- defer-capable JS block -->{% endblock %}
+    {{ profiler_includes|safe }}
 </body>
 </html>

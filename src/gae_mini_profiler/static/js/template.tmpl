@@ -1,0 +1,313 @@
+<script id="profilerCornerTemplate" type="text/x-jquery-tmpl">
+    <div class="g-m-p-corner"></div>
+</script>
+
+<script id="profilerCornerEntryTemplate" type="text/x-jquery-tmpl">
+    <div class="entry">
+        {{if temporary_redirect}}&#8623;{{/if}}
+        ${profiler_results.total_time} <span class="ms">ms</span>
+    </div>
+</script>
+
+<script id="profilerRequestLogTemplate" type="text/x-jquery-tmpl">
+    <span class="request-log">
+        <span title="This request spent ${pending_ms} ms in the pending queue, waiting to be served.">
+            ${pending_ms} <span class="ms">ms</span> <strong>pending</strong>
+        </span> &mdash;
+        {{if loading_request}}
+            <span title="This was a loading request, which means it was served by a new instance.">
+                <strong>Loading request</strong>
+            </span> &mdash;
+        {{/if}}
+        <a href="/gae_mini_profiler/shared?request_id=${encodeURIComponent(request_id)}">Share request profile</a>
+    </span>
+</script>
+
+<script id="profilerTemplate" type="text/x-jquery-tmpl">
+    <div class="g-m-p" style="display:none;">
+        <div class="title">
+            <span class="url" title="${url}">
+                ${url_short}
+            </span>
+            <div class="total">
+                ${profiler_results.total_time} <span class="ms">ms</span>
+            </div>
+        </div>
+
+        <div class="settings" style="display:none;">
+            <table>
+                <tr>
+                    <th>CPU profiling</th>
+                    <th>RPC profiling</th>
+                </tr>
+                <tr>
+                    <td>
+                        <input type="radio" id="cpu_instrumented" name="cpu" value="instrumented"/><label for="cpu_instrumented"> instrumented</label><br>
+                        <input type="radio" id="cpu_sampling" name="cpu" value="sampling"/><label for="cpu_sampling"> sampling</label><br>
+                        <input type="radio" id="cpu_disabled" name="cpu" value=""/><label for="cpu_disabled"> disabled</label>
+                    </td>
+                    <td>
+                        <input type="radio" id="rpc_enabled" name="rpc" value="rpc"/><label for="rpc_enabled"> enabled</label><br>
+                        <input type="radio" id="rpc_disabled" name="rpc" value=""/><label for="rpc_disabled"> disabled</label>
+                    </td>
+                </tr>
+                <tr class="tips">
+                    <td>CPU profiling either keeps track of all function calls and their timings (instrumented) or periodically examines the call stack to figure out in which functions time is being spent during a request (sampling).</td>
+                    <td>RPC profiling monitors all remote procedure calls (think datastore queries, memcache accesses, and URL fetches) and their timings.</td>
+                </tr>
+            </table>
+        </div>
+
+        {{if mode == "simple"}}
+
+        <div class="simple-timing">Detailed timing information is disabled. <a class="settings-link uses_script" href="#">Settings</a></div>
+
+        {{else}}
+
+        <div class="date_and_share">
+            {{if temporary_redirect}}
+                <span class="redirect" title="Temporary redirect">&#8623; (302 redirect)</span>
+            {{/if}}
+            <a href="/gae_mini_profiler/shared?request_id=${encodeURIComponent(request_id)}" class="uses_script request-log-link">More request info</a>
+            <span class="request-log request-log-${logging_request_id}" style="display:none;"><em>loading more request info...</em></span>
+            &mdash; <a class="settings-link uses_script" href="#">Settings</a>
+        </div>
+
+        {{if !GaeMiniProfiler.isCpuEnabled(mode)}}
+
+        <div class="expand">
+            <em>CPU profiling is disabled.</em>
+        </div>
+
+        {{else}}
+
+        <div class="expand">
+            <a href="#profile-link" class="profile-link link uses_script">Profile</a>
+            <div class="summary">
+                {{if GaeMiniProfiler.isInstrumentedEnabled(mode)}}
+                ${profiler_results.total_time} <span class="ms">ms</span> spent in ${profiler_results.total_call_count} function calls
+                {{else}}
+                ${profiler_results.total_samples} sampled stack trace{{if profiler_results.total_samples != 1}}s{{/if}}
+                {{/if}}
+            </div>
+        </div>
+
+        <div class="profiler-details details fancy-scrollbar" style="display:none;">
+            {{if GaeMiniProfiler.isInstrumentedEnabled(mode)}}
+
+            <table>
+                <thead>
+                    <tr>
+                        <th class="left">function</th>
+                        <th class="right headerSortDown"><nobr>total ms</nobr></th>
+                        <th class="right">calls</th>
+                        <th class="right"><nobr>total per call</nobr></th>
+                    </tr>
+                </thead>
+                {{each profiler_results.calls}}
+
+                <tr>
+                    <td title="${$value.func_desc}">${$value.func_desc_short}</td>
+                    <td class="right">${$value.cumulative_time}</td>
+                    <td class="right">
+                        {{if $value.callers_desc.length}}
+                        <a class="callers-link uses_script" href="#callers">${$value.total_call_count}</a>
+
+                        <div class="callers" style="display:none;">
+                            <span class="callers-label">Called by</span>
+                            <div class="callers-content">
+                                {{each $value.callers_desc}}
+                                    <div>
+                                        <span title="${$value.func_desc}"><nobr>${$value.func_desc_short}</nobr></span>
+                                    </div>
+                                {{/each}}
+                            </div>
+                        </div>
+
+                        {{else}}
+
+                        ${$value.total_call_count}
+
+                        {{/if}}
+                    </td>
+                    <td class="right">${$value.per_call_cumulative}</td>
+                </tr>
+
+                {{/each}}
+            </table>
+
+            {{else}}
+
+            {{if profiler_results.is_dev_server}}
+            <span class="warn">
+                <nobr>The sampling profiler only works in production as it requires threading support.</nobr><br>
+                <nobr>Use the instrumented profiler for CPU profiling of App Engine's dev server.</nobr><br>
+                <nobr>These are just examples.</nobr>
+            </span>
+            {{/if}}
+
+            <table>
+                <thead>
+                    <tr>
+                        <th class="left">line</th>
+                        <th class="right headerSortDown"><nobr># of samples</nobr></th>
+                        <th class="right headerSortDown"><nobr>% of samples</nobr></th>
+                    </tr>
+                </thead>
+                {{each profiler_results.calls}}
+
+                <tr>
+                    <td title="${$value.func_desc}">${$value.func_desc_short}</td>
+                    <td class="right">
+                        ${$value.count_samples}
+                    </td>
+                    <td class="right">${$value.per_samples}</td>
+                </tr>
+
+                {{/each}}
+            </table>
+
+
+            {{/if}}
+        </div>
+
+        {{/if}}
+
+        {{if !GaeMiniProfiler.isRpcEnabled(mode)}}
+
+        <div class="expand">
+            <em>Remote Procedure Call profiling is disabled.</em>
+        </div>
+
+        {{else}}
+
+        <div class="expand">
+            <a href="#rpc-link" class="rpc-link link uses_script">Remote Procedure Calls</a>
+            <div class="summary">
+                    ${appstats_results.total_time} <span class="ms">ms</span>
+                    spent in ${appstats_results.total_call_count} RPC{{if appstats_results.total_call_count != 1}}s{{/if}}
+
+                    {{if appstats_results.likely_dupes}}
+                        <span class="warn">(likely dupes)</span>
+                    {{/if}}
+            </div>
+        </div>
+
+        <div class="rpc-details details fancy-scrollbar" style="display:none;">
+
+            <a class="appstats-link" target="_appstats" href="/_ah/stats/details?time=${appstats_results.appstats_key}">Full Appstats Details</a>
+
+            {{if appstats_results.calls.length}}
+            <table class="rpc-service-totals">
+                <thead>
+                    <tr>
+                        <th class="left"><nobr>service type</nobr></th>
+                        <th class="right">calls</th>
+                        <th class="right">misses</th>
+                        <th class="right headerSortDown"><nobr>total ms</nobr></th>
+                    </tr>
+                </thead>
+                {{each appstats_results.service_totals}}
+                <tr>
+                    <td>${$value.service_prefix}</td>
+                    <td class="right">${$value.total_call_count}</td>
+                    <td class="right">${$value.total_misses}</td>
+                    <td class="right">${$value.total_time}</td>
+                </tr>
+                {{/each}}
+            </table>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th class="left">service</th>
+                        <th class="right headerSortDown"><nobr>start ms</nobr></th>
+                        <th class="right">ms</th>
+                        <th class="left">request</th>
+                        <th class="left">response</th>
+                    </tr>
+                </thead>
+                {{each appstats_results.calls}}
+                <tr>
+                    <td>${$value.service}</td>
+                    <td class="right">
+                        <a class="callers-link uses_script" href="#callers">${$value.start_offset}</a>
+
+                        <div class="callers" style="display:none;">
+                            <span class="callers-label">Called by</span>
+                            <div class="callers-content">
+                                {{each $value.stack_frames_desc}}
+                                <div><nobr>${$value}</nobr></div>
+                                {{/each}}
+                            </div>
+                        </div>
+                    </td>
+                    <td class="right">${$value.total_time}</td>
+                    <td>
+                        {{if $value.likely_dupe}}
+                            <span class="warn">Likely duplicate of previous RPC</span>
+                        {{/if}}
+                        <span title="${$value.request}">
+                            ${$value.request_short}
+                        </span>
+                    </td>
+                    <td>
+                        <span title="${$value.response}">
+                            ${$value.response_short}
+                        </span>
+                    </td>
+                </tr>
+                {{/each}}
+            </table>
+            {{/if}}
+        </div>
+
+        {{/if}}
+
+        <div class="expand">
+            <a href="#logs-link" class="logs-link link uses_script">Logs</a>
+            <div class="summary">
+                {{each [10,20,30,40,50]}}
+                    {{if log_count[$value] > 0}}
+                        <span class='loglevel ll${$value}'></span> &#215;${log_count[$value]}
+                    {{/if}}
+                {{/each}}
+            </div>
+        </div>
+
+        <div class="logs-details details fancy-scrollbar" style="display:none;">
+            <div id="slider">
+                Min level:
+                <span class="loglevel"></span>
+                <span class="minlevel-text"></span>
+                <div class="container"><div class="control"></div></div>
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th class="left">log</th>
+                        <th class="left">time</th>
+                        <th class="left"><nobr>fn</nobr></th>
+                        <th class="left"><nobr>file</nobr></th>
+                        <th class="left"><nobr>line</nobr></th>
+                        <th class="left"><nobr>message</nobr></th>
+                    </tr>
+                </thead>
+                {{each logs}}
+                    <tr class="ll${$value[0]}">
+                        <td class="left" class="${$value[0]}"><span class='loglevel ll${$value[0]}'><span>${$value[0]}</span></span></td>
+                        <td class="left">${$value[1]}</td>
+                        <td class="left">${$value[2]}</td>
+                        <td class="left">${$value[3]}</td>
+                        <td class="left">${$value[4]}</td>
+                        <td class="left">
+<pre>
+${$value[5]}
+</pre>                  </td>
+                    </tr>
+                {{/each}}
+            </table>
+        </div>
+        {{/if}}
+    </div>
+</script>
