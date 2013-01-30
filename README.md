@@ -7,8 +7,8 @@ Google App Engine (Python)
 Python 2.7 Runtime Support
 --------------------------
 * Support for the Python 2.7 runtime was added to this project in May 2012.
-* The profiler (gae_mini_profiler) and debugger (werkzeug_debugger_appengine)
-  have been disabled until the libraries are updated to support the Python 2.7 runtime.
+* The debugger (werkzeug_debugger_appengine)
+  has been disabled pending an update to support the Python 2.7 runtime.
 
 
 About Flask
@@ -99,7 +99,8 @@ The App Engine app's root folder is located at `src/`.
   |-- application (application code)
   |-- blinker/ (library for event/signal support)
   |-- flask/ (Flask core)
-  |-- flaskext/ (Flask extensions go here; wtforms and gae_mini_profiler are provided)
+  |-- flaskext/ (Flask extensions go here)
+  |-- gae_mini_profiler/ (Appstats-based profiler)
   |-- index.yaml (App Engine query index definitions)
   |-- tests/ (unit tests)
   |-- werkzeug/ (WSGI utilities for Python-based web development)
