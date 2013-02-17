@@ -75,7 +75,7 @@ use [dev_appserver.py][devserver]
   dev_appserver.py src/
 </pre>
 
-Assuming the latest App Engine SDK is installed, the test environment is 
+Assuming the latest App Engine SDK is installed, the test environment is
 available at <http://localhost:8080>
 
 
@@ -99,6 +99,7 @@ The App Engine app's root folder is located at `src/`.
   |-- application (application code)
   |-- blinker/ (library for event/signal support)
   |-- flask/ (Flask core)
+  |-- flask_debugtoolbar/  (Port of Django Debug Toolbar to Flask)
   |-- flaskext/ (Flask extensions go here)
   |-- gae_mini_profiler/ (Appstats-based profiler)
   |-- index.yaml (App Engine query index definitions)
@@ -170,6 +171,7 @@ Package Versions
 - Blinker: 1.1
 - Bootstrap: 2.2.2
 - Flask: 0.9
+- Flask-DebugToolbar: 0.7.1
 - Flask-WTF: 0.6
 - FontAwesome: 3.0
 - Jinja2: 2.6 (included in GAE)

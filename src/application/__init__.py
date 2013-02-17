@@ -2,9 +2,11 @@
 Initialize Flask app
 
 """
-
 from flask import Flask
+
+from flask_debugtoolbar import DebugToolbarExtension
 from gae_mini_profiler import profiler, templatetags
+
 
 app = Flask('application')
 app.config.from_object('application.settings')
@@ -18,6 +20,9 @@ def inject_profiler():
 
 # Pull in URL dispatch routes
 import urls
+
+# Flask-DebugToolbar (only enabled when DEBUG=True)
+toolbar = DebugToolbarExtension(app)
 
 # GAE Mini Profiler (only enabled on dev server)
 app = profiler.ProfilerWSGIMiddleware(app)
