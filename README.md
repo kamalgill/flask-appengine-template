@@ -185,6 +185,8 @@ Credits
 Project template layout was heavily inspired by Francisco Souza's 
 [gaeseries Flask project][gaeseries]
 
+Incorporates Flask-DebugToolbar by Matt Good et. al.
+
 Layout, form, table, and button styles provided by [Bootstrap][bootstrap]
 
 [Font Awesome][fontawesome] by Dave Gandy
