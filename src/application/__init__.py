@@ -4,6 +4,7 @@ Initialize Flask app
 """
 from flask import Flask
 
+from flask_cache import Cache
 from flask_debugtoolbar import DebugToolbarExtension
 from gae_mini_profiler import profiler, templatetags
 

@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block style_block %}
+    <style type="text/css">
+        table.table { width: 60%; }
+    </style>
+{% endblock %}
+
+{% block content %}
+
+<h1 id="">All Examples</h1>
+<div>&nbsp;</div>
+<table class="table table-bordered table-striped">
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>Name</th>
+        <th>Description</th>
+        <th>Added by</th>
+        <th>Added on</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for example in examples %}
+    {% set example_id = example.key.id() %}
+    <tr>
+        <td>{{ example_id }}</td>
+        <td>{{ example.example_name }}</td>
+        <td>{{ example.example_description }}</td>
+        <td>{{ example.added_by }}</td>
+        <td class="nowrap">{{ example.timestamp.strftime('%b %d, %Y %I:%M %p') }}</td>
+    </tr>
+    {% else %}
+    <tr><td colspan="5">No examples yet</td></tr>
+    {% endfor %}
+    </tbody>
+</table>
+
+{% endblock content %}

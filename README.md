@@ -79,6 +79,12 @@ Assuming the latest App Engine SDK is installed, the test environment is
 available at <http://localhost:8080>
 
 
+Flask-Cache
+-----------
+The handy Flask-Cache extension is included, pre-configured for App Engine's Memcache API.
+Use the "Flush Cache" button at http://localhost:8080/_ah/admin/memcache to clear the cache.
+
+
 Deploying the Application
 -------------------------
 To deploy the application to App Engine, use [appcfg.py update][appcfg]
@@ -99,6 +105,7 @@ The App Engine app's root folder is located at `src/`.
   |-- application (application code)
   |-- blinker/ (library for event/signal support)
   |-- flask/ (Flask core)
+  |-- flask_cache/  (Flask-Cache extension)
   |-- flask_debugtoolbar/  (Port of Django Debug Toolbar to Flask)
   |-- flaskext/ (Flask extensions go here)
   |-- gae_mini_profiler/ (Appstats-based profiler)
@@ -171,6 +178,7 @@ Package Versions
 - Blinker: 1.1
 - Bootstrap: 2.2.2
 - Flask: 0.9
+- Flask-Cache 0.10.1
 - Flask-DebugToolbar: 0.7.1
 - Flask-WTF: 0.6
 - FontAwesome: 3.0
@@ -185,7 +193,8 @@ Credits
 Project template layout was heavily inspired by Francisco Souza's 
 [gaeseries Flask project][gaeseries]
 
-Incorporates Flask-DebugToolbar by Matt Good et. al.
+Incorporates [Flask-DebugToolbar][debugtoolbar] by Matt Good et. al.
+and [Flask-Cache][flaskcache] by Thadeus Burgess
 
 Layout, form, table, and button styles provided by [Bootstrap][bootstrap]
 
@@ -196,8 +205,10 @@ HTML5 detection provided by [Modernizr 2][modernizr] (configured with all featur
 
 [appcfg]: http://code.google.com/appengine/docs/python/tools/uploadinganapp.html
 [bootstrap]: http://twitter.github.com/bootstrap
+[debugtoolbar]: https://readthedocs.org/projects/flask-debugtoolbar/
 [devserver]: http://code.google.com/appengine/docs/python/tools/devserver.html
 [flask]: http://flask.pocoo.org
+[flaskcache]: http://pythonhosted.org/Flask-Cache/
 [fontawesome]: http://fortawesome.github.com/Font-Awesome/
 [html5]: http://html5boilerplate.com/
 [jinja2]: http://jinja.pocoo.org/2/documentation/

@@ -27,6 +27,10 @@ CSRF_SESSION_KEY = SESSION_KEY
 
 CSRF_ENABLED = True
 
-# Debug toolbar profiler
+# Flask-DebugToolbar settings
 DEBUG_TB_PROFILER_ENABLED = DEBUG
 DEBUG_TB_INTERCEPT_REDIRECTS = False
+
+
+# Flask-Cache settings
+CACHE_TYPE = 'gaememcached'
