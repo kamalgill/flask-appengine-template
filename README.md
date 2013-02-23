@@ -1,19 +1,17 @@
 Flask on App Engine Project Template
 ====================================
 
-Boilerplate project template for running a Flask-based application on 
+Boilerplate project template for running a Flask-based application on
 Google App Engine (Python)
 
 Python 2.7 Runtime Support
 --------------------------
 * Support for the Python 2.7 runtime was added to this project in May 2012.
-* The debugger (werkzeug_debugger_appengine)
-  has been disabled pending an update to support the Python 2.7 runtime.
 
 
 About Flask
 -----------
-[Flask][flask] is a BSD-licensed microframework for Python based on 
+[Flask][flask] is a BSD-licensed microframework for Python based on
 [Werkzeug][wz], [Jinja2][jinja2] and good intentions.
 
 See <http://flask.pocoo.org> for more info.
@@ -21,9 +19,9 @@ See <http://flask.pocoo.org> for more info.
 
 Setup/Configuration
 -------------------
-1. Download this repository via 
-   `git clone git@github.com:kamalgill/flask-appengine-template.git` 
-   or download the tarball at 
+1. Download this repository via
+   `git clone git@github.com:kamalgill/flask-appengine-template.git`
+   or download the tarball at
    <http://github.com/kamalgill/flask-appengine-template/tarball/master>
 2. Copy the src/ folder to your application's root folder
 3. Set the application id in `src/app.yaml`
@@ -35,7 +33,7 @@ Setup/Configuration
    script at `src/application/generate_keys.py`, which will generate the
    secret keys module at src/application/secret_keys.py
 
-Note: Copy the .gitignore file from the tarball folder's root to your git 
+Note: Copy the .gitignore file from the tarball folder's root to your git
 repository root to keep the secret_keys module out of version control.
 
 Or, add the following to your .(git|hg|bzr)ignore file
@@ -58,7 +56,7 @@ which can be installed via:
 
 Front-end Customization
 -----------------------
-1. Customize the main HTML template at 
+1. Customize the main HTML template at
    `src/application/static/templates/base.html`
 2. Customize CSS styles at `src/application/static/css/main.css`
 3. Add custom JavaScript code at `src/application/static/js/main.js`
@@ -68,7 +66,7 @@ Front-end Customization
 
 Previewing the Application
 --------------------------
-To preview the application using App Engine's development server, 
+To preview the application using App Engine's development server,
 use [dev_appserver.py][devserver]
 
 <pre class="console">
@@ -154,10 +152,10 @@ The application code is located at `src/application`.
 
 Removing Extended Attributes (@ flag)
 -------------------------------------
-A few of the files in the source tree were uploaded (with apologies) to 
+A few of the files in the source tree were uploaded (with apologies) to
 GitHub with extended attributes (notice the '@' symbol when running ls -al).
 
-To remove the extended attributes, use `xattr -rd` at the root of the 
+To remove the extended attributes, use `xattr -rd` at the root of the
 src/ folder.
 
 <pre class='console'>
@@ -190,7 +188,7 @@ Package Versions
 
 Credits
 -------
-Project template layout was heavily inspired by Francisco Souza's 
+Project template layout was heavily inspired by Francisco Souza's
 [gaeseries Flask project][gaeseries]
 
 Incorporates [Flask-DebugToolbar][debugtoolbar] by Matt Good et. al.
