@@ -4,7 +4,6 @@ Initialize Flask app
 """
 from flask import Flask
 
-from flask_cache import Cache
 from flask_debugtoolbar import DebugToolbarExtension
 from gae_mini_profiler import profiler, templatetags
 from werkzeug.debug import DebuggedApplication
@@ -24,11 +23,12 @@ def inject_profiler():
 import urls
 
 # Flask-DebugToolbar (only enabled when DEBUG=True)
-toolbar = DebugToolbarExtension(app)
-
-# GAE Mini Profiler (only enabled on dev server)
-app = profiler.ProfilerWSGIMiddleware(app)
+# toolbar = DebugToolbarExtension(app)
 
 # Werkzeug Debugger (only enabled when DEBUG=True)
 if app.debug:
     app = DebuggedApplication(app, evalex=True)
+
+# GAE Mini Profiler (only enabled on dev server)
+app = profiler.ProfilerWSGIMiddleware(app)
+
