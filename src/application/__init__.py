@@ -31,4 +31,3 @@ if app.debug:
 
 # GAE Mini Profiler (only enabled on dev server)
 app = profiler.ProfilerWSGIMiddleware(app)
-
