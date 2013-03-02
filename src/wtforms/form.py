@@ -1,7 +1,11 @@
+import sys
+
 __all__ = (
     'BaseForm',
     'Form',
 )
+
+from wtforms.compat import with_metaclass, iteritems, itervalues
 
 class BaseForm(object):
     """
@@ -24,7 +28,9 @@ class BaseForm(object):
         self._errors = None
         self._fields = {}
 
-        if hasattr(fields, 'items'):
+        if hasattr(fields, 'iteritems'):
+            fields = fields.iteritems()
+        elif hasattr(fields, 'items'):
             fields = fields.items()
 
         translations = self._get_translations()
@@ -35,7 +41,7 @@ class BaseForm(object):
 
     def __iter__(self):
         """ Iterate form fields in arbitrary order """
-        return self._fields.itervalues()
+        return iter(itervalues(self._fields))
 
     def __contains__(self, name):
         """ Returns `True` if the named field is a member of this form. """
@@ -69,7 +75,7 @@ class BaseForm(object):
         :note: This is a destructive operation; Any attribute with the same name
                as a field will be overridden. Use with caution.
         """
-        for name, field in self._fields.iteritems():
+        for name, field in iteritems(self._fields):
             field.populate_obj(obj, name)
 
     def process(self, formdata=None, obj=None, **kwargs):
@@ -95,7 +101,7 @@ class BaseForm(object):
             else:
                 raise TypeError("formdata should be a multidict-type wrapper that supports the 'getlist' method")
 
-        for name, field, in self._fields.iteritems():
+        for name, field, in iteritems(self._fields):
             if obj is not None and hasattr(obj, name):
                 field.process(formdata, getattr(obj, name))
             elif name in kwargs:
@@ -116,7 +122,7 @@ class BaseForm(object):
         """
         self._errors = None
         success = True
-        for name, field in self._fields.iteritems():
+        for name, field in iteritems(self._fields):
             if extra_validators is not None and name in extra_validators:
                 extra = extra_validators[name]
             else:
@@ -127,12 +133,12 @@ class BaseForm(object):
 
     @property
     def data(self):
-        return dict((name, f.data) for name, f in self._fields.iteritems())
+        return dict((name, f.data) for name, f in iteritems(self._fields))
 
     @property
     def errors(self):
         if self._errors is None:
-            self._errors = dict((name, f.errors) for name, f in self._fields.iteritems() if f.errors)
+            self._errors = dict((name, f.errors) for name, f in iteritems(self._fields) if f.errors)
         return self._errors
 
 
@@ -189,7 +195,7 @@ class FormMeta(type):
         type.__delattr__(cls, name)
 
 
-class Form(BaseForm):
+class Form(with_metaclass(FormMeta, BaseForm)):
     """
     Declarative Form base class. Extends BaseForm's core behaviour allowing
     fields to be defined on Form subclasses as class attributes.
@@ -197,7 +203,6 @@ class Form(BaseForm):
     In addition, form and instance input data are taken at construction time
     and passed to `process()`.
     """
-    __metaclass__ = FormMeta
 
     def __init__(self, formdata=None, obj=None, prefix='', **kwargs):
         """
@@ -218,7 +223,7 @@ class Form(BaseForm):
         """
         super(Form, self).__init__(self._unbound_fields, prefix=prefix)
 
-        for name, field in self._fields.iteritems():
+        for name, field in iteritems(self._fields):
             # Set all the fields to attributes so that they obscure the class
             # attributes with the same names.
             setattr(self, name, field)

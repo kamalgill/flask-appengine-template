@@ -183,7 +183,7 @@ Package Versions
 - Jinja2: 2.6 (included in GAE)
 - Modernizr: 2.6.2
 - Werkzeug: 0.8.3
-- WTForms: 1.0.1
+- WTForms: 1.0.3
 
 
 Credits
