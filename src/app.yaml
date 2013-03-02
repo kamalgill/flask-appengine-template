@@ -40,4 +40,4 @@ handlers:
   static_dir: application/static
 
 - url: .*
-  script: application.app
+  script: run.application.app
