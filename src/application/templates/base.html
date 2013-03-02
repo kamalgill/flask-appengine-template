@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html lang="en" class="no-js">
-{% set bootstrap_version = '2.2.2' %}
+{% set bootstrap_version = '2.3.1' %}
 {% set modernizer_version = '2.6.2' %}
+{% set jquery_version = '1.9.1' %}
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -12,9 +13,9 @@
     <style> body { padding-top: 90px; } </style> <!-- Bootstrap -->
     <link href="/static/css/main.css" rel="stylesheet" />
     <link rel="shortcut icon" href="/static/img/favicon.ico" />
-    {% block style_block %}<!-- page-specific CSS -->{% endblock %}
+    {% block style_block %}{# page-specific CSS #}{% endblock %}
     <script src="/static/js/lib/modernizr-{{ modernizer_version }}.min.js"></script>{# Modernizr must be here, above body tag. #}
-    {% block head_script %}<!-- defer-incapable JS block -->{% endblock %}
+    {% block head_script %}{# defer-incapable JS block #}{% endblock %}
 </head>
 <body>
     <div id="header">
@@ -23,18 +24,18 @@
     <div class="container" id="maincontent">
         {% include 'includes/flash_message.html' %} {# page-level feedback notices #}
         <div id="body_content">
-            {% block content %}<!-- main content area -->{% endblock %}
+            {% block content %}{# main content area #}{% endblock %}
         </div>
     </div><!-- /container -->
     <footer>
         <div id="footer" class="container">
-            {% block footer %}<!-- footer -->{% endblock %}
+            {% block footer %}{% endblock %}
         </div><!-- /footer -->
     </footer>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/{{ jquery_version }}/jquery.min.js"></script>
     <script src="/static/js/lib/bootstrap-{{ bootstrap_version }}.min.js"></script>
     <script src="/static/js/main.js"></script>
-    {% block tail_script %}<!-- defer-capable JS block -->{% endblock %}
+    {% block tail_script %}{# defer-capable JS block #}{% endblock %}
     {{ profiler_includes|safe }}
 </body>
 </html>
