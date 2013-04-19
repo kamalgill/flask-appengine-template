@@ -77,10 +77,15 @@ Assuming the latest App Engine SDK is installed, the test environment is
 available at <http://localhost:8080>
 
 
+Admin Console
+-------------
+The admin console is viewable at http://localhost:8000 (note distinct port from dev app server)
+
+
 Flask-Cache
 -----------
 The handy Flask-Cache extension is included, pre-configured for App Engine's Memcache API.
-Use the "Flush Cache" button at http://localhost:8080/_ah/admin/memcache to clear the cache.
+Use the "Flush Cache" button at http://localhost:8000/memcache to clear the cache.
 
 
 Deploying the Application
