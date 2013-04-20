@@ -106,16 +106,17 @@ The App Engine app's root folder is located at `src/`.
   src/
   |-- app.yaml (App Engine config file)
   |-- application (application code)
-  |-- blinker/ (library for event/signal support)
-  |-- flask/ (Flask core)
-  |-- flask_cache/  (Flask-Cache extension)
-  |-- flask_debugtoolbar/  (Port of Django Debug Toolbar to Flask)
-  |-- flaskext/ (Flask extensions go here)
-  |-- gae_mini_profiler/ (Appstats-based profiler)
   |-- index.yaml (App Engine query index definitions)
+  |-- lib/
+  |   |-- blinker/ (library for event/signal support)
+  |   |-- flask/ (Flask core)
+  |   |-- flask_cache/  (Flask-Cache extension)
+  |   |-- flask_debugtoolbar/  (Port of Django Debug Toolbar to Flask)
+  |   |-- flaskext/ (Flask extensions go here)
+  |   |-- gae_mini_profiler/ (Appstats-based profiler)
+  |   |-- werkzeug/ (WSGI utilities for Python-based web development)
+  |   `-- wtforms/ (Jinja2-compatible web form utility)
   |-- tests/ (unit tests)
-  |-- werkzeug/ (WSGI utilities for Python-based web development)
-  `-- wtforms/ (Jinja2-compatible web form utility)
 </pre>
 
 The application code is located at `src/application`.
