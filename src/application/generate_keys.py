@@ -26,6 +26,8 @@ from string import Template
 
 # File settings
 file_name = 'secret_keys.py'
+file_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), file_name)
+
 file_template = Template('''# CSRF- and Session keys
 
 CSRF_SECRET_KEY = '$csrf_key'
@@ -49,9 +51,8 @@ def generate_randomkey(length):
 
 
 def write_file(contents):
-    f = open(file_name, 'wb')
-    f.write(contents)
-    f.close()
+    with open(file_path, 'wb') as f:
+        f.write(contents)
 
 
 def generate_keyfile(csrf_key, session_key):
@@ -59,9 +60,9 @@ def generate_keyfile(csrf_key, session_key):
     output = file_template.safe_substitute(dict(
         csrf_key=csrf_key, session_key=session_key
     ))
-    if os.path.exists(file_name):
+    if os.path.exists(file_path):
         if options.force is None:
-            print "Warning: secret_keys.py file exists.  Use '-f' flag to force overwrite."
+            print "Warning: secret_keys.py file exists.  Use 'generate_keys.py --force' to force overwrite."
         else:
             write_file(output)
     else:

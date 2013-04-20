@@ -9,3 +9,7 @@ venv:
 
 deps:
 	pip install -Ur requirements_dev.txt
+
+keys:
+	./src/application/generate_keys.py
+
