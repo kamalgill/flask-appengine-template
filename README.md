@@ -221,4 +221,3 @@ HTML5 detection provided by [Modernizr 2][modernizr] (configured with all featur
 [profiler]: http://packages.python.org/Flask-GAE-Mini-Profiler/
 [wz]: http://werkzeug.pocoo.org/
 [wzda]: https://github.com/nshah/werkzeug-debugger-appengine
-

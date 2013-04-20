@@ -31,13 +31,13 @@ handlers:
   upload: application/static/robots.txt
 
 - url: /gae_mini_profiler/static
-  static_dir: gae_mini_profiler/static
+  static_dir: lib/gae_mini_profiler/static
 
 - url: /gae_mini_profiler/.*
-  script: gae_mini_profiler.main.application
+  script: lib.gae_mini_profiler.main.application
 
 - url: /static
   static_dir: application/static
 
 - url: .*
-  script: application.app
+  script: run.application.app
