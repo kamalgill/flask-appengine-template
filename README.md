@@ -190,7 +190,7 @@ Package Versions
 - jQuery: 1.9.1 (set in base.html)
 - Modernizr: 2.6.2
 - Werkzeug: 0.8.3
-- WTForms: 1.0.3
+- WTForms: 1.0.4
 
 
 Credits
