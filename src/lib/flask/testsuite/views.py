@@ -8,20 +8,20 @@
     :copyright: (c) 2011 by Armin Ronacher.
     :license: BSD, see LICENSE for more details.
 """
+
 import flask
 import flask.views
 import unittest
 from flask.testsuite import FlaskTestCase
 from werkzeug.http import parse_set_header
 
-
 class ViewTestCase(FlaskTestCase):
 
     def common_test(self, app):
         c = app.test_client()
 
-        self.assert_equal(c.get('/').data, 'GET')
-        self.assert_equal(c.post('/').data, 'POST')
+        self.assert_equal(c.get('/').data, b'GET')
+        self.assert_equal(c.post('/').data, b'POST')
         self.assert_equal(c.put('/').status_code, 405)
         meths = parse_set_header(c.open('/', method='OPTIONS').headers['Allow'])
         self.assert_equal(sorted(meths), ['GET', 'HEAD', 'OPTIONS', 'POST'])
@@ -55,9 +55,9 @@ class ViewTestCase(FlaskTestCase):
 
         class Index(flask.views.MethodView):
             def get(self):
-                1/0
+                1 // 0
             def post(self):
-                1/0
+                1 // 0
 
         class Other(Index):
             def get(self):
@@ -108,7 +108,7 @@ class ViewTestCase(FlaskTestCase):
         c = app.test_client()
         rv = c.get('/')
         self.assert_equal(rv.headers['X-Parachute'], 'awesome')
-        self.assert_equal(rv.data, 'Awesome')
+        self.assert_equal(rv.data, b'Awesome')
 
     def test_implicit_head(self):
         app = flask.Flask(__name__)
@@ -122,10 +122,10 @@ class ViewTestCase(FlaskTestCase):
         app.add_url_rule('/', view_func=Index.as_view('index'))
         c = app.test_client()
         rv = c.get('/')
-        self.assert_equal(rv.data, 'Blub')
+        self.assert_equal(rv.data, b'Blub')
         self.assert_equal(rv.headers['X-Method'], 'GET')
         rv = c.head('/')
-        self.assert_equal(rv.data, '')
+        self.assert_equal(rv.data, b'')
         self.assert_equal(rv.headers['X-Method'], 'HEAD')
 
     def test_explicit_head(self):
@@ -140,10 +140,27 @@ class ViewTestCase(FlaskTestCase):
         app.add_url_rule('/', view_func=Index.as_view('index'))
         c = app.test_client()
         rv = c.get('/')
-        self.assert_equal(rv.data, 'GET')
+        self.assert_equal(rv.data, b'GET')
         rv = c.head('/')
-        self.assert_equal(rv.data, '')
+        self.assert_equal(rv.data, b'')
         self.assert_equal(rv.headers['X-Method'], 'HEAD')
+
+    def test_endpoint_override(self):
+        app = flask.Flask(__name__)
+        app.debug = True
+
+        class Index(flask.views.View):
+            methods = ['GET', 'POST']
+            def dispatch_request(self):
+                return flask.request.method
+
+        app.add_url_rule('/', view_func=Index.as_view('index'))
+
+        with self.assert_raises(AssertionError):
+            app.add_url_rule('/', view_func=Index.as_view('index'))
+
+        # But these tests should still pass. We just log a warning.
+        self.common_test(app)
 
 
 def suite():

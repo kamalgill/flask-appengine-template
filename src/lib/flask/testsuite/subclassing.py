@@ -11,30 +11,30 @@
 """
 import flask
 import unittest
-from StringIO import StringIO
 from logging import StreamHandler
 from flask.testsuite import FlaskTestCase
+from flask._compat import StringIO
 
 
 class FlaskSubclassingTestCase(FlaskTestCase):
 
-    def test_supressed_exception_logging(self):
-        class SupressedFlask(flask.Flask):
+    def test_suppressed_exception_logging(self):
+        class SuppressedFlask(flask.Flask):
             def log_exception(self, exc_info):
                 pass
 
         out = StringIO()
-        app = SupressedFlask(__name__)
-        app.logger_name = 'flask_tests/test_supressed_exception_logging'
+        app = SuppressedFlask(__name__)
+        app.logger_name = 'flask_tests/test_suppressed_exception_logging'
         app.logger.addHandler(StreamHandler(out))
 
         @app.route('/')
         def index():
-            1/0
+            1 // 0
 
         rv = app.test_client().get('/')
         self.assert_equal(rv.status_code, 500)
-        self.assert_('Internal Server Error' in rv.data)
+        self.assert_in(b'Internal Server Error', rv.data)
 
         err = out.getvalue()
         self.assert_equal(err, '')

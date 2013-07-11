@@ -114,6 +114,7 @@ The App Engine app's root folder is located at `src/`.
   |   |-- flask_debugtoolbar/  (Port of Django Debug Toolbar to Flask)
   |   |-- flaskext/ (Flask extensions go here)
   |   |-- gae_mini_profiler/ (Appstats-based profiler)
+  |   |-- itsdangerous.py (required by Flask >= 0.10
   |   |-- werkzeug/ (WSGI utilities for Python-based web development)
   |   `-- wtforms/ (Jinja2-compatible web form utility)
   |-- tests/ (unit tests)
@@ -181,11 +182,12 @@ Package Versions
 ----------------
 - Blinker: 1.1
 - Bootstrap: 2.3.1
-- Flask: 0.9
+- Flask: 0.10
 - Flask-Cache 0.10.1
 - Flask-DebugToolbar: 0.7.1
 - Flask-WTF: 0.6
 - FontAwesome: 3.0
+- itsdangerous: 0.22
 - Jinja2: 2.6 (included in GAE)
 - jQuery: 1.9.1 (set in base.html)
 - Modernizr: 2.6.2
