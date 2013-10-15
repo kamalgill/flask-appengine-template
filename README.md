@@ -88,6 +88,36 @@ The handy Flask-Cache extension is included, pre-configured for App Engine's Mem
 Use the "Flush Cache" button at http://localhost:8000/memcache to clear the cache.
 
 
+Testing
+-------
+Place all your tests in src/tests directory. Test runner is placed in src directory. To run your tests simply go to src directory and do:
+
+<pre class="console">
+  python apptest.py path/to/your/googleappengine/installation
+</pre>
+
+Path to your local google app engine installation must be provided as first argument to the script. If the path is long and you don't like to type it each time you run the tests you can also hardcode it in apptest.py, just edit the variable SDK_PATH and set it to your google app engine folder. 
+
+Before running tests set evironment variable FLASK_CONF to the value TEST. 
+
+In Linux this is done by:
+
+<pre class="console">
+  export FLASK_CONF=TEST
+</pre>
+
+In Powershell:
+
+<pre class="console">
+  [Environment]::SetEnvironmentVariable("FLASK_CONF", "TEST", "User");
+</pre>
+
+Remember to restart Powershell. Change of environment variable will take place after restarting Powershell. 
+
+You can specify your testing configuration (e.g. separate database for tests results) in src/application/settings.py.
+
+To switch back to development configuration just set FLASK_CONF to DEV.
+
 Deploying the Application
 -------------------------
 To deploy the application to App Engine, use [appcfg.py update][appcfg]
