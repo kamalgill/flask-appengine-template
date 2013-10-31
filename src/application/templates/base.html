@@ -14,7 +14,7 @@
     <link href="/static/css/main.css" rel="stylesheet" />
     <link rel="shortcut icon" href="/static/img/favicon.ico" />
     {% block style_block %}{# page-specific CSS #}{% endblock %}
-    <script src="/static/js/lib/modernizr-{{ modernizer_version }}.min.js"></script>{# Modernizr must be here, above body tag. #}
+    <script src="//cdnjs.cloudflare.com/ajax/libs/modernizr/-{{ modernizer_version }}/modernizr.min.js"></script>{# Modernizr must be here, above body tag. #}
     {% block head_script %}{# defer-incapable JS block #}{% endblock %}
 </head>
 <body>
