@@ -12,25 +12,25 @@ import os
 
 from secret_keys import CSRF_SECRET_KEY, SESSION_KEY
 
+class Config(object):
+    # Set secret keys for CSRF protection
+    SECRET_KEY = CSRF_SECRET_KEY
+    CSRF_SESSION_KEY = SESSION_KEY
+    # Flask-Cache settings
+    CACHE_TYPE = 'gaememcached'
 
-DEBUG_MODE = False
+class Development(Config):
+    DEBUG = True
+    # Flask-DebugToolbar settings
+    DEBUG_TB_PROFILER_ENABLED = True
+    DEBUG_TB_INTERCEPT_REDIRECTS = False
+    CSRF_ENABLED = True
 
-# Auto-set debug mode based on App Engine dev environ
-if 'SERVER_SOFTWARE' in os.environ and os.environ['SERVER_SOFTWARE'].startswith('Dev'):
-    DEBUG_MODE = True
+class Testing(Config):
+    TESTING = True
+    DEBUG = True
+    CSRF_ENABLED = True
 
-DEBUG = DEBUG_MODE
-
-# Set secret keys for CSRF protection
-SECRET_KEY = CSRF_SECRET_KEY
-CSRF_SESSION_KEY = SESSION_KEY
-
-CSRF_ENABLED = True
-
-# Flask-DebugToolbar settings
-DEBUG_TB_PROFILER_ENABLED = DEBUG
-DEBUG_TB_INTERCEPT_REDIRECTS = False
-
-
-# Flask-Cache settings
-CACHE_TYPE = 'gaememcached'
+class Production(Config):
+    DEBUG = False
+    CSRF_ENABLED = True
