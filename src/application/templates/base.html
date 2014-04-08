@@ -1,26 +1,32 @@
 <!DOCTYPE html>
 <html lang="en" class="no-js">
-{% set bootstrap_version = '2.3.1' %}
+{% set bootstrap_version = '3.0.0' %}
 {% set modernizer_version = '2.6.2' %}
 {% set jquery_version = '1.9.1' %}
+{% set parsley_version = '1.1.16' %}
+{% set awesome_version = '4.0.1' %}
+{% set bootswatch_version = '3.0.0' %}
+{% set bootswatch_theme = 'cyborg' %}
+
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1" />
     <title>{% block title%}Flask on App Engine{% endblock %}</title>
-    <link href="/static/css/bootstrap-{{ bootstrap_version }}.min.css" rel="stylesheet" />
-    <link rel="stylesheet" href="/static/css/font-awesome.min.css">
-    <style> body { padding-top: 90px; } </style> <!-- Bootstrap -->
+    <link href="//netdna.bootstrapcdn.com/bootstrap/{{ bootstrap_version }}/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="//netdna.bootstrapcdn.com/font-awesome/{{ awesome_version }}/css/font-awesome.min.css" rel="stylesheet" >
+    <link href="//netdna.bootstrapcdn.com/bootswatch/{{ bootswatch_version }}/{{ bootswatch_theme }}/bootstrap.min.css" rel="stylesheet" >
+    <style>  </style> <!-- Bootstrap -->
     <link href="/static/css/main.css" rel="stylesheet" />
     <link rel="shortcut icon" href="/static/img/favicon.ico" />
     {% block style_block %}{# page-specific CSS #}{% endblock %}
-    <script src="/static/js/lib/modernizr-{{ modernizer_version }}.min.js"></script>{# Modernizr must be here, above body tag. #}
+    <script src="//cdnjs.cloudflare.com/ajax/libs/modernizr/{{ modernizer_version }}/modernizr.min.js"></script>{# Modernizr must be here, above body tag. #}
     {% block head_script %}{# defer-incapable JS block #}{% endblock %}
 </head>
 <body>
-    <div id="header">
+
         {% include 'includes/nav.html' %} {# pull in navbar #}
-    </div>
+
     <div class="container" id="maincontent">
         {% include 'includes/flash_message.html' %} {# page-level feedback notices #}
         <div id="body_content">
@@ -33,7 +39,8 @@
         </div><!-- /footer -->
     </footer>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/{{ jquery_version }}/jquery.min.js"></script>
-    <script src="/static/js/lib/bootstrap-{{ bootstrap_version }}.min.js"></script>
+    <script src="//netdna.bootstrapcdn.com/bootstrap/{{ bootstrap_version }}/js/bootstrap.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/parsley.js/{{ parsley_version }}/parsley-standalone.min.js"></script>
     <script src="/static/js/main.js"></script>
     {% block tail_script %}{# defer-capable JS block #}{% endblock %}
     {{ profiler_includes|safe }}
