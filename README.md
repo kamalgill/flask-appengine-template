@@ -57,7 +57,7 @@ which can be installed via:
 Front-end Customization
 -----------------------
 1. Customize the main HTML template at
-   `src/application/static/templates/base.html`
+   `src/application/templates/base.html`
 2. Customize CSS styles at `src/application/static/css/main.css`
 3. Add custom JavaScript code at `src/application/static/js/main.js`
 4. Customize favicon at `src/application/static/img/favicon.ico`
