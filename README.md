@@ -20,7 +20,7 @@ See <http://flask.pocoo.org> for more info.
 Setup/Configuration
 -------------------
 1. Download this repository via
-   `git clone git@github.com:kamalgill/flask-appengine-template.git`
+   `git clone https://github.com/kamalgill/flask-appengine-template.git`
    or download the tarball at
    <http://github.com/kamalgill/flask-appengine-template/tarball/master>
 2. Copy the src/ folder to your application's root folder
