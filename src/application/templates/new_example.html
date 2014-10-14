@@ -6,7 +6,7 @@
         <h3>Add a New Example</h3>
     </div>
     <div class="modal-body">
-        <form id="new-example-form" class="well form-horizontal"
+        <form id="new-example-form" class="well"
             action="{{ url_for('list_examples') }}" method="post" accept-charset="utf-8">
             <fieldset>
                 {{ form.hidden_tag() }}
@@ -23,6 +23,7 @@
                         {% endif %}
                     </div>
                 </div>
+                <div>&nbsp;</div>
                 <div class="control-group">
                     <div class="control-label">{{ form.example_description.label }}</div>
                     <div class="controls">
@@ -36,6 +37,7 @@
                         {% endif %}
                     </div>
                 </div>
+                <div>&nbsp;</div>
                 <div class="control-group">
                     <div class="controls">
                         <input class="btn btn-primary" type="submit" value="Add Example"/>

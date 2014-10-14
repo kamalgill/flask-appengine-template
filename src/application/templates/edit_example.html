@@ -2,7 +2,7 @@
 
 {% block content %}
     <h3>Edit Example</h3>
-    <form id="edit-example" class="well form-horizontal"
+    <form id="edit-example" class="well"
           action="{{ url_for('edit_example', example_id=example.key.id()) }}" method="post" accept-charset="utf-8">
         <fieldset>
             {{ form.hidden_tag() }}
@@ -20,6 +20,7 @@
                     {% endif %}
                 </div>
             </div>
+            <div>&nbsp;</div>
             <div class="control-group">
                 <div class="control-label">{{ form.example_description.label }}</div>
                 <div class="controls">
@@ -33,6 +34,7 @@
                     {% endif %}
                 </div>
             </div>
+            <div>&nbsp;</div>
             <div class="control-group">
                 <div class="controls">
                     <input class="btn btn-primary" type="submit" value="Save Changes"/>
