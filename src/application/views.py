@@ -74,13 +74,14 @@ def edit_example(example_id):
 def delete_example(example_id):
     """Delete an example object"""
     example = ExampleModel.get_by_id(example_id)
-    try:
-        example.key.delete()
-        flash(u'Example %s successfully deleted.' % example_id, 'success')
-        return redirect(url_for('list_examples'))
-    except CapabilityDisabledError:
-        flash(u'App Engine Datastore is currently in read-only mode.', 'info')
-        return redirect(url_for('list_examples'))
+    if request.method == "POST":
+        try:
+            example.key.delete()
+            flash(u'Example %s successfully deleted.' % example_id, 'success')
+            return redirect(url_for('list_examples'))
+        except CapabilityDisabledError:
+            flash(u'App Engine Datastore is currently in read-only mode.', 'info')
+            return redirect(url_for('list_examples'))
 
 
 @admin_required
