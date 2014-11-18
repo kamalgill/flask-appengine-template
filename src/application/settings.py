@@ -7,10 +7,8 @@ Important: Place your keys in the secret_keys.py module,
            which should be kept out of version control.
 
 """
-
-import os
-
 from secret_keys import CSRF_SECRET_KEY, SESSION_KEY
+
 
 class Config(object):
     # Set secret keys for CSRF protection
@@ -19,6 +17,7 @@ class Config(object):
     # Flask-Cache settings
     CACHE_TYPE = 'gaememcached'
 
+
 class Development(Config):
     DEBUG = True
     # Flask-DebugToolbar settings
@@ -26,10 +25,12 @@ class Development(Config):
     DEBUG_TB_INTERCEPT_REDIRECTS = False
     CSRF_ENABLED = True
 
+
 class Testing(Config):
     TESTING = True
     DEBUG = True
     CSRF_ENABLED = True
+
 
 class Production(Config):
     DEBUG = False

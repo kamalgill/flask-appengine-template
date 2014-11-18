@@ -10,9 +10,9 @@ from werkzeug.debug import DebuggedApplication
 app = Flask('application')
 
 if os.getenv('FLASK_CONF') == 'DEV':
-	#development settings n
+    # Development settings
     app.config.from_object('application.settings.Development')
-	# Flask-DebugToolbar (only enabled when DEBUG=True)
+    # Flask-DebugToolbar
     toolbar = DebugToolbarExtension(app)
     
     # Google app engine mini profiler
@@ -20,6 +20,7 @@ if os.getenv('FLASK_CONF') == 'DEV':
     app.wsgi_app = DebuggedApplication(app.wsgi_app, evalex=True)
 
     from gae_mini_profiler import profiler, templatetags 
+
     @app.context_processor
     def inject_profiler():
         return dict(profiler_includes=templatetags.profiler_includes())
