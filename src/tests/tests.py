@@ -30,45 +30,46 @@ class DemoTestCase(unittest.TestCase):
     def tearDown(self):
         self.testbed.deactivate()
 
-    def setCurrentUser(self, email, user_id, is_admin=False):
+    def set_current_user(self, email, user_id, is_admin=False):
         os.environ['USER_EMAIL'] = email or ''
         os.environ['USER_ID'] = user_id or ''
         os.environ['USER_IS_ADMIN'] = '1' if is_admin else '0'
 
     def test_home_redirects(self):
         rv = self.app.get('/')
-        assert rv.status == '302 FOUND'    
+        assert rv.status == '302 FOUND'
 
     def test_says_hello(self):
         rv = self.app.get('/hello/world')
         assert 'Hello world' in rv.data
 
     def test_displays_no_data(self):
+        self.set_current_user(u'john@example.com', u'123')
         rv = self.app.get('/examples')
         assert 'No examples yet' in rv.data
 
     def test_inserts_data(self):
-        self.setCurrentUser(u'john@example.com', u'123')
-        rv = self.app.post('/example/new', data=dict(
+        self.set_current_user(u'john@example.com', u'123')
+        rv = self.app.post('/examples', data=dict(
             example_name='An example',
             example_description='Description of an example'
         ), follow_redirects=True)
-        assert 'Example successfully saved' in rv.data
+        assert 'successfully saved' in rv.data
 
         rv = self.app.get('/examples')
         assert 'No examples yet' not in rv.data
         assert 'An example' in rv.data
-    
+
     def test_admin_login(self):
-        #Anonymous
+        # Anonymous
         rv = self.app.get('/admin_only')
         assert rv.status == '302 FOUND'
-        #Normal user
-        self.setCurrentUser(u'john@example.com', u'123')
+        # Normal user
+        self.set_current_user(u'john@example.com', u'123')
         rv = self.app.get('/admin_only')
-        assert rv.status == '302 FOUND'
-        #Admin
-        self.setCurrentUser(u'john@example.com', u'123', True)
+        assert rv.status == '401 UNAUTHORIZED'
+        # Admin
+        self.set_current_user(u'john@example.com', u'123', True)
         rv = self.app.get('/admin_only')
         assert rv.status == '200 OK'
 
@@ -77,6 +78,5 @@ class DemoTestCase(unittest.TestCase):
         assert rv.status == '404 NOT FOUND'
         assert '<h1>Not found</h1>' in rv.data
 
-    
 if __name__ == '__main__':
     unittest.main()
