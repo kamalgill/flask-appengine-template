@@ -24,6 +24,7 @@ def main(sdk_path, test_path):
     import dev_appserver 
     dev_appserver.fix_sys_path()
     sys.path.insert(1, os.path.join(os.path.abspath('.'), 'lib')) 
+    sys.path.insert(1, os.path.join(os.path.abspath('.'), 'application'))
     suite = unittest2.loader.TestLoader().discover(test_path)
     unittest2.TextTestRunner(verbosity=2).run(suite)
 
