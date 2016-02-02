@@ -12,7 +12,7 @@ from flaskext import wtf
 from flaskext.wtf import validators
 from wtforms.ext.appengine.ndb import model_form
 
-from .models import ExampleModel
+from models import ExampleModel
 
 
 class ClassicExampleForm(wtf.Form):
