@@ -44,16 +44,17 @@ class DemoTestCase(unittest.TestCase):
         assert 'Hello world' in rv.data
 
     def test_displays_no_data(self):
+        self.set_current_user(u'john@example.com', u'123')
         rv = self.app.get('/examples')
         assert 'No examples yet' in rv.data
 
     def test_inserts_data(self):
         self.set_current_user(u'john@example.com', u'123')
-        rv = self.app.post('/example/new', data=dict(
+        rv = self.app.post('/examples', data=dict(
             example_name='An example',
             example_description='Description of an example'
         ), follow_redirects=True)
-        assert 'Example successfully saved' in rv.data
+        assert 'successfully saved' in rv.data
 
         rv = self.app.get('/examples')
         assert 'No examples yet' not in rv.data
@@ -66,7 +67,7 @@ class DemoTestCase(unittest.TestCase):
         # Normal user
         self.set_current_user(u'john@example.com', u'123')
         rv = self.app.get('/admin_only')
-        assert rv.status == '302 FOUND'
+        assert rv.status == '401 UNAUTHORIZED'
         # Admin
         self.set_current_user(u'john@example.com', u'123', True)
         rv = self.app.get('/admin_only')
