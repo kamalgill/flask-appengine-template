@@ -49,7 +49,7 @@ parser.add_option(
 def generate_randomkey(length):
     """Generate random key, given a number of characters"""
     chars = string.letters + string.digits
-    return ''.join([choice(chars) for i in range(length)])
+    return ''.join([choice(chars) for i in range(int(length))])
 
 
 def write_file(contents):
