@@ -4,9 +4,11 @@ Flask on App Engine Project Template
 Boilerplate project template for running a Flask-based application on
 Google App Engine (Python)
 
-Python 2.7 Runtime Support
---------------------------
-* Support for the Python 2.7 runtime was added to this project in May 2012.
+Note: This project isn't as actively maintained as I would like (although pull requests are still welcome).
+You may want to investigate similar projects listed below:
+
+- [gae-init](https://github.com/gae-init/gae-init)
+- [gae-boilerplate](https://github.com/coto/gae-boilerplate)
 
 
 About Flask
