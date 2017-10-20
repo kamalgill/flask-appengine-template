@@ -12,21 +12,22 @@ from flask_debugtoolbar.utils import format_fname
 
 _ = lambda x: x
 
+
 class ThreadTrackingHandler(logging.Handler):
     def __init__(self):
         if threading is None:
             raise NotImplementedError("threading module is not available, \
                 the logging panel cannot be used without it")
         logging.Handler.__init__(self)
-        self.records = {} # a dictionary that maps threads to log records
+        self.records = {}  # a dictionary that maps threads to log records
 
     def emit(self, record):
         self.get_records().append(record)
 
     def get_records(self, thread=None):
         """
-        Returns a list of records for the provided thread, of if none is provided,
-        returns a list for the current thread.
+        Returns a list of records for the provided thread, of if none is
+        provided, returns a list for the current thread.
         """
         if thread is None:
             thread = threading.currentThread()
@@ -46,18 +47,27 @@ _init_lock = threading.Lock()
 
 
 def _init_once():
-  # Initialize the logging handler once, but after werkzeug has set up its
-  # default logger.  Otherwise, if this sets up the logging first, werkzeug
-  # will not create a default logger, so the development server's output will
-  # not get printed.
-  global handler
-  if handler is not None:
-    return
-  with _init_lock:
+    global handler
     if handler is not None:
-      return
-    handler = ThreadTrackingHandler()
-    logging.root.addHandler(handler)
+        return
+    with _init_lock:
+        if handler is not None:
+            return
+
+        # Call werkzeug's internal logging to make sure it gets configured
+        # before we add our handler.  Otherwise werkzeug will see our handler
+        # and not configure console logging for the request log.
+        # Werkzeug's default log level is INFO so this message probably won't
+        # be seen.
+        try:
+            from werkzeug._internal import _log
+        except ImportError:
+            pass
+        else:
+            _log('debug', 'Initializing Flask-DebugToolbar log handler')
+
+        handler = ThreadTrackingHandler()
+        logging.root.addHandler(handler)
 
 
 class LoggingPanel(DebugPanel):
@@ -78,7 +88,8 @@ class LoggingPanel(DebugPanel):
 
     def nav_subtitle(self):
         # FIXME l10n: use ngettext
-        return "%s message%s" % (len(handler.get_records()), (len(handler.get_records()) == 1) and '' or 's')
+        num_records = len(handler.get_records())
+        return '%s message%s' % (num_records, '' if num_records == 1 else 's')
 
     def title(self):
         return _('Log Messages')
@@ -102,5 +113,3 @@ class LoggingPanel(DebugPanel):
         context.update({'records': records})
 
         return self.render('panels/logger.html', context)
-
-
