@@ -16,6 +16,7 @@ from blinker._utilities import (
     contextmanager,
     defaultdict,
     hashable_identity,
+    lazy_property,
     reference,
     symbol,
     )
@@ -32,6 +33,42 @@ class Signal(object):
     #: An :obj:`ANY` convenience synonym, allows ``Signal.ANY``
     #: without an additional import.
     ANY = ANY
+
+    @lazy_property
+    def receiver_connected(self):
+        """Emitted after each :meth:`connect`.
+
+        The signal sender is the signal instance, and the :meth:`connect`
+        arguments are passed through: *receiver*, *sender*, and *weak*.
+
+        .. versionadded:: 1.2
+
+        """
+        return Signal(doc="Emitted after a receiver connects.")
+
+    @lazy_property
+    def receiver_disconnected(self):
+        """Emitted after :meth:`disconnect`.
+
+        The sender is the signal instance, and the :meth:`disconnect` arguments
+        are passed through: *receiver* and *sender*.
+
+        Note, this signal is emitted **only** when :meth:`disconnect` is
+        called explicitly.
+
+        The disconnect signal can not be emitted by an automatic disconnect
+        (due to a weakly referenced receiver or sender going out of scope),
+        as the receiver and/or sender instances are no longer available for
+        use at the time this signal would be emitted.
+
+        An alternative approach is available by subscribing to
+        :attr:`receiver_connected` and setting up a custom weakref cleanup
+        callback on weak receivers and senders.
+
+        .. versionadded:: 1.2
+
+        """
+        return Signal(doc="Emitted after a receiver disconnects.")
 
     def __init__(self, doc=None):
         """
@@ -99,6 +136,16 @@ class Signal(object):
                 del sender_ref
 
         # broadcast this connection.  if receivers raise, disconnect.
+        if ('receiver_connected' in self.__dict__ and
+            self.receiver_connected.receivers):
+            try:
+                self.receiver_connected.send(self,
+                                             receiver=receiver,
+                                             sender=sender,
+                                             weak=weak)
+            except:
+                self.disconnect(receiver, sender)
+                raise
         if receiver_connected.receivers and self is not receiver_connected:
             try:
                 receiver_connected.send(self,
@@ -182,13 +229,13 @@ class Signal(object):
         .. versionadded:: 0.9
 
         .. versionchanged:: 1.1
-          Renamed to :meth:`connected_to`.  ``temporarily_connected_to``
-          will be deprecated in 1.2 and removed in a subsequent version.
+          Renamed to :meth:`connected_to`.  ``temporarily_connected_to`` was
+          deprecated in 1.2 and will be removed in a subsequent version.
 
         """
         warn("temporarily_connected_to is deprecated; "
              "use connected_to instead.",
-             PendingDeprecationWarning)
+             DeprecationWarning)
         return self.connected_to(receiver, sender)
 
     def send(self, *sender, **kwargs):
@@ -273,6 +320,12 @@ class Signal(object):
         receiver_id = hashable_identity(receiver)
         self._disconnect(receiver_id, sender_id)
 
+        if ('receiver_disconnected' in self.__dict__ and
+            self.receiver_disconnected.receivers):
+            self.receiver_disconnected.send(self,
+                                            receiver=receiver,
+                                            sender=sender)
+
     def _disconnect(self, receiver_id, sender_id):
         if sender_id == ANY_ID:
             if self._by_receiver.pop(receiver_id, False):
@@ -281,6 +334,7 @@ class Signal(object):
             self.receivers.pop(receiver_id, None)
         else:
             self._by_sender[sender_id].discard(receiver_id)
+            self._by_receiver[receiver_id].discard(sender_id)
 
     def _cleanup_receiver(self, receiver_ref):
         """Disconnect a receiver from all senders."""
@@ -293,6 +347,32 @@ class Signal(object):
         self._weak_senders.pop(sender_id, None)
         for receiver_id in self._by_sender.pop(sender_id, ()):
             self._by_receiver[receiver_id].discard(sender_id)
+
+    def _cleanup_bookkeeping(self):
+        """Prune unused sender/receiver bookeeping. Not threadsafe.
+
+        Connecting & disconnecting leave behind a small amount of bookeeping
+        for the receiver and sender values. Typical workloads using Blinker,
+        for example in most web apps, Flask, CLI scripts, etc., are not
+        adversely affected by this bookkeeping.
+
+        With a long-running Python process performing dynamic signal routing
+        with high volume- e.g. connecting to function closures, "senders" are
+        all unique object instances, and doing all of this over and over- you
+        may see memory usage will grow due to extraneous bookeeping. (An empty
+        set() for each stale sender/receiver pair.)
+
+        This method will prune that bookeeping away, with the caveat that such
+        pruning is not threadsafe. The risk is that cleanup of a fully
+        disconnected receiver/sender pair occurs while another thread is
+        connecting that same pair. If you are in the highly dynamic, unique
+        receiver/sender situation that has lead you to this method, that
+        failure mode is perhaps not a big deal for you.
+        """
+        for mapping in (self._by_sender, self._by_receiver):
+            for _id, bucket in list(mapping.items()):
+                if not bucket:
+                    mapping.pop(_id, None)
 
     def _clear_state(self):
         """Throw away all signal state.  Useful for unit tests."""
@@ -309,6 +389,13 @@ Sent by a :class:`Signal` after a receiver connects.
 :keyword receiver_arg: the connected receiver
 :keyword sender_arg: the sender to connect to
 :keyword weak_arg: true if the connection to receiver_arg is a weak reference
+
+.. deprecated:: 1.2
+
+As of 1.2, individual signals have their own private
+:attr:`~Signal.receiver_connected` and
+:attr:`~Signal.receiver_disconnected` signals with a slightly simplified
+call signature.  This global signal is planned to be removed in 1.6.
 
 """)
 
@@ -327,8 +414,31 @@ class NamedSignal(Signal):
         return "%s; %r>" % (base[:-1], self.name)
 
 
-class Namespace(WeakValueDictionary):
+class Namespace(dict):
     """A mapping of signal names to signals."""
+
+    def signal(self, name, doc=None):
+        """Return the :class:`NamedSignal` *name*, creating it if required.
+
+        Repeated calls to this function will return the same signal object.
+
+        """
+        try:
+            return self[name]
+        except KeyError:
+            return self.setdefault(name, NamedSignal(name, doc))
+
+
+class WeakNamespace(WeakValueDictionary):
+    """A weak mapping of signal names to signals.
+
+    Automatically cleans up unused Signals when the last reference goes out
+    of scope.  This namespace implementation exists for a measure of legacy
+    compatibility with Blinker <= 1.2, and may be dropped in the future.
+
+    .. versionadded:: 1.3
+
+    """
 
     def signal(self, name, doc=None):
         """Return the :class:`NamedSignal` *name*, creating it if required.

@@ -209,7 +209,7 @@ See licenses/ folder
 
 Package Versions
 ----------------
-- Blinker: 1.1
+- Blinker: 1.4
 - Bootstrap: 2.3.1
 - Click: 6.7
 - Flask: 0.12.2

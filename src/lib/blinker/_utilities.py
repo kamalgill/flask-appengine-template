@@ -104,9 +104,19 @@ class symbol(object):
             return cls.symbols.setdefault(name, _symbol(name))
 
 
+try:
+    text = (str, unicode)
+except NameError:
+    text = str
+
+
 def hashable_identity(obj):
-    if hasattr(obj, 'im_func'):
+    if hasattr(obj, '__func__'):
+        return (id(obj.__func__), id(obj.__self__))
+    elif hasattr(obj, 'im_func'):
         return (id(obj.im_func), id(obj.im_self))
+    elif isinstance(obj, text):
+        return obj
     else:
         return id(obj)
 
@@ -136,3 +146,18 @@ def callable_reference(object, callback=None):
     elif hasattr(object, '__self__') and object.__self__ is not None:
         return BoundMethodWeakref(target=object, on_delete=callback)
     return annotatable_weakref(object, callback)
+
+
+class lazy_property(object):
+    """A @property that is only evaluated once."""
+
+    def __init__(self, deferred):
+        self._deferred = deferred
+        self.__doc__ = deferred.__doc__
+
+    def __get__(self, obj, cls):
+        if obj is None:
+            return self
+        value = self._deferred(obj)
+        setattr(obj, self._deferred.__name__, value)
+        return value
