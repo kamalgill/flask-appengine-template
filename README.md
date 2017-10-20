@@ -215,7 +215,7 @@ Package Versions
 - Flask: 0.12.2
 - Flask-Cache 0.13.1
 - Flask-DebugToolbar: 0.10.1
-- Flask-WTF: 0.6
+- Flask-WTF: 0.14.2
 - FontAwesome: 3.0
 - itsdangerous: 0.24
 - Jinja2: 2.6 (included in GAE)
