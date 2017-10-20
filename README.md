@@ -217,7 +217,7 @@ Package Versions
 - Flask-DebugToolbar: 0.10.1
 - Flask-WTF: 0.6
 - FontAwesome: 3.0
-- itsdangerous: 0.22
+- itsdangerous: 0.24
 - Jinja2: 2.6 (included in GAE)
 - jQuery: 1.9.1 (set in base.html)
 - Modernizr: 2.6.2

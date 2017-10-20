@@ -6,7 +6,7 @@
     A module that implements various functions to deal with untrusted
     sources.  Mainly useful for web applications.
 
-    :copyright: (c) 2011 by Armin Ronacher and the Django Software Foundation.
+    :copyright: (c) 2014 by Armin Ronacher and the Django Software Foundation.
     :license: BSD, see LICENSE for more details.
 """
 
@@ -124,6 +124,10 @@ class BadPayload(BadData):
     that.  The original exception that caused that will be stored on the
     exception as :attr:`original_error`.
 
+    This can also happen with a :class:`JSONWebSignatureSerializer` that
+    is subclassed and uses a different serializer for the payload than
+    the expected one.
+
     .. versionadded:: 0.15
     """
 
@@ -164,6 +168,27 @@ class BadTimeSignature(BadSignature):
         #:
         #: .. versionadded:: 0.14
         self.date_signed = date_signed
+
+
+class BadHeader(BadSignature):
+    """Raised if a signed header is invalid in some form.  This only
+    happens for serializers that have a header that goes with the
+    signature.
+
+    .. versionadded:: 0.24
+    """
+
+    def __init__(self, message, payload=None, header=None,
+                 original_error=None):
+        BadSignature.__init__(self, message, payload)
+
+        #: If the header is actually available but just malformed it
+        #: might be stored here.
+        self.header = header
+
+        #: If available, the error that indicates why the payload
+        #: was not valid.  This might be `None`.
+        self.original_error = original_error
 
 
 class SignatureExpired(BadTimeSignature):
@@ -330,7 +355,10 @@ class Signer(object):
     def verify_signature(self, value, sig):
         """Verifies the signature for the given value."""
         key = self.derive_key()
-        sig = base64_decode(sig)
+        try:
+            sig = base64_decode(sig)
+        except Exception:
+            return False
         return self.algorithm.verify_signature(key, value, sig)
 
     def unsign(self, signed_value):
@@ -511,7 +539,7 @@ class Serializer(object):
             return serializer.loads(payload)
         except Exception as e:
             raise BadPayload('Could not load the payload because an '
-                'exception ocurred on unserializing the data',
+                'exception occurred on unserializing the data',
                 original_error=e)
 
     def dump_payload(self, obj):
@@ -657,14 +685,23 @@ class JSONWebSignatureSerializer(Serializer):
         base64d_header, base64d_payload = payload.split(b'.', 1)
         try:
             json_header = base64_decode(base64d_header)
+        except Exception as e:
+            raise BadHeader('Could not base64 decode the header because of '
+                'an exception', original_error=e)
+        try:
             json_payload = base64_decode(base64d_payload)
         except Exception as e:
             raise BadPayload('Could not base64 decode the payload because of '
                 'an exception', original_error=e)
-        header = Serializer.load_payload(self, json_header,
-            serializer=json)
+        try:
+            header = Serializer.load_payload(self, json_header,
+                serializer=json)
+        except BadData as e:
+            raise BadHeader('Could not unserialize header because it was '
+                'malformed', original_error=e)
         if not isinstance(header, dict):
-            raise BadPayload('Header payload is not a JSON object')
+            raise BadHeader('Header payload is not a JSON object',
+                header=header)
         payload = Serializer.load_payload(self, json_payload)
         if return_header:
             return payload, header
@@ -712,7 +749,8 @@ class JSONWebSignatureSerializer(Serializer):
             self.make_signer(salt, self.algorithm).unsign(want_bytes(s)),
             return_header=True)
         if header.get('alg') != self.algorithm_name:
-            raise BadSignature('Algorithm mismatch')
+            raise BadHeader('Algorithm mismatch', header=header,
+                            payload=payload)
         if return_header:
             return payload, header
         return payload
