@@ -222,7 +222,7 @@ Package Versions
 - jQuery: 1.9.1 (set in base.html)
 - Modernizr: 2.6.2
 - Werkzeug: 0.12.2
-- WTForms: 1.0.5
+- WTForms: 2.1
 
 
 Credits

@@ -1,6 +1,7 @@
 from __future__ import unicode_literals
 
 import re
+import warnings
 
 from wtforms.compat import string_types, text_type
 
@@ -101,7 +102,7 @@ class Length(object):
                 else:
                     message = field.gettext('Field must be between %(min)d and %(max)d characters long.')
 
-            raise ValidationError(message % dict(min=self.min, max=self.max))
+            raise ValidationError(message % dict(min=self.min, max=self.max, length=l))
 
 
 class NumberRange(object):
@@ -171,8 +172,12 @@ class Optional(object):
 
 class DataRequired(object):
     """
-    Validates that the field contains coerced data. This validator will stop
-    the validation chain on error.
+    Checks the field's data is 'truthy' otherwise stops the validation chain.
+
+    This validator checks that the ``data`` attribute on the field is a 'true'
+    value (effectively, it does ``if field.data``.) Furthermore, if the data
+    is a string type, a string containing only whitespace characters is
+    considered false.
 
     If the data is empty, also removes prior errors (such as processing errors)
     from the field.
@@ -181,8 +186,8 @@ class DataRequired(object):
     (requiring coerced data, not input data) meant it functioned in a way
     which was not symmetric to the `Optional` validator and furthermore caused
     confusion with certain fields which coerced data to 'falsey' values like
-    ``0``, ``Decimal(0)``, etc. Unless a very specific reason exists, we
-    recommend using the :class:`InputRequired` instead.
+    ``0``, ``Decimal(0)``, ``time(0)`` etc. Unless a very specific reason
+    exists, we recommend using the :class:`InputRequired` instead.
 
     :param message:
         Error message to raise in case of a validation error.
@@ -210,8 +215,13 @@ class Required(DataRequired):
     This is needed over simple aliasing for those who require that the
     class-name of required be 'Required.'
 
-    This class will start throwing deprecation warnings in WTForms 1.1 and be removed by 1.2.
     """
+    def __init__(self, *args, **kwargs):
+        super(Required, self).__init__(*args, **kwargs)
+        warnings.warn(
+            'Required is going away in WTForms 3.0, use DataRequired',
+            DeprecationWarning, stacklevel=2
+        )
 
 
 class InputRequired(object):
@@ -258,7 +268,8 @@ class Regexp(object):
         self.message = message
 
     def __call__(self, form, field, message=None):
-        if not self.regex.match(field.data or ''):
+        match = self.regex.match(field.data or '')
+        if not match:
             if message is None:
                 if self.message is None:
                     message = field.gettext('Invalid input.')
@@ -266,6 +277,7 @@ class Regexp(object):
                     message = self.message
 
             raise ValidationError(message)
+        return match
 
 
 class Email(Regexp):
@@ -278,14 +290,19 @@ class Email(Regexp):
         Error message to raise in case of a validation error.
     """
     def __init__(self, message=None):
-        super(Email, self).__init__(r'^.+@[^.].*\.[a-z]{2,10}$', re.IGNORECASE, message)
+        self.validate_hostname = HostnameValidation(
+            require_tld=True,
+        )
+        super(Email, self).__init__(r'^.+@([^.@][^@]+)$', re.IGNORECASE, message)
 
     def __call__(self, form, field):
         message = self.message
         if message is None:
             message = field.gettext('Invalid email address.')
 
-        super(Email, self).__call__(form, field, message)
+        match = super(Email, self).__call__(form, field, message)
+        if not self.validate_hostname(match.group(1)):
+            raise ValidationError(message)
 
 
 class IPAddress(object):
@@ -318,14 +335,16 @@ class IPAddress(object):
                 message = field.gettext('Invalid IP address.')
             raise ValidationError(message)
 
-    def check_ipv4(self, value):
+    @classmethod
+    def check_ipv4(cls, value):
         parts = value.split('.')
         if len(parts) == 4 and all(x.isdigit() for x in parts):
             numbers = list(int(x) for x in parts)
             return all(num >= 0 and num < 256 for num in numbers)
         return False
 
-    def check_ipv6(self, value):
+    @classmethod
+    def check_ipv6(cls, value):
         parts = value.split(':')
         if len(parts) > 8:
             return False
@@ -383,16 +402,21 @@ class URL(Regexp):
         Error message to raise in case of a validation error.
     """
     def __init__(self, require_tld=True, message=None):
-        tld_part = (require_tld and r'\.[a-z]{2,10}' or '')
-        regex = r'^[a-z]+://([^/:]+%s|([0-9]{1,3}\.){3}[0-9]{1,3})(:[0-9]+)?(\/.*)?$' % tld_part
+        regex = r'^[a-z]+://(?P<host>[^/:]+)(?P<port>:[0-9]+)?(?P<path>\/.*)?$'
         super(URL, self).__init__(regex, re.IGNORECASE, message)
+        self.validate_hostname = HostnameValidation(
+            require_tld=require_tld,
+            allow_ip=True,
+        )
 
     def __call__(self, form, field):
         message = self.message
         if message is None:
             message = field.gettext('Invalid URL.')
 
-        super(URL, self).__call__(form, field, message)
+        match = super(URL, self).__call__(form, field, message)
+        if not self.validate_hostname(match.group('host')):
+            raise ValidationError(message)
 
 
 class UUID(Regexp):
@@ -462,7 +486,7 @@ class NoneOf(object):
         self.values = values
         self.message = message
         if values_formatter is None:
-            values_formatter = lambda v: ', '.join(text_type(x) for x in v)
+            values_formatter = self.default_values_formatter
         self.values_formatter = values_formatter
 
     def __call__(self, form, field):
@@ -472,6 +496,53 @@ class NoneOf(object):
                 message = field.gettext('Invalid value, can\'t be any of: %(values)s.')
 
             raise ValidationError(message % dict(values=self.values_formatter(self.values)))
+
+    @staticmethod
+    def default_values_formatter(v):
+        return ', '.join(text_type(x) for x in v)
+
+
+class HostnameValidation(object):
+    """
+    Helper class for checking hostnames for validation.
+
+    This is not a validator in and of itself, and as such is not exported.
+    """
+    hostname_part = re.compile(r'^(xn-|[a-z0-9]+)(-[a-z0-9]+)*$', re.IGNORECASE)
+    tld_part = re.compile(r'^([a-z]{2,20}|xn--([a-z0-9]+-)*[a-z0-9]+)$', re.IGNORECASE)
+
+    def __init__(self, require_tld=True, allow_ip=False):
+        self.require_tld = require_tld
+        self.allow_ip = allow_ip
+
+    def __call__(self, hostname):
+        if self.allow_ip:
+            if IPAddress.check_ipv4(hostname) or IPAddress.check_ipv6(hostname):
+                return True
+
+        # Encode out IDNA hostnames. This makes further validation easier.
+        hostname = hostname.encode('idna')
+
+        # Turn back into a string in Python 3x
+        if not isinstance(hostname, string_types):
+            hostname = hostname.decode('ascii')
+
+        if len(hostname) > 253:
+            return False
+
+        # Check that all labels in the hostname are valid
+        parts = hostname.split('.')
+        for part in parts:
+            if not part or len(part) > 63:
+                return False
+            if not self.hostname_part.match(part):
+                return False
+
+        if self.require_tld:
+            if len(parts) < 2 or not self.tld_part.match(parts[-1]):
+                return False
+
+        return True
 
 
 email = Email

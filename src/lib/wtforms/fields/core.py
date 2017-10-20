@@ -6,7 +6,9 @@ import itertools
 
 from wtforms import widgets
 from wtforms.compat import text_type, izip
+from wtforms.i18n import DummyTranslations
 from wtforms.validators import StopValidation
+from wtforms.utils import unset_value
 
 
 __all__ = (
@@ -14,20 +16,6 @@ __all__ = (
     'FloatField', 'FormField', 'IntegerField', 'RadioField', 'SelectField',
     'SelectMultipleField', 'StringField',
 )
-
-
-_unset_value = object()
-
-
-class DummyTranslations(object):
-    def gettext(self, string):
-        return string
-
-    def ngettext(self, singular, plural, n):
-        if n == 1:
-            return singular
-
-        return plural
 
 
 class Field(object):
@@ -41,7 +29,7 @@ class Field(object):
     widget = None
     _formfield = True
     _translations = DummyTranslations()
-    do_not_call_in_templates = True # Allow Django 1.4 traversal
+    do_not_call_in_templates = True  # Allow Django 1.4 traversal
 
     def __new__(cls, *args, **kwargs):
         if '_form' in kwargs and '_name' in kwargs:
@@ -51,7 +39,8 @@ class Field(object):
 
     def __init__(self, label=None, validators=None, filters=tuple(),
                  description='', id=None, default=None, widget=None,
-                 _form=None, _name=None, _prefix='', _translations=None):
+                 render_kw=None, _form=None, _name=None, _prefix='',
+                 _translations=None, _meta=None):
         """
         Construct a new field.
 
@@ -71,6 +60,9 @@ class Field(object):
             input is provided. May be a callable.
         :param widget:
             If provided, overrides the widget used to render the field.
+        :param dict render_kw:
+            If provided, a dictionary which provides default keywords that
+            will be given to the widget at render time.
         :param _form:
             The form holding this field. It is passed by the form itself during
             construction. You should never pass this value yourself.
@@ -80,6 +72,13 @@ class Field(object):
         :param _prefix:
             The prefix to prepend to the form name of this field, passed by
             the enclosing form during construction.
+        :param _translations:
+            A translations object providing message translations. Usually
+            passed by the enclosing form during construction. See
+            :doc:`I18n docs <i18n>` for information on message translations.
+        :param _meta:
+            If provided, this is the 'meta' instance from the form. You usually
+            don't pass this yourself.
 
         If `_form` and `_name` isn't provided, an :class:`UnboundField` will be
         returned instead. Call its :func:`bind` method with a form instance and
@@ -88,8 +87,16 @@ class Field(object):
         if _translations is not None:
             self._translations = _translations
 
+        if _meta is not None:
+            self.meta = _meta
+        elif _form is not None:
+            self.meta = _form.meta
+        else:
+            raise TypeError("Must provide one of _form or _meta")
+
         self.default = default
         self.description = description
+        self.render_kw = render_kw
         self.filters = filters
         self.flags = Flags()
         self.name = _prefix + _name
@@ -103,7 +110,7 @@ class Field(object):
         if widget is not None:
             self.widget = widget
 
-        for v in self.validators:
+        for v in itertools.chain(self.validators, [self.widget]):
             flags = getattr(v, 'field_flags', ())
             for f in flags:
                 setattr(self.flags, f, True)
@@ -125,7 +132,7 @@ class Field(object):
     def __html__(self):
         """
         Returns a HTML representation of the field. For more powerful rendering,
-        see the `__call__` method.
+        see the :meth:`__call__` method.
         """
         return self()
 
@@ -133,15 +140,37 @@ class Field(object):
         """
         Render this field as HTML, using keyword args as additional attributes.
 
-        Any HTML attribute passed to the method will be added to the tag
-        and entity-escaped properly.
+        This delegates rendering to
+        :meth:`meta.render_field <wtforms.meta.DefaultMeta.render_field>`
+        whose default behavior is to call the field's widget, passing any
+        keyword arguments from this call along to the widget.
+
+        In all of the WTForms HTML widgets, keyword arguments are turned to
+        HTML attributes, though in theory a widget is free to do anything it
+        wants with the supplied keyword arguments, and widgets don't have to
+        even do anything related to HTML.
         """
-        return self.widget(self, **kwargs)
+        return self.meta.render_field(self, kwargs)
 
     def gettext(self, string):
+        """
+        Get a translation for the given message.
+
+        This proxies for the internal translations object.
+
+        :param string: A unicode string to be translated.
+        :return: A unicode string which is the translated output.
+        """
         return self._translations.gettext(string)
 
     def ngettext(self, singular, plural, n):
+        """
+        Get a translation for a message which can be pluralized.
+
+        :param str singular: The singular form of the message.
+        :param str plural: The plural form of the message.
+        :param int n: The number of elements this message is referring to
+        """
         return self._translations.ngettext(singular, plural, n)
 
     def validate(self, form, extra_validators=tuple()):
@@ -222,7 +251,7 @@ class Field(object):
         """
         pass
 
-    def process(self, formdata, data=_unset_value):
+    def process(self, formdata, data=unset_value):
         """
         Process incoming data, calling process_data, process_formdata as needed,
         and run filters.
@@ -236,7 +265,7 @@ class Field(object):
         inputs.
         """
         self.process_errors = []
-        if data is _unset_value:
+        if data is unset_value:
             try:
                 data = self.default()
             except TypeError:
@@ -259,11 +288,11 @@ class Field(object):
             except ValueError as e:
                 self.process_errors.append(e.args[0])
 
-        for filter in self.filters:
-            try:
+        try:
+            for filter in self.filters:
                 self.data = filter(self.data)
-            except ValueError as e:
-                self.process_errors.append(e.args[0])
+        except ValueError as e:
+            self.process_errors.append(e.args[0])
 
     def process_data(self, value):
         """
@@ -310,7 +339,15 @@ class UnboundField(object):
         self.creation_counter = UnboundField.creation_counter
 
     def bind(self, form, name, prefix='', translations=None, **kwargs):
-        return self.field_class(_form=form, _prefix=prefix, _name=name, _translations=translations, *self.args, **dict(self.kwargs, **kwargs))
+        kw = dict(
+            self.kwargs,
+            _form=form,
+            _prefix=prefix,
+            _name=name,
+            _translations=translations,
+            **kwargs
+        )
+        return self.field_class(*self.args, **kw)
 
     def __repr__(self):
         return '<UnboundField(%s, %r, %r)>' % (self.field_class.__name__, self.args, self.kwargs)
@@ -388,7 +425,7 @@ class SelectFieldBase(Field):
         raise NotImplementedError()
 
     def __iter__(self):
-        opts = dict(widget=self.option_widget, _name=self.name, _form=None)
+        opts = dict(widget=self.option_widget, _name=self.name, _form=None, _meta=self.meta)
         for i, (value, label, checked) in enumerate(self.iter_choices()):
             opt = self._Option(label=label, id='%s-%d' % (self.id, i), **opts)
             opt.process(None, value)
@@ -438,7 +475,7 @@ class SelectField(SelectFieldBase):
 class SelectMultipleField(SelectField):
     """
     No different from a normal select field, except this one can take (and
-    validate) multiple choices.  You'll need to specify the HTML `rows`
+    validate) multiple choices.  You'll need to specify the HTML `size`
     attribute to the select field when rendering.
     """
     widget = widgets.Select(multiple=True)
@@ -496,6 +533,34 @@ class StringField(Field):
         return text_type(self.data) if self.data is not None else ''
 
 
+class LocaleAwareNumberField(Field):
+    """
+    Base class for implementing locale-aware number parsing.
+
+    Locale-aware numbers require the 'babel' package to be present.
+    """
+    def __init__(self, label=None, validators=None, use_locale=False, number_format=None, **kwargs):
+        super(LocaleAwareNumberField, self).__init__(label, validators, **kwargs)
+        self.use_locale = use_locale
+        if use_locale:
+            self.number_format = number_format
+            self.locale = kwargs['_form'].meta.locales[0]
+            self._init_babel()
+
+    def _init_babel(self):
+        try:
+            from babel import numbers
+            self.babel_numbers = numbers
+        except ImportError:
+            raise ImportError('Using locale-aware decimals requires the babel library.')
+
+    def _parse_decimal(self, value):
+        return self.babel_numbers.parse_decimal(value, self.locale)
+
+    def _format_decimal(self, value):
+        return self.babel_numbers.format_decimal(value, self.number_format, self.locale)
+
+
 class IntegerField(Field):
     """
     A text field, except all input is coerced to an integer.  Erroneous input
@@ -523,7 +588,7 @@ class IntegerField(Field):
                 raise ValueError(self.gettext('Not a valid integer value'))
 
 
-class DecimalField(Field):
+class DecimalField(LocaleAwareNumberField):
     """
     A text field which displays and coerces data of the `decimal.Decimal` type.
 
@@ -534,11 +599,22 @@ class DecimalField(Field):
         How to round the value during quantize, for example
         `decimal.ROUND_UP`. If unset, uses the rounding value from the
         current thread's context.
+    :param use_locale:
+        If True, use locale-based number formatting. Locale-based number
+        formatting requires the 'babel' package.
+    :param number_format:
+        Optional number format for locale. If omitted, use the default decimal
+        format for the locale.
     """
     widget = widgets.TextInput()
 
-    def __init__(self, label=None, validators=None, places=2, rounding=None, **kwargs):
+    def __init__(self, label=None, validators=None, places=unset_value, rounding=None, **kwargs):
         super(DecimalField, self).__init__(label, validators, **kwargs)
+        if self.use_locale and (places is not unset_value or rounding is not None):
+            raise TypeError("When using locale-aware numbers, 'places' and 'rounding' are ignored.")
+
+        if places is unset_value:
+            places = 2
         self.places = places
         self.rounding = rounding
 
@@ -546,7 +622,9 @@ class DecimalField(Field):
         if self.raw_data:
             return self.raw_data[0]
         elif self.data is not None:
-            if self.places is not None:
+            if self.use_locale:
+                return text_type(self._format_decimal(self.data))
+            elif self.places is not None:
                 if hasattr(self.data, 'quantize'):
                     exp = decimal.Decimal('.1') ** self.places
                     if self.rounding is None:
@@ -567,7 +645,10 @@ class DecimalField(Field):
     def process_formdata(self, valuelist):
         if valuelist:
             try:
-                self.data = decimal.Decimal(valuelist[0])
+                if self.use_locale:
+                    self.data = self._parse_decimal(valuelist[0])
+                else:
+                    self.data = decimal.Decimal(valuelist[0])
             except (decimal.InvalidOperation, ValueError):
                 self.data = None
                 raise ValueError(self.gettext('Not a valid decimal value'))
@@ -602,7 +683,9 @@ class FloatField(Field):
 
 class BooleanField(Field):
     """
-    Represents an ``<input type="checkbox">``.
+    Represents an ``<input type="checkbox">``. Set the ``checked``-status by using the
+    ``default``-option. Any value for ``default``, e.g. ``default="checked"`` puts
+    ``checked`` into the html-element and sets the ``data`` to ``True``
 
     :param false_values:
         If provided, a sequence of strings each of which is an exact match
@@ -698,8 +781,8 @@ class FormField(Field):
         if validators:
             raise TypeError('FormField does not accept any validators. Instead, define them on the enclosed form.')
 
-    def process(self, formdata, data=_unset_value):
-        if data is _unset_value:
+    def process(self, formdata, data=unset_value):
+        if data is unset_value:
             try:
                 data = self.default()
             except TypeError:
@@ -765,7 +848,7 @@ class FieldList(Field):
         accept no more than this many entries as input, even if more exist in
         formdata.
     """
-    widget=widgets.ListWidget()
+    widget = widgets.ListWidget()
 
     def __init__(self, unbound_field, label=None, validators=None, min_entries=0,
                  max_entries=None, default=tuple(), **kwargs):
@@ -779,9 +862,9 @@ class FieldList(Field):
         self.last_index = -1
         self._prefix = kwargs.get('_prefix', '')
 
-    def process(self, formdata, data=_unset_value):
+    def process(self, formdata, data=unset_value):
         self.entries = []
-        if data is _unset_value or not data:
+        if data is unset_value or not data:
             try:
                 data = self.default()
             except TypeError:
@@ -799,7 +882,7 @@ class FieldList(Field):
                 try:
                     obj_data = next(idata)
                 except StopIteration:
-                    obj_data = _unset_value
+                    obj_data = unset_value
                 self._add_entry(formdata, obj_data, index=index)
         else:
             for obj_data in data:
@@ -839,7 +922,7 @@ class FieldList(Field):
                 self.errors.append(subfield.errors)
 
         chain = itertools.chain(self.validators, extra_validators)
-        stop_validation = self._run_validation_chain(form, chain)
+        self._run_validation_chain(form, chain)
 
         return len(self.errors) == 0
 
@@ -861,18 +944,21 @@ class FieldList(Field):
 
         setattr(obj, name, output)
 
-    def _add_entry(self, formdata=None, data=_unset_value, index=None):
+    def _add_entry(self, formdata=None, data=unset_value, index=None):
         assert not self.max_entries or len(self.entries) < self.max_entries, \
             'You cannot have more than max_entries entries in this FieldList'
-        new_index = self.last_index = index or (self.last_index + 1)
-        name = '%s-%d' % (self.short_name, new_index)
-        id   = '%s-%d' % (self.id, new_index)
-        field = self.unbound_field.bind(form=None, name=name, prefix=self._prefix, id=id)
+        if index is None:
+            index = self.last_index + 1
+        self.last_index = index
+        name = '%s-%d' % (self.short_name, index)
+        id = '%s-%d' % (self.id, index)
+        field = self.unbound_field.bind(form=None, name=name, prefix=self._prefix, id=id, _meta=self.meta,
+                                        translations=self._translations)
         field.process(formdata, data)
         self.entries.append(field)
         return field
 
-    def append_entry(self, data=_unset_value):
+    def append_entry(self, data=unset_value):
         """
         Create a new entry with optional default data.
 

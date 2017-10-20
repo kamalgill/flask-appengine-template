@@ -8,13 +8,12 @@ import inspect
 from wtforms import fields as f
 from wtforms import validators
 from wtforms.form import Form
-from wtforms.ext.sqlalchemy.fields import QuerySelectField
-from wtforms.ext.sqlalchemy.fields import QuerySelectMultipleField
-from wtforms.ext.sqlalchemy.validators import Unique
+from .fields import QuerySelectField, QuerySelectMultipleField
 
 __all__ = (
     'model_fields', 'model_form',
 )
+
 
 def converts(*args):
     def _inner(func):
@@ -47,8 +46,9 @@ class ModelConverterBase(object):
         if not hasattr(prop, 'columns') and not hasattr(prop, 'direction'):
             return
         elif not hasattr(prop, 'direction') and len(prop.columns) != 1:
-            raise TypeError('Do not know how to convert multiple-column '
-                + 'properties currently')
+            raise TypeError(
+                'Do not know how to convert multiple-column properties currently'
+            )
 
         kwargs = {
             'validators': [],
@@ -83,11 +83,6 @@ class ModelConverterBase(object):
                 kwargs['validators'].append(validators.Optional())
             else:
                 kwargs['validators'].append(validators.Required())
-
-            if db_session and column.unique:
-                kwargs['validators'].append(Unique(
-                    lambda: db_session, model, column
-                ))
 
             if self.use_mro:
                 types = inspect.getmro(type(column.type))
@@ -141,8 +136,8 @@ class ModelConverterBase(object):
 
 
 class ModelConverter(ModelConverterBase):
-    def __init__(self, extra_converters=None):
-        super(ModelConverter, self).__init__(extra_converters)
+    def __init__(self, extra_converters=None, use_mro=True):
+        super(ModelConverter, self).__init__(extra_converters, use_mro=use_mro)
 
     @classmethod
     def _string_common(cls, column, field_args, **extra):
@@ -154,7 +149,7 @@ class ModelConverter(ModelConverterBase):
         self._string_common(field_args=field_args, **extra)
         return f.TextField(**field_args)
 
-    @converts('types.Text', 'UnicodeText', 'types.LargeBinary', 'types.Binary')
+    @converts('types.Text', 'UnicodeText', 'types.LargeBinary', 'types.Binary', 'sql.sqltypes.Text')
     def conv_Text(self, field_args, **extra):
         self._string_common(field_args=field_args, **extra)
         return f.TextAreaField(**field_args)
@@ -173,7 +168,8 @@ class ModelConverter(ModelConverterBase):
 
     @converts('Enum')
     def conv_Enum(self, column, field_args, **extra):
-        field_args['choices'] = [(e, e) for e in column.type.enums]
+        if 'choices' not in field_args:
+            field_args['choices'] = [(e, e) for e in column.type.enums]
         return f.SelectField(**field_args)
 
     @converts('Integer', 'SmallInteger')
@@ -223,7 +219,8 @@ class ModelConverter(ModelConverterBase):
 
 
 def model_fields(model, db_session=None, only=None, exclude=None,
-        field_args=None, converter=None):
+                 field_args=None, converter=None, exclude_pk=False,
+                 exclude_fk=False):
     """
     Generate a dictionary of fields for a given SQLAlchemy model.
 
@@ -232,8 +229,18 @@ def model_fields(model, db_session=None, only=None, exclude=None,
     mapper = model._sa_class_manager.mapper
     converter = converter or ModelConverter()
     field_args = field_args or {}
+    properties = []
 
-    properties = ((p.key, p) for p in mapper.iterate_properties)
+    for prop in mapper.iterate_properties:
+        if getattr(prop, 'columns', None):
+            if exclude_fk and prop.columns[0].foreign_keys:
+                continue
+            elif exclude_pk and prop.columns[0].primary_key:
+                continue
+
+        properties.append((prop.key, prop))
+
+    # ((p.key, p) for p in mapper.iterate_properties)
     if only:
         properties = (x for x in properties if x[0] in only)
     elif exclude:
@@ -241,8 +248,10 @@ def model_fields(model, db_session=None, only=None, exclude=None,
 
     field_dict = {}
     for name, prop in properties:
-        field = converter.convert(model, mapper, prop,
-            field_args.get(name), db_session)
+        field = converter.convert(
+            model, mapper, prop,
+            field_args.get(name), db_session
+        )
         if field is not None:
             field_dict[name] = field
 
@@ -250,12 +259,12 @@ def model_fields(model, db_session=None, only=None, exclude=None,
 
 
 def model_form(model, db_session=None, base_class=Form, only=None,
-    exclude=None, field_args=None, converter=None, exclude_pk=True,
-    exclude_fk=True, type_name=None):
+               exclude=None, field_args=None, converter=None, exclude_pk=True,
+               exclude_fk=True, type_name=None):
     """
     Create a wtforms Form for a given SQLAlchemy model class::
 
-        from wtalchemy.orm import model_form
+        from wtforms.ext.sqlalchemy.orm import model_form
         from myapp.models import User
         UserForm = model_form(User)
 
@@ -287,17 +296,9 @@ def model_form(model, db_session=None, base_class=Form, only=None,
     if not hasattr(model, '_sa_class_manager'):
         raise TypeError('model must be a sqlalchemy mapped model')
 
-    if not exclude:
-        exclude = []
-    model_mapper = model.__mapper__
-    for prop in model_mapper.iterate_properties:
-        if not hasattr(prop, 'direction') and prop.columns[0].primary_key:
-            if exclude_pk:
-                exclude.append(prop.key)
-        if hasattr(prop, 'direction') and exclude_fk and \
-                prop.direction.name != 'MANYTOMANY':
-            for pair in prop.local_remote_pairs:
-                exclude.append(pair[0].key)
     type_name = type_name or str(model.__name__ + 'Form')
-    field_dict = model_fields(model, db_session, only, exclude, field_args, converter)
+    field_dict = model_fields(
+        model, db_session, only, exclude, field_args, converter,
+        exclude_pk=exclude_pk, exclude_fk=exclude_fk
+    )
     return type(type_name, (base_class, ), field_dict)
