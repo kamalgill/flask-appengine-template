@@ -221,7 +221,7 @@ Package Versions
 - Jinja2: 2.6 (included in GAE)
 - jQuery: 1.9.1 (set in base.html)
 - Modernizr: 2.6.2
-- Werkzeug: 0.8.3
+- Werkzeug: 0.12.2
 - WTForms: 1.0.5
 
 

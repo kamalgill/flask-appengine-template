@@ -8,29 +8,38 @@
     browsers.
 
 
-    :copyright: (c) 2011 by the Werkzeug Team, see AUTHORS for more details.
+    :copyright: (c) 2014 by the Werkzeug Team, see AUTHORS for more details.
     :license: BSD, see LICENSE for more details.
 """
 import re
 
 
 class UserAgentParser(object):
+
     """A simple user agent parser.  Used by the `UserAgent`."""
 
     platforms = (
+        ('cros', 'chromeos'),
         ('iphone|ios', 'iphone'),
+        ('ipad', 'ipad'),
         (r'darwin|mac|os\s*x', 'macos'),
         ('win', 'windows'),
         (r'android', 'android'),
-        (r'x11|lin(\b|ux)?', 'linux'),
+        ('netbsd', 'netbsd'),
+        ('openbsd', 'openbsd'),
+        ('freebsd', 'freebsd'),
+        ('dragonfly', 'dragonflybsd'),
         ('(sun|i86)os', 'solaris'),
+        (r'x11|lin(\b|ux)?', 'linux'),
         (r'nintendo\s+wii', 'wii'),
         ('irix', 'irix'),
         ('hp-?ux', 'hpux'),
         ('aix', 'aix'),
         ('sco|unix_sv', 'sco'),
         ('bsd', 'bsd'),
-        ('amiga', 'amiga')
+        ('amiga', 'amiga'),
+        ('blackberry|playbook', 'blackberry'),
+        ('symbian', 'symbian')
     )
     browsers = (
         ('googlebot', 'google'),
@@ -40,21 +49,24 @@ class UserAgentParser(object):
         (r'aol|america\s+online\s+browser', 'aol'),
         ('opera', 'opera'),
         ('chrome', 'chrome'),
+        ('seamonkey', 'seamonkey'),
         ('firefox|firebird|phoenix|iceweasel', 'firefox'),
         ('galeon', 'galeon'),
-        ('safari', 'safari'),
+        ('safari|version', 'safari'),
         ('webkit', 'webkit'),
         ('camino', 'camino'),
         ('konqueror', 'konqueror'),
         ('k-meleon', 'kmeleon'),
         ('netscape', 'netscape'),
-        (r'msie|microsoft\s+internet\s+explorer', 'msie'),
+        (r'msie|microsoft\s+internet\s+explorer|trident/.+? rv:', 'msie'),
         ('lynx', 'lynx'),
         ('links', 'links'),
-        ('seamonkey|mozilla', 'seamonkey')
+        ('Baiduspider', 'baidu'),
+        ('bingbot', 'bing'),
+        ('mozilla', 'mozilla')
     )
 
-    _browser_version_re = r'(?:%s)[/\sa-z(]*(\d+[.\da-z]+)?(?i)'
+    _browser_version_re = r'(?:%s)[/\sa-z(]*(\d+[.\da-z]+)?'
     _language_re = re.compile(
         r'(?:;\s*|\s+)(\b\w{2}\b(?:-\b\w{2}\b)?)\s*;|'
         r'(?:\(|\[|;)\s*(\b\w{2}\b(?:-\b\w{2}\b)?)\s*(?:\]|\)|;)'
@@ -62,7 +74,7 @@ class UserAgentParser(object):
 
     def __init__(self):
         self.platforms = [(b, re.compile(a, re.I)) for a, b in self.platforms]
-        self.browsers = [(b, re.compile(self._browser_version_re % a))
+        self.browsers = [(b, re.compile(self._browser_version_re % a, re.I))
                          for a, b in self.browsers]
 
     def __call__(self, user_agent):
@@ -88,6 +100,7 @@ class UserAgentParser(object):
 
 
 class UserAgent(object):
+
     """Represents a user agent.  Pass it a WSGI environment or a user agent
     string and you can inspect some of the details from the user agent
     string via the attributes.  The following attributes exist:
@@ -105,8 +118,10 @@ class UserAgent(object):
        -   `amiga`
        -   `android`
        -   `bsd`
+       -   `chromeos`
        -   `hpux`
        -   `iphone`
+       -   `ipad`
        -   `irix`
        -   `linux`
        -   `macos`
@@ -169,6 +184,8 @@ class UserAgent(object):
     def __nonzero__(self):
         return bool(self.browser)
 
+    __bool__ = __nonzero__
+
     def __repr__(self):
         return '<%s %r/%s>' % (
             self.__class__.__name__,
@@ -182,4 +199,4 @@ class UserAgent(object):
 # it afterwards.  The class itself has the module set to this module so
 # pickle, inspect and similar modules treat the object as if it was really
 # implemented here.
-from werkzeug.wrappers import UserAgentMixin
+from werkzeug.wrappers import UserAgentMixin  # noqa
