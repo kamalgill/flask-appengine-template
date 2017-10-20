@@ -1,16 +1,14 @@
 # -*- coding: utf-8 -*-
 
-from flask.views import View
-
 from flask import flash, redirect, url_for, render_template
+from flask.views import View
 
 from google.appengine.api import users
 from google.appengine.runtime.apiproxy_errors import CapabilityDisabledError
 
+from decorators import login_required
 from forms import ExampleForm
 from models import ExampleModel
-
-from decorators import login_required
 
 
 class AdminListExamples(View):

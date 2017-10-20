@@ -1,13 +1,11 @@
 # -*- coding: utf-8 -*-
 
-from flask.views import View
-
 from flask import flash, redirect, url_for, request
+from flask.views import View
 
 from google.appengine.runtime.apiproxy_errors import CapabilityDisabledError
 
 from models import ExampleModel
-
 from decorators import login_required
 
 

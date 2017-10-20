@@ -195,7 +195,7 @@ The application code is located at `src/application`.
   |-- urls.py (URL dispatch routes)
   |-- views
   |   |-- admin
-  |     `-- *.py (Views which require authentification)
+  |     `-- *.py (Views which require authentication)
   |   |-- public
   |     `-- *.py (Public views)
 </pre>
