@@ -3,8 +3,6 @@
 """
 tests.py
 
-TODO: These tests need to be updated to support the Python 2.7 runtime
-
 """
 import os
 import unittest
@@ -20,7 +18,8 @@ class DemoTestCase(unittest.TestCase):
         app.config['TESTING'] = True
         app.config['CSRF_ENABLED'] = False
         self.app = app.test_client()
-        # Setups app engine test bed. See: http://code.google.com/appengine/docs/python/tools/localunittesting.html#Introducing_the_Python_Testing_Utilities
+        # Setups app engine test bed.
+        # See: http://code.google.com/appengine/docs/python/tools/localunittesting.html#Introducing_the_Python_Testing_Utilities
         self.testbed = testbed.Testbed()
         self.testbed.activate()
         self.testbed.init_datastore_v3_stub()
@@ -77,6 +76,7 @@ class DemoTestCase(unittest.TestCase):
         rv = self.app.get('/missing')
         assert rv.status == '404 NOT FOUND'
         assert '<h1>Not found</h1>' in rv.data
+
 
 if __name__ == '__main__':
     unittest.main()
