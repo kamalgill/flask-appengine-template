@@ -2,13 +2,21 @@ Flask on App Engine Project Template
 ====================================
 
 Boilerplate project template for running a Flask-based application on
-Google App Engine (Python)
+Google App Engine's Standard Python 2.7 Runtime
 
-Note: This project isn't as actively maintained as I would like (although pull requests are still welcome).
-You may want to investigate similar projects listed below:
+Similar boilerplate projects are listed below:
 
 - [gae-init](https://github.com/gae-init/gae-init)
 - [gae-boilerplate](https://github.com/coto/gae-boilerplate)
+
+
+App Engine Flexible Environment
+-------------------------------
+This project does not currently support deployments on the App Engine Flexible environment,
+although it could potentially work on App Engine Flexible with some modifications.
+
+See the official [Quickstart for Python in the App Engine Flexible Environment][quickstart]
+if you are looking to deploy Python 2.7 and 3.x applications on App Engine
 
 
 About Flask
@@ -193,21 +201,6 @@ The application code is located at `src/application`.
 </pre>
 
 
-Removing Extended Attributes (@ flag)
--------------------------------------
-A few of the files in the source tree were uploaded (with apologies) to
-GitHub with extended attributes (notice the '@' symbol when running ls -al).
-
-To remove the extended attributes, use `xattr -rd` at the root of the
-src/ folder.
-
-<pre class='console'>
-  xattr -rd com.apple.quarantine .
-  xattr -rd com.macromates.caret .
-</pre>
-
-Note: Windows users may safely ignore the xattr fix
-
 
 Licenses
 --------
@@ -258,5 +251,6 @@ HTML5 detection provided by [Modernizr 2][modernizr] (configured with all featur
 [gaeseries]: http://github.com/franciscosouza/gaeseries/tree/flask
 [modernizr]: http://www.modernizr.com/
 [profiler]: http://packages.python.org/Flask-GAE-Mini-Profiler/
+[quickstart]: https://cloud.google.com/appengine/docs/flexible/python/quickstart
 [wz]: http://werkzeug.pocoo.org/
 [wzda]: https://github.com/nshah/werkzeug-debugger-appengine
