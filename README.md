@@ -213,7 +213,7 @@ Package Versions
 - Bootstrap: 2.3.1
 - Click: 6.7
 - Flask: 0.12.2
-- Flask-Cache 0.10.1
+- Flask-Cache 0.13.1
 - Flask-DebugToolbar: 0.7.1
 - Flask-WTF: 0.6
 - FontAwesome: 3.0
