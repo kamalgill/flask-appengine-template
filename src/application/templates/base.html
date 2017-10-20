@@ -2,8 +2,7 @@
 <html lang="en" class="no-js">
 {% set bootstrap_version = '3.0.0' %}
 {% set modernizer_version = '2.6.2' %}
-{% set jquery_version = '1.9.1' %}
-{% set parsley_version = '1.1.16' %}
+{% set jquery_version = '3.2.1' %}
 {% set awesome_version = '4.0.1' %}
 {% set bootswatch_version = '3.0.0' %}
 {% set bootswatch_theme = 'cyborg' %}
@@ -40,7 +39,6 @@
     </footer>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/{{ jquery_version }}/jquery.min.js"></script>
     <script src="//netdna.bootstrapcdn.com/bootstrap/{{ bootstrap_version }}/js/bootstrap.min.js"></script>
-    <script src="//cdnjs.cloudflare.com/ajax/libs/parsley.js/{{ parsley_version }}/parsley-standalone.min.js"></script>
     <script src="/static/js/main.js"></script>
     {% block tail_script %}{# defer-capable JS block #}{% endblock %}
     {{ profiler_includes|safe }}

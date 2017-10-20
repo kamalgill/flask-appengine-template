@@ -210,7 +210,7 @@ See licenses/ folder
 Package Versions
 ----------------
 - Blinker: 1.4
-- Bootstrap: 2.3.1
+- Bootstrap: 3.0.0
 - Click: 6.7
 - Flask: 0.12.2
 - Flask-Cache 0.13.1
@@ -219,7 +219,7 @@ Package Versions
 - FontAwesome: 3.0
 - itsdangerous: 0.24
 - Jinja2: 2.6 (included in GAE)
-- jQuery: 1.9.1 (set in base.html)
+- jQuery: 3.2.1 (set in base.html)
 - Modernizr: 2.6.2
 - Werkzeug: 0.12.2
 - WTForms: 2.1
