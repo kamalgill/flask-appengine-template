@@ -211,7 +211,8 @@ Package Versions
 ----------------
 - Blinker: 1.1
 - Bootstrap: 2.3.1
-- Flask: 0.10
+- Click: 6.7
+- Flask: 0.12.2
 - Flask-Cache 0.10.1
 - Flask-DebugToolbar: 0.7.1
 - Flask-WTF: 0.6

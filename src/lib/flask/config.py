@@ -5,16 +5,17 @@
 
     Implements the configuration related objects.
 
-    :copyright: (c) 2011 by Armin Ronacher.
+    :copyright: (c) 2015 by Armin Ronacher.
     :license: BSD, see LICENSE for more details.
 """
 
-import imp
 import os
+import types
 import errno
 
 from werkzeug.utils import import_string
-from ._compat import string_types
+from ._compat import string_types, iteritems
+from . import json
 
 
 class ConfigAttribute(object):
@@ -92,9 +93,9 @@ class Config(dict):
             app.config.from_pyfile(os.environ['YOURAPPLICATION_SETTINGS'])
 
         :param variable_name: name of the environment variable
-        :param silent: set to `True` if you want silent failure for missing
+        :param silent: set to ``True`` if you want silent failure for missing
                        files.
-        :return: bool. `True` if able to load config, `False` otherwise.
+        :return: bool. ``True`` if able to load config, ``False`` otherwise.
         """
         rv = os.environ.get(variable_name)
         if not rv:
@@ -115,17 +116,17 @@ class Config(dict):
         :param filename: the filename of the config.  This can either be an
                          absolute filename or a filename relative to the
                          root path.
-        :param silent: set to `True` if you want silent failure for missing
+        :param silent: set to ``True`` if you want silent failure for missing
                        files.
 
         .. versionadded:: 0.7
            `silent` parameter.
         """
         filename = os.path.join(self.root_path, filename)
-        d = imp.new_module('config')
+        d = types.ModuleType('config')
         d.__file__ = filename
         try:
-            with open(filename) as config_file:
+            with open(filename, mode='rb') as config_file:
                 exec(compile(config_file.read(), filename, 'exec'), d.__dict__)
         except IOError as e:
             if silent and e.errno in (errno.ENOENT, errno.EISDIR):
@@ -142,10 +143,12 @@ class Config(dict):
         -   a string: in this case the object with that name will be imported
         -   an actual object reference: that object is used directly
 
-        Objects are usually either modules or classes.
+        Objects are usually either modules or classes. :meth:`from_object`
+        loads only the uppercase attributes of the module/class. A ``dict``
+        object will not work with :meth:`from_object` because the keys of a
+        ``dict`` are not attributes of the ``dict`` class.
 
-        Just the uppercase variables in that object are stored in the config.
-        Example usage::
+        Example of module-based configuration::
 
             app.config.from_object('yourapplication.default_config')
             from yourapplication import default_config
@@ -156,6 +159,9 @@ class Config(dict):
         with :meth:`from_pyfile` and ideally from a location not within the
         package because the package might be installed system wide.
 
+        See :ref:`config-dev-prod` for an example of class-based configuration
+        using :meth:`from_object`.
+
         :param obj: an import name or object
         """
         if isinstance(obj, string_types):
@@ -163,6 +169,95 @@ class Config(dict):
         for key in dir(obj):
             if key.isupper():
                 self[key] = getattr(obj, key)
+
+    def from_json(self, filename, silent=False):
+        """Updates the values in the config from a JSON file. This function
+        behaves as if the JSON object was a dictionary and passed to the
+        :meth:`from_mapping` function.
+
+        :param filename: the filename of the JSON file.  This can either be an
+                         absolute filename or a filename relative to the
+                         root path.
+        :param silent: set to ``True`` if you want silent failure for missing
+                       files.
+
+        .. versionadded:: 0.11
+        """
+        filename = os.path.join(self.root_path, filename)
+
+        try:
+            with open(filename) as json_file:
+                obj = json.loads(json_file.read())
+        except IOError as e:
+            if silent and e.errno in (errno.ENOENT, errno.EISDIR):
+                return False
+            e.strerror = 'Unable to load configuration file (%s)' % e.strerror
+            raise
+        return self.from_mapping(obj)
+
+    def from_mapping(self, *mapping, **kwargs):
+        """Updates the config like :meth:`update` ignoring items with non-upper
+        keys.
+
+        .. versionadded:: 0.11
+        """
+        mappings = []
+        if len(mapping) == 1:
+            if hasattr(mapping[0], 'items'):
+                mappings.append(mapping[0].items())
+            else:
+                mappings.append(mapping[0])
+        elif len(mapping) > 1:
+            raise TypeError(
+                'expected at most 1 positional argument, got %d' % len(mapping)
+            )
+        mappings.append(kwargs.items())
+        for mapping in mappings:
+            for (key, value) in mapping:
+                if key.isupper():
+                    self[key] = value
+        return True
+
+    def get_namespace(self, namespace, lowercase=True, trim_namespace=True):
+        """Returns a dictionary containing a subset of configuration options
+        that match the specified namespace/prefix. Example usage::
+
+            app.config['IMAGE_STORE_TYPE'] = 'fs'
+            app.config['IMAGE_STORE_PATH'] = '/var/app/images'
+            app.config['IMAGE_STORE_BASE_URL'] = 'http://img.website.com'
+            image_store_config = app.config.get_namespace('IMAGE_STORE_')
+
+        The resulting dictionary `image_store_config` would look like::
+
+            {
+                'type': 'fs',
+                'path': '/var/app/images',
+                'base_url': 'http://img.website.com'
+            }
+
+        This is often useful when configuration options map directly to
+        keyword arguments in functions or class constructors.
+
+        :param namespace: a configuration namespace
+        :param lowercase: a flag indicating if the keys of the resulting
+                          dictionary should be lowercase
+        :param trim_namespace: a flag indicating if the keys of the resulting
+                          dictionary should not include the namespace
+
+        .. versionadded:: 0.11
+        """
+        rv = {}
+        for k, v in iteritems(self):
+            if not k.startswith(namespace):
+                continue
+            if trim_namespace:
+                key = k[len(namespace):]
+            else:
+                key = k
+            if lowercase:
+                key = key.lower()
+            rv[key] = v
+        return rv
 
     def __repr__(self):
         return '<%s %s>' % (self.__class__.__name__, dict.__repr__(self))
