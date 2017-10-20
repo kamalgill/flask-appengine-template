@@ -2,11 +2,15 @@
 
 from flask import flash, redirect, url_for, request
 from flask.views import View
+from flask_cache import Cache
 
 from google.appengine.runtime.apiproxy_errors import CapabilityDisabledError
 
+from application import app
 from models import ExampleModel
 from decorators import login_required
+
+cache = Cache(app)
 
 
 class AdminDeleteExample(View):
@@ -17,6 +21,7 @@ class AdminDeleteExample(View):
         if request.method == "POST":
             try:
                 example.key.delete()
+                cache.clear()
                 flash(u'Example %s successfully deleted.' % example_id, 'success')
                 return redirect(url_for('list_examples'))
             except CapabilityDisabledError:

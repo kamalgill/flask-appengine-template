@@ -2,13 +2,17 @@
 
 from flask import flash, redirect, url_for, render_template
 from flask.views import View
+from flask_cache import Cache
 
 from google.appengine.api import users
 from google.appengine.runtime.apiproxy_errors import CapabilityDisabledError
 
+from application import app
 from decorators import login_required
 from forms import ExampleForm
 from models import ExampleModel
+
+cache = Cache(app)
 
 
 class AdminListExamples(View):
@@ -26,6 +30,7 @@ class AdminListExamples(View):
             try:
                 example.put()
                 example_id = example.key.id()
+                cache.clear()
                 flash(u'Example %s successfully saved.' % example_id, 'success')
                 return redirect(url_for('list_examples'))
             except CapabilityDisabledError:
