@@ -1,6 +1,7 @@
 # Development environment pip requirements file
 # Install via 'pip install -r requirements_dev.txt'
 
+click
 Pillow
 jinja2
 simplejson

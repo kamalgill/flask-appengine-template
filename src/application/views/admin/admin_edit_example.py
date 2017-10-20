@@ -1,13 +1,11 @@
 # -*- coding: utf-8 -*-
 
+from flask import flash, redirect, url_for, render_template, request
 from flask.views import View
 
-from flask import flash, redirect, url_for, render_template, request
-
+from decorators import login_required
 from forms import ExampleForm
 from models import ExampleModel
-
-from decorators import login_required
 
 
 class AdminEditExample(View):

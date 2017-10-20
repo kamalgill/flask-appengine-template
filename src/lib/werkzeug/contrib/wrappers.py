@@ -17,18 +17,19 @@
     Afterwards this request object provides the extra functionality of the
     :class:`JSONRequestMixin`.
 
-    :copyright: (c) 2011 by the Werkzeug Team, see AUTHORS for more details.
+    :copyright: (c) 2014 by the Werkzeug Team, see AUTHORS for more details.
     :license: BSD, see LICENSE for more details.
 """
 import codecs
-from werkzeug.exceptions import BadRequest
-from werkzeug.utils import cached_property
-from werkzeug.http import dump_options_header, parse_options_header
-from werkzeug._internal import _decode_unicode
 try:
     from simplejson import loads
 except ImportError:
     from json import loads
+
+from werkzeug.exceptions import BadRequest
+from werkzeug.utils import cached_property
+from werkzeug.http import dump_options_header, parse_options_header
+from werkzeug._compat import wsgi_decoding_dance
 
 
 def is_known_charset(charset):
@@ -41,6 +42,7 @@ def is_known_charset(charset):
 
 
 class JSONRequestMixin(object):
+
     """Add json method to a request object.  This will parse the input data
     through simplejson if possible.
 
@@ -54,12 +56,13 @@ class JSONRequestMixin(object):
         if 'json' not in self.environ.get('CONTENT_TYPE', ''):
             raise BadRequest('Not a JSON request')
         try:
-            return loads(self.data)
+            return loads(self.data.decode(self.charset, self.encoding_errors))
         except Exception:
             raise BadRequest('Unable to read JSON request')
 
 
 class ProtobufRequestMixin(object):
+
     """Add protobuf parsing method to a request object.  This will parse the
     input data through `protobuf`_ if possible.
 
@@ -94,10 +97,11 @@ class ProtobufRequestMixin(object):
 
 
 class RoutingArgsRequestMixin(object):
+
     """This request mixin adds support for the wsgiorg routing args
     `specification`_.
 
-    .. _specification: http://www.wsgi.org/wsgi/Specifications/routing_args
+    .. _specification: https://wsgi.readthedocs.io/en/latest/specifications/routing_args.html
     """
 
     def _get_routing_args(self):
@@ -136,6 +140,7 @@ class RoutingArgsRequestMixin(object):
 
 
 class ReverseSlashBehaviorRequestMixin(object):
+
     """This mixin reverses the trailing slash behavior of :attr:`script_root`
     and :attr:`path`.  This makes it possible to use :func:`~urlparse.urljoin`
     directly on the paths.
@@ -163,17 +168,20 @@ class ReverseSlashBehaviorRequestMixin(object):
         """Requested path as unicode.  This works a bit like the regular path
         info in the WSGI environment but will not include a leading slash.
         """
-        path = (self.environ.get('PATH_INFO') or '').lstrip('/')
-        return _decode_unicode(path, self.charset, self.encoding_errors)
+        path = wsgi_decoding_dance(self.environ.get('PATH_INFO') or '',
+                                   self.charset, self.encoding_errors)
+        return path.lstrip('/')
 
     @cached_property
     def script_root(self):
         """The root path of the script includling a trailing slash."""
-        path = (self.environ.get('SCRIPT_NAME') or '').rstrip('/') + '/'
-        return _decode_unicode(path, self.charset, self.encoding_errors)
+        path = wsgi_decoding_dance(self.environ.get('SCRIPT_NAME') or '',
+                                   self.charset, self.encoding_errors)
+        return path.rstrip('/') + '/'
 
 
 class DynamicCharsetRequestMixin(object):
+
     """"If this mixin is mixed into a request class it will provide
     a dynamic `charset` attribute.  This means that if the charset is
     transmitted in the content type headers it's used from there.
@@ -230,6 +238,7 @@ class DynamicCharsetRequestMixin(object):
 
 
 class DynamicCharsetResponseMixin(object):
+
     """If this mixin is mixed into a response class it will provide
     a dynamic `charset` attribute.  This means that if the charset is
     looked up and stored in the `Content-Type` header and updates

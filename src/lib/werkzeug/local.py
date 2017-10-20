@@ -5,22 +5,24 @@
 
     This module implements context-local objects.
 
-    :copyright: (c) 2011 by the Werkzeug Team, see AUTHORS for more details.
+    :copyright: (c) 2014 by the Werkzeug Team, see AUTHORS for more details.
     :license: BSD, see LICENSE for more details.
 """
+import copy
+from functools import update_wrapper
 from werkzeug.wsgi import ClosingIterator
-from werkzeug._internal import _patch_wrapper
+from werkzeug._compat import PY2, implements_bool
 
 # since each thread has its own greenlet we can just use those as identifiers
 # for the context.  If greenlets are not available we fall back to the
-# current thread ident.
+# current thread ident depending on where it is.
 try:
     from greenlet import getcurrent as get_ident
-except ImportError: # pragma: no cover
+except ImportError:
     try:
         from thread import get_ident
-    except ImportError: # pragma: no cover
-        from dummy_thread import get_ident
+    except ImportError:
+        from _thread import get_ident
 
 
 def release_local(local):
@@ -36,7 +38,7 @@ def release_local(local):
         False
 
     With this function one can release :class:`Local` objects as well
-    as :class:`StackLocal` objects.  However it is not possible to
+    as :class:`LocalStack` objects.  However it is not possible to
     release data held by proxies that way, one always has to retain
     a reference to the underlying local object in order to be able
     to release it.
@@ -85,6 +87,7 @@ class Local(object):
 
 
 class LocalStack(object):
+
     """This class works similar to a :class:`Local` but keeps a stack
     of objects instead.  This is best explained with an example::
 
@@ -119,6 +122,7 @@ class LocalStack(object):
 
     def _get__ident_func__(self):
         return self._local.__ident_func__
+
     def _set__ident_func__(self, value):
         object.__setattr__(self._local, '__ident_func__', value)
     __ident_func__ = property(_get__ident_func__, _set__ident_func__)
@@ -165,10 +169,11 @@ class LocalStack(object):
 
 
 class LocalManager(object):
+
     """Local objects cannot manage themselves. For that you need a local
     manager.  You can pass a local manager multiple locals or add them later
-    by appending them to `manager.locals`.  Everytime the manager cleans up
-    it, will clean up all the data left in the locals for this context.
+    by appending them to `manager.locals`.  Every time the manager cleans up,
+    it will clean up all the data left in the locals for this context.
 
     The `ident_func` parameter can be added to override the default ident
     function for the wrapped locals.
@@ -202,7 +207,7 @@ class LocalManager(object):
         scoped sessions) to the Werkzeug locals.
 
         .. versionchanged:: 0.7
-           Yu can pass a different ident function to the local manager that
+           You can pass a different ident function to the local manager that
            will then be propagated to all the locals passed to the
            constructor.
         """
@@ -236,7 +241,7 @@ class LocalManager(object):
         will have all the arguments copied from the inner application
         (name, docstring, module).
         """
-        return _patch_wrapper(func, self.make_middleware(func))
+        return update_wrapper(self.make_middleware(func), func)
 
     def __repr__(self):
         return '<%s storages: %d>' % (
@@ -245,7 +250,9 @@ class LocalManager(object):
         )
 
 
+@implements_bool
 class LocalProxy(object):
+
     """Acts as a proxy for a werkzeug local.  Forwards all operations to
     a proxied object.  The only operations not supported for forwarding
     are right handed operands and any kind of assignment.
@@ -278,13 +285,17 @@ class LocalProxy(object):
         session = LocalProxy(lambda: get_current_request().session)
 
     .. versionchanged:: 0.6.1
-       The class can be instanciated with a callable as well now.
+       The class can be instantiated with a callable as well now.
     """
-    __slots__ = ('__local', '__dict__', '__name__')
+    __slots__ = ('__local', '__dict__', '__name__', '__wrapped__')
 
     def __init__(self, local, name=None):
         object.__setattr__(self, '_LocalProxy__local', local)
         object.__setattr__(self, '__name__', name)
+        if callable(local) and not hasattr(local, '__release_local__'):
+            # "local" is a callable that is not an instance of Local or
+            # LocalManager: mark it as a wrapped function.
+            object.__setattr__(self, '__wrapped__', local)
 
     def _get_current_object(self):
         """Return the current object.  This is useful if you want the real
@@ -312,7 +323,7 @@ class LocalProxy(object):
             return '<%s unbound>' % self.__class__.__name__
         return repr(obj)
 
-    def __nonzero__(self):
+    def __bool__(self):
         try:
             return bool(self._get_current_object())
         except RuntimeError:
@@ -320,7 +331,7 @@ class LocalProxy(object):
 
     def __unicode__(self):
         try:
-            return unicode(self._get_current_object())
+            return unicode(self._get_current_object())  # noqa
         except RuntimeError:
             return repr(self)
 
@@ -341,11 +352,14 @@ class LocalProxy(object):
     def __delitem__(self, key):
         del self._get_current_object()[key]
 
-    def __setslice__(self, i, j, seq):
-        self._get_current_object()[i:j] = seq
+    if PY2:
+        __getslice__ = lambda x, i, j: x._get_current_object()[i:j]
 
-    def __delslice__(self, i, j):
-        del self._get_current_object()[i:j]
+        def __setslice__(self, i, j, seq):
+            self._get_current_object()[i:j] = seq
+
+        def __delslice__(self, i, j):
+            del self._get_current_object()[i:j]
 
     __setattr__ = lambda x, n, v: setattr(x._get_current_object(), n, v)
     __delattr__ = lambda x, n: delattr(x._get_current_object(), n)
@@ -356,14 +370,13 @@ class LocalProxy(object):
     __ne__ = lambda x, o: x._get_current_object() != o
     __gt__ = lambda x, o: x._get_current_object() > o
     __ge__ = lambda x, o: x._get_current_object() >= o
-    __cmp__ = lambda x, o: cmp(x._get_current_object(), o)
+    __cmp__ = lambda x, o: cmp(x._get_current_object(), o)  # noqa
     __hash__ = lambda x: hash(x._get_current_object())
     __call__ = lambda x, *a, **kw: x._get_current_object()(*a, **kw)
     __len__ = lambda x: len(x._get_current_object())
     __getitem__ = lambda x, i: x._get_current_object()[i]
     __iter__ = lambda x: iter(x._get_current_object())
     __contains__ = lambda x, i: i in x._get_current_object()
-    __getslice__ = lambda x, i, j: x._get_current_object()[i:j]
     __add__ = lambda x, o: x._get_current_object() + o
     __sub__ = lambda x, o: x._get_current_object() - o
     __mul__ = lambda x, o: x._get_current_object() * o
@@ -384,11 +397,24 @@ class LocalProxy(object):
     __invert__ = lambda x: ~(x._get_current_object())
     __complex__ = lambda x: complex(x._get_current_object())
     __int__ = lambda x: int(x._get_current_object())
-    __long__ = lambda x: long(x._get_current_object())
+    __long__ = lambda x: long(x._get_current_object())  # noqa
     __float__ = lambda x: float(x._get_current_object())
     __oct__ = lambda x: oct(x._get_current_object())
     __hex__ = lambda x: hex(x._get_current_object())
     __index__ = lambda x: x._get_current_object().__index__()
-    __coerce__ = lambda x, o: x.__coerce__(x, o)
-    __enter__ = lambda x: x.__enter__()
-    __exit__ = lambda x, *a, **kw: x.__exit__(*a, **kw)
+    __coerce__ = lambda x, o: x._get_current_object().__coerce__(x, o)
+    __enter__ = lambda x: x._get_current_object().__enter__()
+    __exit__ = lambda x, *a, **kw: x._get_current_object().__exit__(*a, **kw)
+    __radd__ = lambda x, o: o + x._get_current_object()
+    __rsub__ = lambda x, o: o - x._get_current_object()
+    __rmul__ = lambda x, o: o * x._get_current_object()
+    __rdiv__ = lambda x, o: o / x._get_current_object()
+    if PY2:
+        __rtruediv__ = lambda x, o: x._get_current_object().__rtruediv__(o)
+    else:
+        __rtruediv__ = __rdiv__
+    __rfloordiv__ = lambda x, o: o // x._get_current_object()
+    __rmod__ = lambda x, o: o % x._get_current_object()
+    __rdivmod__ = lambda x, o: x._get_current_object().__rdivmod__(o)
+    __copy__ = lambda x: copy.copy(x._get_current_object())
+    __deepcopy__ = lambda x, memo: copy.deepcopy(x._get_current_object(), memo)

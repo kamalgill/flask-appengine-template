@@ -1,8 +1,7 @@
 # -*- coding: utf-8 -*-
 
-from flask.views import View
-
 from flask import redirect, url_for
+from flask.views import View
 
 
 class PublicIndex(View):

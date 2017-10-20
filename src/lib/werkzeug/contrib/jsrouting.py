@@ -6,7 +6,7 @@
     Addon module that allows to create a JavaScript function from a map
     that generates rules.
 
-    :copyright: (c) 2011 by the Werkzeug Team, see AUTHORS for more details.
+    :copyright: (c) 2014 by the Werkzeug Team, see AUTHORS for more details.
     :license: BSD, see LICENSE for more details.
 """
 try:
@@ -20,18 +20,19 @@ except ImportError:
 
 from inspect import getmro
 from werkzeug.routing import NumberConverter
+from werkzeug._compat import iteritems
 
 
 def render_template(name_parts, rules, converters):
     result = u''
     if name_parts:
-        for idx in xrange(0, len(name_parts) - 1):
+        for idx in range(0, len(name_parts) - 1):
             name = u'.'.join(name_parts[:idx + 1])
             result += u"if (typeof %s === 'undefined') %s = {}\n" % (name, name)
         result += '%s = ' % '.'.join(name_parts)
     result += """(function (server_name, script_name, subdomain, url_scheme) {
-    var converters = %(converters)s;
-    var rules = $rules;
+    var converters = [%(converters)s];
+    var rules = %(rules)s;
     function in_array(array, value) {
         if (array.indexOf != undefined) {
             return array.indexOf(value) != -1;
@@ -162,7 +163,9 @@ def render_template(name_parts, rules, converters):
                    + '/' + lstrip(rv.path, '/');
         }
     };
-})""" % {'converters': u', '.join(converters)}
+})""" % {'converters': u', '.join(converters),
+         'rules': rules}
+
     return result
 
 
@@ -181,6 +184,8 @@ def generate_map(map, name='url_map'):
     defined in your map to users. If your rules contain sensitive
     information, don't use JavaScript generation!
     """
+    from warnings import warn
+    warn(DeprecationWarning('This module is deprecated'))
     map.update()
     rules = []
     converters = []
@@ -190,7 +195,7 @@ def generate_map(map, name='url_map'):
             'data':         data
         } for is_dynamic, data in rule._trace]
         rule_converters = {}
-        for key, converter in rule._converters.iteritems():
+        for key, converter in iteritems(rule._converters):
             js_func = js_to_url_function(converter)
             try:
                 index = converters.index(js_func)

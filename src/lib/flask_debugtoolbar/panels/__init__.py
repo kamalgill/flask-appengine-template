@@ -1,15 +1,17 @@
 """Base DebugPanel class"""
 
+
 class DebugPanel(object):
     """
     Base class for debug panels.
     """
     # name = Base
-    has_content = False # If content returns something, set to true in subclass
+
+    # If content returns something, set to true in subclass
+    has_content = False
 
     # If the client is able to activate/de-activate the panel
     user_enable = False
-
 
     # We'll maintain a local context instance so we can expose our template
     # context variables to panels which need them:
@@ -57,5 +59,3 @@ class DebugPanel(object):
 
     def process_response(self, request, response):
         pass
-
-

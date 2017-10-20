@@ -1,11 +1,12 @@
 import collections
 import json
 import sys
-import traceback
 import uuid
-from jinja2.exceptions import TemplateSyntaxError
 
-from flask import template_rendered, request, g, render_template_string, Response, current_app, abort, url_for
+from flask import (
+    template_rendered, request, g,
+    Response, current_app, abort, url_for
+)
 from flask_debugtoolbar import module
 from flask_debugtoolbar.panels import DebugPanel
 
@@ -77,18 +78,28 @@ def require_enabled():
         abort(403)
 
 
+def _get_source(template):
+    with open(template.filename, 'rb') as fp:
+        source = fp.read()
+    return source.decode(_template_encoding())
+
+
+def _template_encoding():
+    return getattr(current_app.jinja_loader, 'encoding', 'utf-8')
+
+
 @module.route('/template/<key>')
 def template_editor(key):
     require_enabled()
     # TODO set up special loader that caches templates it loads
     # and can override template contents
-    templates = [t['template'] for t in TemplateDebugPanel.get_cache_for_key(key)]
+    templates = [t['template'] for t in
+                 TemplateDebugPanel.get_cache_for_key(key)]
     return g.debug_toolbar.render('panels/template_editor.html', {
         'static_path': url_for('_debug_toolbar.static', filename=''),
         'request': request,
         'templates': [
-            {'name': t.name,
-             'source': open(t.filename).read()}
+            {'name': t.name, 'source': _get_source(t)}
             for t in templates
         ]
     })
@@ -98,8 +109,8 @@ def template_editor(key):
 def save_template(key):
     require_enabled()
     template = TemplateDebugPanel.get_cache_for_key(key)[0]['template']
-    content = request.form['content']
-    with open(template.filename, 'w') as fp:
+    content = request.form['content'].encode(_template_encoding())
+    with open(template.filename, 'wb') as fp:
         fp.write(content)
     return 'ok'
 
@@ -119,6 +130,7 @@ def template_preview(key):
             while tb.tb_next:
                 tb = tb.tb_next
             msg = {'lineno': tb.tb_lineno, 'error': str(e)}
-            return Response(json.dumps(msg), status=400, mimetype='application/json')
+            return Response(json.dumps(msg), status=400,
+                            mimetype='application/json')
         finally:
             del tb
