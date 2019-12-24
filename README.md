@@ -1,5 +1,11 @@
-Flask on App Engine Project Template
-====================================
+Flask on App Engine Project Template (Deprecated)
+=================================================
+
+IMPORTANT: This project is deprecated (primarily due to Python 2 end-of-life as of 1 Jan 2020) 
+and has been supplanted by the following, which supports Flask in Python 3
+on Google App Engine's second-generation runtimes...
+
+https://github.com/kamalgill/cloud-starterkit-flask-appengine
 
 Boilerplate project template for running a Flask-based application on
 Google App Engine's Standard Python 2.7 Runtime
